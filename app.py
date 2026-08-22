@@ -26,9 +26,5 @@ def login():
         return jsonify({"success": True, "user": user_info})
     return jsonify({"success": False, "message": "Password salah!"})
 
-# Handler wajib untuk Vercel Serverless Python
-def handler(request, response):
-    return app(request, response)
-
 if __name__ == "__main__":
     app.run(debug=True)
