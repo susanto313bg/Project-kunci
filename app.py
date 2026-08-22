@@ -26,5 +26,8 @@ def login():
         return jsonify({"success": True, "user": user_info})
     return jsonify({"success": False, "message": "Password salah!"})
 
+# Baris ini penting agar Vercel mengenali app sebagai WSGI/serverless handler
+app = app
+
 if __name__ == "__main__":
     app.run(debug=True)
