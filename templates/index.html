@@ -4,26 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEWCRO_PHP_V7 (WEB VERSION)</title>
-    <!-- Tailwind CSS untuk styling cepat dan rapi -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Mengatur lebar kolom input agar pas untuk sekitar 7 karakter */
         .tid-input {
-            width: 130px !important;
-            max-width: 130px;
+            width: 140px !important;
+            max-width: 140px;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col font-sans">
 
     <!-- Header / Navbar -->
-    <header class="bg-slate-900 text-white p-4 shadow-md flex items-center space-x-3">
-        <span class="text-2xl font-bold text-amber-400">∞ bgi</span>
-        <span class="text-sm tracking-wider text-gray-300 border-l pl-3 border-gray-600">Integrated Cash Solutions</span>
+    <header class="bg-[#0f172a] text-white p-4 shadow-md flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl font-bold text-amber-400">∞ bgi</span>
+            <span class="text-sm tracking-wider text-gray-300 border-l pl-3 border-gray-600">Integrated Cash Solutions</span>
+        </div>
+        <div class="text-sm font-semibold text-gray-300">
+            PT. Bringin Gigantara
+        </div>
     </header>
 
     <!-- Sub Header Title -->
-    <div class="bg-slate-200 py-2 px-6 text-center text-slate-700 font-semibold text-sm tracking-wide shadow-inner">
+    <div class="bg-slate-200 py-2 px-6 text-slate-700 font-semibold text-sm tracking-wide shadow-inner border-b border-slate-300">
         NEWCRO_PHP_V7 (WEB VERSION)
     </div>
 
@@ -34,416 +38,107 @@
         <div class="w-full md:w-80 bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-between space-y-4">
             <div class="space-y-3">
                 <div class="bg-blue-50 border border-blue-200 p-3 rounded text-center">
-                    <h2 class="font-bold text-slate-800 text-sm">ADMIN KUNCI</h2>
-                    <p class="text-xs text-slate-600">BG BEKASI</p>
+                    <h2 class="font-bold text-blue-900 text-sm">ADMIN KUNCI</h2>
+                    <p class="text-xs text-blue-700">BG BEKASI</p>
                 </div>
                 
                 <div class="text-xs space-y-1.5 text-slate-700 font-mono bg-slate-50 p-3 rounded border border-slate-200">
                     <p>USER ID : 1471191</p>
                     <p>NAMA : ADMIN KUNCI</p>
                     <p>DATE : 22 Aug, 2026</p>
-                    <p>LOGIN : 13:16</p>
+                    <p>LOGIN : 13:51</p>
                 </div>
             </div>
 
             <div class="space-y-2">
-                <button class="w-full bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs font-semibold py-2 px-3 rounded border border-pink-300 flex items-center justify-center space-x-1">
+                <button onclick="showView('team')" class="w-full bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs font-semibold py-2 px-3 rounded border border-pink-300 flex items-center justify-center space-x-1 transition">
                     <span>🌺</span>
                     <span>CETAK KUNCI RPL</span>
                 </button>
-                <button class="w-full bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold py-2 px-3 rounded border border-red-200 flex items-center justify-center space-x-1">
+                <button onclick="alert('Logout berhasil')" class="w-full bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold py-2 px-3 rounded border border-red-200 flex items-center justify-center space-x-1 transition">
                     <span>🚨</span>
                     <span>Logout</span>
                 </button>
             </div>
         </div>
 
-        <!-- Table / Content Panel -->
-        <div class="flex-1 bg-white p-4 rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
-            <div class="mb-4">
-                <button class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-medium py-1.5 px-3 rounded flex items-center space-x-1">
-                    <span>➖</span>
-                    <span>Kembali ke Daftar Team</span>
-                </button>
+        <!-- Dynamic Right Panel -->
+        <div class="flex-1 bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
+            
+            <!-- VIEW 1: Dashboard Awal (Sesuai Gambar 12) -->
+            <div id="view-dashboard" class="flex-1 flex items-center justify-center p-12 text-center text-gray-400 italic text-sm">
+                Silahkan klik tombol 'CETAK KUNCI RPL' di menu sebelah kiri.
             </div>
 
-            <!-- Tabel Input TID -->
-            <table class="w-full border-collapse border border-slate-300 text-sm">
-                <thead>
-                    <tr class="bg-emerald-700 text-white">
-                        <th class="border border-slate-300 p-2 w-16 text-center">NO</th>
-                        <th class="border border-slate-300 p-2 text-left">TID (Bisa Paste Excel di Baris 1)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Baris 1 sampai 10 -->
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">1</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600" value="dfvb"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">2</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">3</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">4</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">5</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">6</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">7</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">8</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">9</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">10</td>
-                        <td class="border border-slate-300 p-2"><input type="text" maxlength="7" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PT. Bringin Gigantara - Management Kunci</title>
-    <!-- Tailwind CSS untuk styling modern -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-after: always; break-after: page; }
-        }
-    </style>
-</head>
-<body class="bg-[#EBF2FA] font-sans antialiased min-h-screen flex flex-col">
-
-    <!-- LAYAR LOGIN -->
-    <div id="loginScreen" class="fixed inset-0 bg-[#1E293B] flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-[380px] text-center">
-            <h2 class="text-xl font-bold text-[#1E3A8A]">PT. Bringin Gigantara</h2>
-            <p class="text-xs italic text-slate-500 mb-6">Integrated Cash Solutions</p>
-            
-            <label class="block text-left text-sm font-medium text-slate-700 mb-2">Masukkan Password Akses:</label>
-            <input type="password" id="loginPass" class="w-full text-center text-lg border border-slate-300 rounded p-2 mb-4 focus:outline-none focus:border-blue-600" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()">
-            
-            <button onclick="handleLogin()" class="w-full bg-[#1E3A8A] text-white font-bold py-2 rounded hover:bg-blue-900 transition">LOGIN</button>
-        </div>
-    </div>
-
-    <!-- APLIKASI UTAMA (Disembunyikan sebelum login) -->
-    <div id="mainApp" class="hidden flex flex-col flex-1">
-        <!-- Header -->
-        <header class="bg-[#0F172A] h-20 flex items-center justify-between px-6 text-white shadow">
-            <div class="flex items-center space-x-3">
-                <span class="text-3xl font-bold text-[#F97316]">∞ bgi</span>
-                <span class="text-xs text-slate-400 leading-tight">Integrated<br>Cash Solutions</span>
-            </div>
-            <h1 class="text-xl font-bold tracking-wide">PT. Bringin Gigantara</h1>
-        </header>
-
-        <!-- Sub-bar Version -->
-        <div class="bg-[#CBD5E1] px-6 py-1 text-xs font-bold text-[#334155] pl-[170px]">
-            NEWCRO_PHP_V7 (WEB VERSION)
-        </div>
-
-        <!-- Body Content -->
-        <div class="flex flex-1 p-3 gap-3">
-            <!-- Sidebar -->
-            <aside class="w-[200px] flex flex-col gap-3">
-                <div class="bg-[#DBEAFE] border border-blue-200 p-3 rounded text-xs">
-                    <div id="sidebarRole" class="font-bold text-[#1E3A8A] text-center mb-2">TEKNISI<br>BG BEKASI</div>
-                    <div class="space-y-1 font-mono text-[11px] text-slate-800">
-                        <div>USER ID : <span id="lblUserId">---</span></div>
-                        <div>NAMA : <span id="lblUserName">---</span></div>
-                        <div>DATE : <span id="lblDate">---</span></div>
-                        <div>LOGIN : <span id="lblLoginTime">---</span></div>
+            <!-- VIEW 2: Pilih Team RPL -->
+            <div id="view-team" class="hidden flex-1 flex flex-col">
+                <h2 class="text-lg font-bold text-slate-800 mb-6 pb-2 border-b border-slate-200">Pilih Team RPL</h2>
+                <div class="space-y-3 max-w-xl">
+                    <div onclick="showView('input')" class="bg-white border border-slate-300 hover:border-slate-400 p-3 rounded shadow-sm cursor-pointer font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        TEAM RPL MALAM 1
+                    </div>
+                    <div onclick="showView('input')" class="bg-white border border-slate-300 hover:border-slate-400 p-3 rounded shadow-sm cursor-pointer font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        TEAM RPL MALAM 2
+                    </div>
+                    <div onclick="showView('input')" class="bg-white border border-slate-300 hover:border-slate-400 p-3 rounded shadow-sm cursor-pointer font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        TEAM RPL PAGI 1
+                    </div>
+                    <div onclick="showView('input')" class="bg-white border border-slate-300 hover:border-slate-400 p-3 rounded shadow-sm cursor-pointer font-semibold text-slate-700 hover:bg-slate-50 transition">
+                        TEAM RPL PAGI 2
                     </div>
                 </div>
+            </div>
 
-                <button onclick="showTeamMenu()" class="text-left bg-[#DBEAFE] hover:bg-blue-200 text-[#1E3A8A] font-bold py-2 px-3 rounded text-xs transition">
-                    🌺 CETAK KUNCI RPL
-                </button>
-                <button onclick="location.reload()" class="text-left bg-[#FEE2E2] hover:bg-red-200 text-[#991B1B] font-bold py-2 px-3 rounded text-xs transition">
-                    🚨 Logout
-                </button>
-            </aside>
-
-            <!-- Main Dynamic Content Area -->
-            <main id="contentArea" class="flex-1 bg-white p-4 rounded shadow-sm border border-slate-200 overflow-y-auto">
-                <div class="flex items-center justify-center h-full text-slate-400 italic">
-                    Silakan klik tombol 'CETAK KUNCI RPL' di menu sebelah kiri.
+            <!-- VIEW 3: Input TID Table -->
+            <div id="view-input" class="hidden flex-1 flex flex-col">
+                <div class="mb-4">
+                    <button onclick="showView('team')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-medium py-1.5 px-3 rounded flex items-center space-x-1 transition">
+                        <span>⬅</span>
+                        <span>Kembali ke Daftar Team</span>
+                    </button>
                 </div>
-            </main>
-        </div>
-    </div>
 
-    <script>
-        let currentUser = null;
-        let batchTeamsData = {}; 
-        let previewPayload = [];
-        let currentSlideIndex = 0;
-
-        const teamsList = [
-            "TEAM RPL MALAM 1", "TEAM RPL MALAM 2", "*",
-            "TEAM RPL PAGI 1", "TEAM RPL PAGI 2", "TEAM RPL PAGI 3", "TEAM RPL PAGI 4", "TEAM RPL PAGI 5", "TEAM RPL PAGI 6", "TEAM RPL PAGI 7", "TEAM RPL PAGI 8", "TEAM RPL PAGI 9", "*",
-            "TEAM RPL MIDLE 1", "TEAM RPL MIDLE 2", "TEAM RPL MIDLE 3", "*",
-            "TEAM RPL SIANG 1", "TEAM RPL SIANG 2", "TEAM RPL SIANG 3", "TEAM RPL SIANG 4"
-        ];
-
-        async function handleLogin() {
-            const pwd = document.getElementById("loginPass").value.trim();
-            const res = await fetch("/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password: pwd })
-            });
-            const data = await res.json();
-            if (data.success) {
-                currentUser = data.user;
-                document.getElementById("loginScreen").classList.add("hidden");
-                document.getElementById("mainApp").classList.remove("hidden");
-                
-                document.getElementById("sidebarRole").innerHTML = `${currentUser.role}<br>BG BEKASI`;
-                document.getElementById("lblUserId").innerText = currentUser.id;
-                document.getElementById("lblUserName").innerText = currentUser.name;
-                document.getElementById("lblDate").innerText = currentUser.today_date;
-                document.getElementById("lblLoginTime").innerText = currentUser.login_time;
-            } else {
-                alert(data.message);
-            }
-        }
-
-        function showTeamMenu() {
-            batchTeamsData = {};
-            renderTeamMenuHtml();
-        }
-
-        function renderTeamMenuHtml() {
-            const content = document.getElementById("contentArea");
-            let hasData = Object.keys(batchTeamsData).length > 0;
-
-            let html = `
-                <div class="flex justify-between items-center mb-4 pb-2 border-b">
-                    <span class="font-bold text-slate-700">Pilih Team RPL</span>
-                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded">🖨️ Pratinjau / Cetak Semua (${Object.keys(batchTeamsData).length} Team)</button>` : ''}
-                </div>
-                <div class="grid grid-cols-1 gap-2 max-w-md">
-            `;
-
-            teamsList.forEach(team => {
-                if (team === "*") {
-                    html += `<div class="bg-slate-200 text-center text-slate-500 font-bold text-xs py-1">*</div>`;
-                } else {
-                    let isFilled = batchTeamsData[team] && batchTeamsData[team].length > 0;
-                    let btnText = isFilled ? `✓ ${team} (${batchTeamsData[team].length} TID)` : team;
-                    let btnBg = isFilled ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-white text-slate-800 border-slate-200 hover:bg-slate-50";
-                    
-                    html += `<button onclick="openTeamInput('${team}')" class="text-left border px-4 py-2 rounded text-sm font-bold transition ${btnBg}">${btnText}</button>`;
-                }
-            });
-
-            html += `</div>`;
-            content.innerHTML = html;
-        }
-
-        function openTeamInput(teamName) {
-            const content = document.getElementById("contentArea");
-            let previousTids = batchTeamsData[teamName] || [];
-
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="renderTeamMenuHtml()" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
-                    <span class="font-bold text-blue-900">INPUT TID - ${teamName}</span>
-                </div>
-                <div class="border rounded overflow-hidden max-w-lg mb-4">
-                    <table class="w-full border-collapse text-sm">
-                        <thead>
-                            <tr class="bg-emerald-600 text-white">
-                                <th class="border p-1 w-12 text-center">NO</th>
-                                <th class="border p-1 text-left px-3">TID (Bisa Paste Excel di Baris 1)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tidTableBody">
-            `;
-
-            for (let i = 0; i < 17; i++) {
-                let val = previousTids[i] || "";
-                let bgRow = i % 2 === 0 ? "bg-slate-50" : "bg-white";
-                html += `
-                    <tr class="${bgRow}">
-                        <td class="border p-1 text-center font-bold text-slate-600">${i + 1}</td>
-                        <td class="border p-1">
-                            <input type="text" class="tid-input w-full px-2 py-0.5 border rounded text-sm outline-none focus:border-blue-500" value="${val}" data-index="${i}">
-                        </td>
-                    </tr>
-                `;
-            }
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="saveTeam('${teamName}', true)" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-4 py-2 rounded">🖨️ Cetak Team Ini Langsung</button>
-                    <button onclick="saveTeam('${teamName}', false)" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded">➕ Simpan & Tambah Team Lain</button>
-                </div>
-            `;
-
-            content.innerHTML = html;
-
-            document.querySelectorAll(".tid-input").forEach(input => {
-                input.addEventListener("paste", function(e) {
-                    e.preventDefault();
-                    let clipboardData = e.clipboardData || window.clipboardData;
-                    let pastedData = clipboardData.getData("Text");
-                    let lines = pastedData.split(/\r?\n/).map(l => l.trim()).filter(l => l);
-                    
-                    let startIndex = parseInt(this.getAttribute("data-index"));
-                    let inputs = document.querySelectorAll(".tid-input");
-                    
-                    lines.forEach((line, idx) => {
-                        let targetIdx = startIndex + idx;
-                        if (targetIdx < inputs.length) {
-                            inputs[targetIdx].value = line;
-                        }
-                    });
-                });
-            });
-        }
-
-        function saveTeam(teamName, andPrint) {
-            let inputs = document.querySelectorAll(".tid-input");
-            let tids = [];
-            inputs.forEach(inp => {
-                if(inp.value.trim() !== "") tids.push(inp.value.trim());
-            });
-
-            if (tids.length === 0) {
-                alert("Harap masukkan minimal 1 TID!");
-                return;
-            }
-
-            batchTeamsData[teamName] = tids;
-
-            if (andPrint) {
-                let singleData = {};
-                singleData[teamName] = tids;
-                preparePreview(singleData);
-            } else {
-                renderTeamMenuHtml();
-            }
-        }
-
-        function preparePreview(dataDict) {
-            previewPayload = [];
-            for (let [tName, tids] of Object.entries(dataDict)) {
-                if (tids.length === 0) continue;
-                let teamRows = [];
-                tids.forEach((tid, i) => {
-                    teamRows.push([
-                        i + 1,
-                        tid,
-                        `ATM-${tid} (BEKASI)`,
-                        `RPL-${tid}-99`,
-                        `R-0${(i % 3) + 1}`,
-                        `B-0${(i % 4) + 1}`,
-                        `K-0${(i % 5) + 1}`,
-                        "Ready"
-                    ]);
-                });
-                previewPayload.push({ team_name: tName, data: teamRows });
-            }
-
-            currentSlideIndex = 0;
-            renderSlideView();
-        }
-
-        function renderSlideView() {
-            const content = document.getElementById("contentArea");
-            let totalPages = previewPayload.length;
-            if (totalPages === 0) return;
-
-            let html = `
-                <div class="flex justify-between items-center mb-4 no-print">
-                    <button onclick="renderTeamMenuHtml()" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
-                    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded">🖨️ CETAK DOKUMEN</button>
-                </div>
-                <div class="space-y-8">
-            `;
-
-            previewPayload.forEach((item) => {
-                html += `
-                    <div class="page-break border border-slate-400 bg-white mb-6">
-                        <table class="w-full border-collapse text-xs">
-                            <thead>
-                                <tr>
-                                    <th colspan="3" class="bg-amber-500 text-white border border-slate-400 p-2 text-left font-bold text-sm">${item.team_name}</th>
-                                    <th colspan="4" class="bg-amber-500 text-white border border-slate-400 p-2 text-center font-bold text-sm">NAMA TEAM</th>
-                                    <th class="bg-amber-500 text-white border border-slate-400 p-2"></th>
-                                </tr>
-                                <tr class="bg-blue-900 text-white">
-                                    <th class="border border-slate-400 p-1 w-10">NO</th>
-                                    <th class="border border-slate-400 p-1 w-20">TID</th>
-                                    <th class="border border-slate-400 p-1 text-left px-2">LOKASI</th>
-                                    <th class="border border-slate-400 p-1">BARCODE RPL</th>
-                                    <th class="border border-slate-400 p-1 w-12">RAK</th>
-                                    <th class="border border-slate-400 p-1 w-12">BARIS</th>
-                                    <th class="border border-slate-400 p-1 w-12">KOLOM</th>
-                                    <th class="border border-slate-400 p-1 w-24">KETERANGAN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-
-                item.data.forEach((row, rIdx) => {
-                    let bg = rIdx % 2 === 0 ? "bg-slate-50" : "bg-white";
-                    html += `
-                        <tr class="${bg}">
-                            <td class="border border-slate-400 p-1 text-center">${row[0]}</td>
-                            <td class="border border-slate-400 p-1 text-center font-bold">${row[1]}</td>
-                            <td class="border border-slate-400 p-1 px-2">${row[2]}</td>
-                            <td class="border border-slate-400 p-1 text-center font-mono">${row[3]}</td>
-                            <td class="border border-slate-400 p-1 text-center">${row[4]}</td>
-                            <td class="border border-slate-400 p-1 text-center">${row[5]}</td>
-                            <td class="border border-slate-400 p-1 text-center">${row[6]}</td>
-                            <td class="border border-slate-400 p-1 text-center text-emerald-600 font-bold">${row[7]}</td>
+                <table class="w-full border-collapse border border-slate-300 text-sm">
+                    <thead>
+                        <tr class="bg-emerald-700 text-white">
+                            <th class="border border-slate-300 p-2 w-16 text-center">NO</th>
+                            <th class="border border-slate-300 p-2 text-left">TID (Bisa Paste Excel di Baris 1)</th>
                         </tr>
-                    `;
-                });
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">1</td>
+                            <td class="border border-slate-300 p-2"><input type="text" maxlength="8" value="dfvb" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
+                        </tr>
+                        <script>
+                            for(let i=2; i<=10; i++) {
+                                document.write(`<tr>
+                                    <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">${i}</td>
+                                    <td class="border border-slate-300 p-2"><input type="text" maxlength="8" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
+                                </tr>`);
+                            }
+                        </script>
+                    </tbody>
+                </table>
+            </div>
 
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            });
+        </div>
+    </div>
 
-            html += `</div>`;
-            content.innerHTML = html;
+    <!-- Script Navigasi Antar Halaman -->
+    <script>
+        function showView(viewName) {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-team').classList.add('hidden');
+            document.getElementById('view-input').classList.add('hidden');
+
+            if(viewName === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+            } else if(viewName === 'team') {
+                document.getElementById('view-team').classList.remove('hidden');
+            } else if(viewName === 'input') {
+                document.getElementById('view-input').classList.remove('hidden');
+            }
         }
     </script>
 </body>
