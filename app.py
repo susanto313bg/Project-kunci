@@ -3,7 +3,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Data user login sementara
+# Data user login
 PASSWORDS = {
     "00": {"role": "TEKNISI", "name": "TEKNISI BRANKAS", "id": "1471190"},
     "01": {"role": "ADMIN KUNCI", "name": "ADMIN KUNCI", "id": "1471191"}
@@ -26,6 +26,5 @@ def login():
         return jsonify({"success": True, "user": user_info})
     return jsonify({"success": False, "message": "Password salah!"})
 
-# Baris ini penting agar Vercel mendeteksi aplikasi Flask
 if __name__ == "__main__":
     app.run(debug=True)
