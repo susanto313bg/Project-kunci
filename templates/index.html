@@ -164,12 +164,12 @@
             let previousMemberName = memberElem ? memberElem.value : (batchTeamMembers[teamName] || "");
 
             let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded mb-1">⬅ Kembali ke Daftar Team</button>
-                        <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-1">
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
+                        <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua TID</button>
                     </div>
-                    <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua TID</button>
+                    <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
                 </div>
 
                 <div class="border border-slate-400 rounded overflow-hidden inline-block mb-4 bg-white shadow-sm">
@@ -307,7 +307,6 @@
                 input.addEventListener("keydown", function(e) {
                     let currentIndex = parseInt(this.getAttribute("data-index"));
 
-                    // Shortcut Ctrl + A untuk memilih/memblok semua baris kotak input
                     if (e.ctrlKey && e.key.toLowerCase() === 'a') {
                         e.preventDefault();
                         containers.forEach(c => c.classList.add("tid-cell-selected"));
