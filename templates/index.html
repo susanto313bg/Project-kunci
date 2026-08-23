@@ -224,18 +224,19 @@
                         <table class="w-full border-collapse text-xs">
                             <thead>
                                 <tr>
-                                    <th colspan="9" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
+                                    <th colspan="10" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
                                 </tr>
                                 <tr class="bg-slate-400 text-slate-900">
                                     <th class="border border-slate-400 p-1 w-10">NO</th>
                                     <th class="border border-slate-400 p-1 w-20">TID</th>
                                     <th class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">LOKASI</th>
-                                    <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE RPL</th>
-                                    <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE FLM</th>
+                                    <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE RPL</th>
+                                    <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE FLM</th>
                                     <th class="border border-slate-400 p-1 w-12">RAK</th>
                                     <th class="border border-slate-400 p-1 w-12">BARIS</th>
                                     <th class="border border-slate-400 p-1 w-12">KOLOM</th>
-                                    <th class="border border-slate-400 p-1 w-24">KETERANGAN</th>
+                                    <th class="border border-slate-400 p-1 w-20">KETERANGAN</th>
+                                    <th class="border border-slate-400 p-1 w-20"></th>
                                 </tr>
                             </thead>
                             <tbody id="realtimePreviewBody">
@@ -250,11 +251,12 @@
                             <td class="border border-slate-400 p-1 text-center">${i + 1}</td>
                             <td class="border border-slate-400 p-1 text-center font-bold">${tid}</td>
                             <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">ATM-${tid} (BEKASI)</td>
-                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">RPL-${tid}-99</td>
-                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">FLM-${tid}-88</td>
+                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">RPL-${tid}-99</td>
+                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">FLM-${tid}-88</td>
                             <td class="border border-slate-400 p-1 text-center">R-0${(i % 3) + 1}</td>
                             <td class="border border-slate-400 p-1 text-center">B-0${(i % 4) + 1}</td>
                             <td class="border border-slate-400 p-1 text-center">K-0${(i % 5) + 1}</td>
+                            <td class="border border-slate-400 p-1 text-center"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
                         </tr>
                     `;
@@ -264,8 +266,9 @@
                             <td class="border border-slate-400 p-1 text-center">${i + 1}</td>
                             <td class="border border-slate-400 p-1 text-center font-bold"></td>
                             <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap"></td>
-                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono"></td>
-                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono"></td>
+                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]"></td>
+                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]"></td>
+                            <td class="border border-slate-400 p-1 text-center"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
@@ -316,6 +319,7 @@
                         row.cells[6].innerText = `B-0${(i % 4) + 1}`;
                         row.cells[7].innerText = `K-0${(i % 5) + 1}`;
                         row.cells[8].innerText = "";
+                        row.cells[9].innerText = "";
                     } else {
                         row.style.display = "none";
                     }
@@ -500,6 +504,7 @@
                         `R-0${(i % 3) + 1}`,
                         `B-0${(i % 4) + 1}`,
                         `K-0${(i % 5) + 1}`,
+                        "",
                         ""
                     ]);
                 });
@@ -534,18 +539,19 @@
                     <table class="w-full border-collapse text-xs">
                         <thead>
                             <tr>
-                                <th colspan="9" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm">${item.team_name}</th>
+                                <th colspan="10" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm">${item.team_name}</th>
                             </tr>
                             <tr class="bg-slate-400 text-slate-900">
                                 <th class="border border-slate-400 p-1 w-10">NO</th>
                                 <th class="border border-slate-400 p-1 w-20">TID</th>
                                 <th class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">LOKASI</th>
-                                <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE RPL</th>
-                                <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE FLM</th>
+                                <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE RPL</th>
+                                <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE FLM</th>
                                 <th class="border border-slate-400 p-1 w-12">RAK</th>
                                 <th class="border border-slate-400 p-1 w-12">BARIS</th>
                                 <th class="border border-slate-400 p-1 w-12">KOLOM</th>
-                                <th class="border border-slate-400 p-1 w-24">KETERANGAN</th>
+                                <th class="border border-slate-400 p-1 w-20">KETERANGAN</th>
+                                <th class="border border-slate-400 p-1 w-20"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -558,12 +564,13 @@
                         <td class="border border-slate-400 p-1 text-center">${row[0]}</td>
                         <td class="border border-slate-400 p-1 text-center font-bold">${row[1]}</td>
                         <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">${row[2]}</td>
-                        <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">${row[3]}</td>
-                        <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">${row[4]}</td>
+                        <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">${row[3]}</td>
+                        <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">${row[4]}</td>
                         <td class="border border-slate-400 p-1 text-center">${row[5]}</td>
                         <td class="border border-slate-400 p-1 text-center">${row[6]}</td>
                         <td class="border border-slate-400 p-1 text-center">${row[7]}</td>
                         <td class="border border-slate-400 p-1 text-center">${row[8]}</td>
+                        <td class="border border-slate-400 p-1 text-center">${row[9]}</td>
                     </tr>
                 `;
             });
