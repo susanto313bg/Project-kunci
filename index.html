@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PT. Bringin Gigantara - Management Kunci</title>
+    <!-- Tailwind CSS untuk styling modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .page-break { page-break-after: always; break-after: page; }
+        }
+        /* Efek sel aktif ala Excel */
+        .tid-cell-selected {
+            background-color: #FEF08A !important;
+            outline: 2px solid #2563EB !important;
+            z-index: 10;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#0F172A] font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- LAYAR LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white/95 backdrop-blur p-8 rounded-xl shadow-2xl border border-white/20 w-[380px] text-center">
+            <h2 class="text-xl font-extrabold text-[#1E3A8A] tracking-wide">PT. Bringin Gigantara</h2>
+            <p class="text-xs italic text-slate-500 mb-6">Integrated Cash Solutions</p>
+            
+            <label class="block text-left text-sm font-semibold text-slate-700 mb-2">Masukkan Password Akses:</label>
+            <input type="password" id="loginPass" class="w-full text-center text-lg border border-slate-300 rounded-lg p-2.5 mb-4 shadow-inner focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()">
+            
+            <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900 text-white font-bold py-2.5 rounded-lg shadow-md transition transform active:scale-[0.98]">LOGIN</button>
+        </div>
+    </div>
+
+    <!-- APLIKASI UTAMA -->
+    <div id="mainApp" class="hidden flex flex-col flex-1">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1E293B] h-20 flex items-center justify-between px-6 text-white shadow-xl border-b border-blue-900/50 overflow-hidden">
+            <div class="flex items-center space-x-3 z-10 bg-[#0F172A] pr-4">
+                <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ bgi</span>
+                <span class="text-xs text-slate-300 leading-tight font-medium">Integrated<br>Cash Solutions</span>
+            </div>
+            <!-- Teks Berjalan -->
+            <div class="flex-1 overflow-hidden mx-6">
+                <marquee scrollamount="5" class="text-xl font-bold tracking-wider drop-shadow text-amber-300">
+                    9930 BG BEKASI
+                </marquee>
+            </div>
+        </header>
+
+        <!-- Sub-bar Version -->
+        <div class="bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400">
+            NEWCRO_PHP_V7 (WEB VERSION)
+        </div>
+
+        <!-- Body Content -->
+        <div class="flex flex-1 p-3 gap-3">
+            <!-- Sidebar -->
+            <aside class="w-[220px] flex flex-col gap-3 shrink-0">
+                <!-- Kotak Profil -->
+                <div class="bg-gradient-to-b from-[#E0F2FE] via-[#BAE6FD] to-[#7DD3FC] border-2 border-blue-400/80 p-3.5 rounded-xl shadow-[0_6px_15px_rgba(0,0,0,0.25),inset_0_2px_4px_rgba(255,255,255,0.8)]">
+                    <div id="sidebarRole" class="font-black text-[#1E3A8A] text-center mb-2.5 tracking-wider text-xs drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)] uppercase border-b border-blue-300/80 pb-2">TEKNISI<br>BG BEKASI</div>
+                    <div class="space-y-2 font-mono text-[12px] font-black text-slate-950 pt-1 drop-shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+                        <div>USER ID : <span id="lblUserId" class="font-black text-blue-950">---</span></div>
+                        <div>NAMA : <span id="lblUserName" class="font-black text-blue-950">---</span></div>
+                        <div>DATE : <span id="lblDate" class="font-black text-blue-950">---</span></div>
+                        <div>LOGIN : <span id="lblLoginTime" class="font-black text-blue-950">---</span></div>
+                    </div>
+                </div>
+
+                <!-- MENU TOMBOL SAMPING -->
+                <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-amber-300 transform active:scale-[0.98]">
+                    📊 MASTER DATA
+                </button>
+
+                <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 hover:to-indigo-300 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-blue-300 transform active:scale-[0.98]">
+                    🌺 CETAK KUNCI RPL
+                </button>
+
+                <!-- Tombol Menu Unduh Berkas -->
+                <button onclick="downloadMasterDataFile()" class="text-left bg-gradient-to-r from-emerald-100 via-teal-100 to-emerald-200 hover:from-emerald-200 hover:to-teal-300 text-[#065F46] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-emerald-300 transform active:scale-[0.98]">
+                    📥 UNDUH BERKAS
+                </button>
+
+                <!-- MENU DROPDOWN SETTING -->
+                <div class="flex flex-col">
+                    <button onclick="toggleSettingDropdown()" class="w-full text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-purple-300 transform active:scale-[0.98] flex justify-between items-center">
+                        <span>⚙️ SETTING</span>
+                        <span id="settingArrow" class="transform transition-transform text-[10px]">▼</span>
+                    </button>
+                    <!-- Sub-menu Dropdown -->
+                    <div id="settingDropdownContent" class="hidden flex flex-col gap-1.5 mt-1.5 pl-1">
+                        <button onclick="renderPlaceholderSetting(1)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
+                            • (Kosong)
+                        </button>
+                        <button onclick="renderPlaceholderSetting(2)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
+                            • (Kosong)
+                        </button>
+                        <button onclick="renderPlaceholderSetting(3)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
+                            • Hapus Kunci
+                        </button>
+
+                        <!-- FORM HAPUS BERDASARKAN TID (DI DALAM SIDEBAR) -->
+                        <div class="bg-purple-50/90 border border-purple-200 p-2.5 rounded-lg shadow-inner space-y-2 mt-1">
+                            <div class="text-[11px] font-extrabold text-[#6B21A8] uppercase">🗑️ Hapus Berdasarkan TID</div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Masukkan Nomor TID</label>
+                                <input type="text" id="sidebarInputTid" oninput="checkSidebarTid()" class="w-full border border-slate-300 rounded p-1.5 text-[11px] bg-white font-bold text-blue-900 outline-none focus:border-purple-500" placeholder="Ketik TID...">
+                            </div>
+
+                            <div id="sidebarTidDetail" class="hidden bg-white border border-blue-200 p-2 rounded space-y-1 text-[10px] text-slate-800 shadow-sm">
+                                <div><strong>Lokasi:</strong> <span id="sideDetLokasi" class="text-blue-900 font-semibold">-</span></div>
+                                <div><strong>RPL:</strong> <span id="sideDetRpl" class="font-mono text-slate-900">-</span></div>
+                                <div><strong>FLM:</strong> <span id="sideDetFlm" class="font-mono text-slate-900">-</span></div>
+                            </div>
+
+                            <div id="sidebarConfirmBox" class="hidden">
+                                <label class="flex items-start gap-1.5 cursor-pointer bg-red-50 border border-red-200 p-1.5 rounded text-[10px] font-bold text-red-700">
+                                    <input type="checkbox" id="sideChkConfirm" class="w-3.5 h-3.5 text-red-600 rounded mt-0.5">
+                                    <span>Ya, yakin hapus permanen</span>
+                                </label>
+                            </div>
+
+                            <button id="sideBtnSubmit" onclick="submitSidebarDeleteTid()" class="hidden w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow transition">Hapus Data TID</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="text-left bg-gradient-to-r from-red-100 via-rose-100 to-red-200 hover:from-red-200 hover:to-rose-300 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-red-300 transform active:scale-[0.98]">
+                    🚨 Logout
+                </button>
+            </aside>
+
+            <!-- Main Dynamic Content Area -->
+            <main id="contentArea" class="flex-1 bg-white/95 backdrop-blur-md p-5 rounded-xl shadow-2xl border border-slate-200 overflow-y-auto">
+                <div class="flex items-center justify-center h-full text-slate-400 italic">
+                    Silakan pilih menu di sebelah kiri.
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let batchTeamsData = {}; 
+        let batchTeamMembers = {}; 
+        let previewPayload = [];
+        let currentSlideIndex = 0;
+        let masterDatabase = {}; 
+
+        const teamsList = [
+            "TEAM RPL MALAM 1", "TEAM RPL MALAM 2", "*",
+            "TEAM RPL PAGI 1", "TEAM RPL PAGI 2", "TEAM RPL PAGI 3", "TEAM RPL PAGI 4", "TEAM RPL PAGI 5", "TEAM RPL PAGI 6", "TEAM RPL PAGI 7", "TEAM RPL PAGI 8", "TEAM RPL PAGI 9", "*",
+            "TEAM RPL MIDLE 1", "TEAM RPL MIDLE 2", "TEAM RPL MIDLE 3", "*",
+            "TEAM RPL SIANG 1", "TEAM RPL SIANG 2", "TEAM RPL SIANG 3", "TEAM RPL SIANG 4"
+        ];
+
+        async function handleLogin() {
+            const pwd = document.getElementById("loginPass").value.trim();
+            const res = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pwd })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser = data.user;
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("mainApp").classList.remove("hidden");
+                
+                document.getElementById("sidebarRole").innerHTML = `${currentUser.role}<br>BG BEKASI`;
+                document.getElementById("lblUserId").innerText = currentUser.id;
+                document.getElementById("lblUserName").innerText = currentUser.name;
+                document.getElementById("lblDate").innerText = currentUser.today_date;
+                document.getElementById("lblLoginTime").innerText = currentUser.login_time;
+
+                renderMasterDataHtml();
+            } else {
+                alert(data.message);
+            }
+        }
+
+        function toggleSettingDropdown() {
+            const dropdown = document.getElementById("settingDropdownContent");
+            const arrow = document.getElementById("settingArrow");
+            dropdown.classList.toggle("hidden");
+            if (dropdown.classList.contains("hidden")) {
+                arrow.style.transform = "rotate(0deg)";
+            } else {
+                arrow.style.transform = "rotate(180deg)";
+            }
+        }
+
+        function renderPlaceholderSetting(index) {
+            const content = document.getElementById("contentArea");
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <span class="font-extrabold text-slate-800 text-base">⚙️ SETTING - MENU ${index}</span>
+                </div>
+                <div class="p-8 text-slate-400 italic bg-slate-50 rounded-xl border border-dashed border-slate-300 text-center">
+                    Menu ini masih kosong dan sedang dalam tahap pengembangan berikutnya.
+                </div>
+            `;
+        }
+
+        // FUNGSI PENGHAPUSAN LANGSUNG DARI SIDEBAR
+        function checkSidebarTid() {
+            let tidInput = document.getElementById("sidebarInputTid").value.trim();
+            let detailBox = document.getElementById("sidebarTidDetail");
+            let confirmBox = document.getElementById("sidebarConfirmBox");
+            let submitBtn = document.getElementById("sideBtnSubmit");
+
+            if (tidInput && masterDatabase[tidInput]) {
+                let item = masterDatabase[tidInput];
+                document.getElementById("sideDetLokasi").innerText = item.lokasi;
+                document.getElementById("sideDetRpl").innerText = item.rpl;
+                document.getElementById("sideDetFlm").innerText = item.flm;
+
+                detailBox.classList.remove("hidden");
+                confirmBox.classList.remove("hidden");
+                submitBtn.classList.remove("hidden");
+            } else {
+                detailBox.classList.add("hidden");
+                confirmBox.classList.add("hidden");
+                submitBtn.classList.add("hidden");
+                let chk = document.getElementById("sideChkConfirm");
+                if(chk) chk.checked = false;
+            }
+        }
+
+        function submitSidebarDeleteTid() {
+            let tidInput = document.getElementById("sidebarInputTid").value.trim();
+            let chk = document.getElementById("sideChkConfirm");
+
+            if (!tidInput || !masterDatabase[tidInput]) {
+                alert("Nomor TID tidak valid atau belum ditemukan!");
+                return;
+            }
+
+            if (!chk || !chk.checked) {
+                alert("Silakan centang kotak konfirmasi hapus data terlebih dahulu!");
+                return;
+            }
+
+            delete masterDatabase[tidInput];
+            alert(`Data TID ${tidInput} berhasil dihapus.`);
+            
+            // Reset form sidebar
+            document.getElementById("sidebarInputTid").value = "";
+            checkSidebarTid();
+
+            // Refresh tabel master jika sedang dibuka di area utama
+            if(document.getElementById("masterTableBody")) {
+                renderMasterTable();
+            }
+        }
+
+        // FUNGSI UNDUH BERKAS CSV RAPI SESUAI KOLOM EXCEL
+        function downloadMasterDataFile() {
+            let keys = Object.keys(masterDatabase);
+            if (keys.length === 0) {
+                alert("Tidak ada data master untuk diunduh!");
+                return;
+            }
+
+            // Menggunakan pemisah titik koma (;) agar otomatis rapi per kolom di Excel Indonesia
+            let csvContent = "NO;TID;LOKASI ATM;BARCODE RPL;BARCODE FLM;RAK;BARIS;KOLOM\r\n";
+
+            keys.forEach((tid, index) => {
+                let item = masterDatabase[tid];
+                let row = [
+                    index + 1,
+                    tid,
+                    `"${item.lokasi}"`,
+                    `"${item.rpl}"`,
+                    `"${item.flm}"`,
+                    `"${item.rak}"`,
+                    `"${item.baris}"`,
+                    `"${item.kolom}"`
+                ].join(";");
+                
+                csvContent += row + "\r\n";
+            });
+
+            // Tambahkan BOM (\uFEFF) agar format teks/karakter terbaca sempurna di Excel
+            let blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+            let url = URL.createObjectURL(blob);
+            let link = document.createElement("a");
+            
+            let today = currentUser && currentUser.today_date ? currentUser.today_date.replace(/[\/\s]/g, "-") : "data";
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Master_Data_Kunci_${today}.csv`);
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function renderMasterDataHtml() {
+            const content = document.getElementById("contentArea");
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <span class="font-extrabold text-slate-800 text-base">📊 MASTER DATA KUNCI & LOKASI ATM</span>
+                    <div class="flex gap-2">
+                        <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
+                            📁 Upload File Master (Excel/CSV)
+                            <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap lg:flex-nowrap gap-5 items-start">
+                    <div class="bg-slate-50 border border-slate-300 p-4 rounded-xl shadow-inner w-full lg:w-[380px] shrink-0">
+                        <h3 class="text-xs font-extrabold text-slate-700 mb-3 uppercase tracking-wider">➕ Tambah / Update Data Master TID</h3>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">TID</label>
+                                <input type="text" id="m_tid" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-bold text-blue-900" placeholder="Contoh: 12345678" data-index="0">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Lokasi ATM</label>
+                                <input type="text" id="m_lokasi" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white" placeholder="Contoh: ATM-12345678 (BEKASI)" data-index="1">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Barcode RPL</label>
+                                <input type="text" id="m_rpl" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-mono" placeholder="RPL-12345678-99" data-index="2">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Barcode FLM</label>
+                                <input type="text" id="m_flm" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-mono" placeholder="FLM-12345678-88" data-index="3">
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Rak</label>
+                                    <input type="text" id="m_rak" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center" placeholder="R-01" data-index="4">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Baris</label>
+                                    <input type="text" id="m_baris" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center" placeholder="B-01" data-index="5">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Kolom</label>
+                                    <input type="text" id="m_kolom" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center" placeholder="K-01" data-index="6">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="saveMasterItemManual()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-xs px-4 py-2 rounded shadow transition">Submit</button>
+                            <button onclick="clearMasterForm()" class="bg-gradient-to-r from-slate-400 to-slate-500 hover:from-slate-500 hover:to-slate-600 text-white font-bold text-xs px-4 py-2 rounded shadow transition">Batal</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4 overflow-x-auto flex-1">
+                        <div class="flex flex-wrap justify-between items-center mb-3 bg-blue-50 border border-blue-200 p-2.5 rounded-lg shadow-sm gap-2">
+                            <span class="text-xs font-extrabold text-blue-900">📋 DATABASE MASTER AKTIF</span>
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-300 w-48 shadow-inner">
+                                </div>
+                                <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black shadow-inner">
+                                    Total Aset Tersimpan: <span id="masterCountBadge" class="text-blue-700">0</span> TID
+                                </div>
+                            </div>
+                        </div>
+                        <table class="w-full border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-200 text-slate-800 font-bold">
+                                    <th class="border border-slate-300 p-1.5 w-10">NO</th>
+                                    <th class="border border-slate-300 p-1.5">TID</th>
+                                    <th class="border border-slate-300 p-1.5">LOKASI ATM</th>
+                                    <th class="border border-slate-300 p-1.5">BARCODE RPL</th>
+                                    <th class="border border-slate-300 p-1.5">BARCODE FLM</th>
+                                    <th class="border border-slate-300 p-1.5 w-12">RAK</th>
+                                    <th class="border border-slate-300 p-1.5 w-12">BARIS</th>
+                                    <th class="border border-slate-300 p-1.5 w-12">KOLOM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master. Silakan upload file atau input manual di atas.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            renderMasterTable();
+            setupMasterInputNavigation();
+        }
+
+        function setupMasterInputNavigation() {
+            const inputs = document.querySelectorAll(".master-input");
+            inputs.forEach(input => {
+                input.addEventListener("keydown", function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        let currentIndex = parseInt(this.getAttribute("data-index"));
+                        let nextIndex = currentIndex + 1;
+                        if (nextIndex < inputs.length) {
+                            inputs[nextIndex].focus();
+                        } else {
+                            saveMasterItemManual();
+                        }
+                    }
+                });
+            });
+        }
+
+        function clearMasterForm() {
+            document.getElementById("m_tid").value = "";
+            document.getElementById("m_lokasi").value = "";
+            document.getElementById("m_rpl").value = "";
+            document.getElementById("m_flm").value = "";
+            document.getElementById("m_rak").value = "";
+            document.getElementById("m_baris").value = "";
+            document.getElementById("m_kolom").value = "";
+            document.getElementById("m_tid").focus();
+        }
+
+        function saveMasterItemManual() {
+            let tid = document.getElementById("m_tid").value.trim();
+            if (!tid) {
+                alert("Nomor TID wajib diisi!");
+                document.getElementById("m_tid").focus();
+                return;
+            }
+            masterDatabase[tid] = {
+                lokasi: document.getElementById("m_lokasi").value.trim() || `ATM-${tid} (BEKASI)`,
+                rpl: document.getElementById("m_rpl").value.trim() || `RPL-${tid}-99`,
+                flm: document.getElementById("m_flm").value.trim() || `FLM-${tid}-88`,
+                rak: document.getElementById("m_rak").value.trim() || "R-01",
+                baris: document.getElementById("m_baris").value.trim() || "B-01",
+                kolom: document.getElementById("m_kolom").value.trim() || "K-01"
+            };
+
+            clearMasterForm();
+            renderMasterTable(); 
+        }
+
+        function handleMasterUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r?\n/);
+                let count = 0;
+                
+                lines.forEach((line, idx) => {
+                    if (idx === 0 && line.toLowerCase().includes("tid")) return;
+                    let parts = line.split(/[,;\t]/).map(p => p.trim());
+                    if (parts.length >= 1 && parts[0]) {
+                        let tid = parts[0];
+                        masterDatabase[tid] = {
+                            lokasi: parts[1] || `ATM-${tid} (BEKASI)`,
+                            rpl: parts[2] || `RPL-${tid}-99`,
+                            flm: parts[3] || `FLM-${tid}-88`,
+                            rak: parts[4] || "R-01",
+                            baris: parts[5] || "B-01",
+                            kolom: parts[6] || "K-01"
+                        };
+                        count++;
+                    }
+                });
+
+                renderMasterTable();
+                alert(`Berhasil mengimpor ${count} data master dari file!`);
+            };
+            reader.readAsText(file);
+        }
+
+        function renderMasterTable() {
+            let tbody = document.getElementById("masterTableBody");
+            let countBadge = document.getElementById("masterCountBadge");
+            let searchInput = document.getElementById("masterSearchInput");
+            let keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            
+            let keys = Object.keys(masterDatabase);
+            
+            if(countBadge) countBadge.innerText = keys.length;
+
+            if (keys.length === 0) {
+                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master. Silakan upload file atau input manual di atas.</td></tr>`;
+                return;
+            }
+
+            let filteredKeys = keys.filter(tid => {
+                let item = masterDatabase[tid];
+                return tid.toLowerCase().includes(keyword) || 
+                       item.lokasi.toLowerCase().includes(keyword) || 
+                       item.rpl.toLowerCase().includes(keyword) || 
+                       item.flm.toLowerCase().includes(keyword);
+            });
+
+            if (filteredKeys.length === 0) {
+                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Data tidak ditemukan dengan kata kunci "${keyword}".</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            filteredKeys.forEach((tid, i) => {
+                let item = masterDatabase[tid];
+                html += `
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
+                        <td class="border border-slate-300 p-1 text-center">${i + 1}</td>
+                        <td class="border border-slate-300 p-1 text-center font-bold text-blue-900">${tid}</td>
+                        <td class="border border-slate-300 p-1 px-2">${item.lokasi}</td>
+                        <td class="border border-slate-300 p-1 px-2 font-mono">${item.rpl}</td>
+                        <td class="border border-slate-300 p-1 px-2 font-mono">${item.flm}</td>
+                        <td class="border border-slate-300 p-1 text-center">${item.rak}</td>
+                        <td class="border border-slate-300 p-1 text-center">${item.baris}</td>
+                        <td class="border border-slate-300 p-1 text-center">${item.kolom}</td>
+                    </tr>
+                `;
+            });
+            if(tbody) tbody.innerHTML = html;
+        }
+
+        function renderTeamMenuHtml() {
+            const content = document.getElementById("contentArea");
+            let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
+
+            let html = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <span class="font-bold text-slate-800 text-base">Pilih Team RPL</span>
+                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow transition">🖨️ Pratinjau / Cetak Semua Team</button>` : ''}
+                </div>
+                <div class="grid grid-cols-1 gap-2 max-w-md">
+            `;
+
+            teamsList.forEach(team => {
+                if (team === "*") {
+                    html += `<div class="bg-slate-100 text-center text-slate-400 font-bold text-xs py-1.5 rounded border border-slate-200">*</div>`;
+                } else {
+                    let isFilled = batchTeamsData[team] && batchTeamsData[team].length > 0;
+                    let btnText = isFilled ? `✓ ${team} (${batchTeamsData[team].length} TID)` : team;
+                    let btnBg = isFilled ? "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-900 border-emerald-300 shadow-sm" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 shadow-sm";
+                    
+                    html += `<button onclick="openTeamInput('${team}')" class="text-left border px-4 py-2.5 rounded-lg text-sm font-bold transition transform active:scale-[0.99] ${btnBg}">${btnText}</button>`;
+                }
+            });
+
+            html += `</div>`;
+            content.innerHTML = html;
+        }
+
+        function openTeamInput(teamName) {
+            const content = document.getElementById("contentArea");
+            
+            let previousTids = [];
+            let activeInputs = document.querySelectorAll(".tid-input");
+            if (activeInputs.length > 0) {
+                activeInputs.forEach(inp => previousTids.push(inp.value.trim()));
+            } else {
+                previousTids = batchTeamsData[teamName] || [];
+            }
+
+            let memberElem = document.getElementById("inputTeamMember");
+            let previousMemberName = memberElem ? memberElem.value : (batchTeamMembers[teamName] || "");
+
+            let html = `
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
+                        <span class="text-xs text-slate-700 font-bold">Input Team: <span class="text-blue-900 font-extrabold">${teamName}</span></span>
+                    </div>
+                </div>
+            `;
+            content.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
