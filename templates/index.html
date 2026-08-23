@@ -45,8 +45,8 @@
                 <div class="text-xs space-y-1.5 text-slate-700 font-mono bg-slate-50 p-3 rounded border border-slate-200">
                     <p>USER ID : 1471191</p>
                     <p>NAMA : ADMIN KUNCI</p>
-                    <p>DATE : 22 Aug, 2026</p>
-                    <p>LOGIN : 13:51</p>
+                    <p>DATE : 23 Aug, 2026</p>
+                    <p>LOGIN : 00:20</p>
                 </div>
             </div>
 
@@ -65,12 +65,12 @@
         <!-- Dynamic Right Panel -->
         <div class="flex-1 bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
             
-            <!-- VIEW 1: Dashboard Awal (Sesuai Gambar 12) -->
+            <!-- VIEW 1: Dashboard Awal (Tampilan Default Sesuai Keinginanmu) -->
             <div id="view-dashboard" class="flex-1 flex items-center justify-center p-12 text-center text-gray-400 italic text-sm">
                 Silahkan klik tombol 'CETAK KUNCI RPL' di menu sebelah kiri.
             </div>
 
-            <!-- VIEW 2: Pilih Team RPL -->
+            <!-- VIEW 2: Pilih Team RPL (Muncul saat tombol CETAK KUNCI RPL diklik) -->
             <div id="view-team" class="hidden flex-1 flex flex-col">
                 <h2 class="text-lg font-bold text-slate-800 mb-6 pb-2 border-b border-slate-200">Pilih Team RPL</h2>
                 <div class="space-y-3 max-w-xl">
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: Input TID Table -->
+            <!-- VIEW 3: Input TID Table (Muncul setelah memilih team) -->
             <div id="view-input" class="hidden flex-1 flex flex-col">
                 <div class="mb-4">
                     <button onclick="showView('team')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-medium py-1.5 px-3 rounded flex items-center space-x-1 transition">
@@ -108,7 +108,7 @@
                     <tbody>
                         <tr>
                             <td class="border border-slate-300 p-2 text-center font-semibold bg-slate-50">1</td>
-                            <td class="border border-slate-300 p-2"><input type="text" maxlength="8" value="dfvb" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
+                            <td class="border border-slate-300 p-2"><input type="text" maxlength="8" class="tid-input border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-600"></td>
                         </tr>
                         <script>
                             for(let i=2; i<=10; i++) {
@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <!-- Script Navigasi Antar Halaman -->
+    <!-- Script Navigasi Interaktif -->
     <script>
         function showView(viewName) {
             document.getElementById('view-dashboard').classList.add('hidden');
