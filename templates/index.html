@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <!-- APLIKASI UTAMA (Disembunyikan sebelum login) -->
+    <!-- APLIKASI UTAMA -->
     <div id="mainApp" class="hidden flex flex-col flex-1">
         <!-- Header -->
         <header class="bg-[#0F172A] h-20 flex items-center justify-between px-6 text-white shadow">
@@ -166,7 +166,7 @@
             let html = `
                 <div class="mb-4">
                     <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded mb-3">⬅ Kembali ke Daftar Team</button>
-                    <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
+                    <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName} (Gunakan Shift/Drag untuk blok beruntun, atau Ctrl+Klik untuk pilih sel terpisah)</div>
                 </div>
 
                 <div class="border border-slate-400 rounded overflow-hidden inline-block mb-4 bg-white shadow-sm">
@@ -249,11 +249,19 @@
 
             containers.forEach((container, idx) => {
                 container.addEventListener("mousedown", function(e) {
+                    // Jika menekan Ctrl, biarkan event mousedown mengatur toggle seleksi sel
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        container.classList.toggle("tid-cell-selected");
+                        return;
+                    }
+
                     isMouseDown = true;
                     startIndex = idx;
-                    if (!e.ctrlKey && !e.shiftKey) { clearSelection(); }
+                    if (!e.shiftKey) { clearSelection(); }
                     selectCell(idx);
                 });
+
                 container.addEventListener("mouseenter", function() {
                     if (isMouseDown && startIndex !== null) {
                         clearSelection();
@@ -268,7 +276,6 @@
 
             function selectCell(index) {
                 containers[index].classList.add("tid-cell-selected");
-                inputs[index].focus();
             }
 
             function clearSelection() {
@@ -276,18 +283,25 @@
             }
 
             inputs.forEach(input => {
-                input.addEventListener("click", function(e) {
+                // Ketika diklik biasa atau dengan Ctrl
+                input.addEventListener("mousedown", function(e) {
                     let idx = parseInt(this.getAttribute("data-index"));
-                    if (e.ctrlKey) { containers[idx].classList.toggle("tid-cell-selected"); }
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        containers[idx].classList.toggle("tid-cell-selected");
+                        if(containers[idx].classList.contains("tid-cell-selected")) {
+                            this.focus();
+                        }
+                    }
                 });
 
-                // Tombol Delete / Backspace untuk menghapus sel yang diblok sekaligus
                 input.addEventListener("keydown", function(e) {
                     let currentIndex = parseInt(this.getAttribute("data-index"));
 
+                    // Tombol Delete atau Backspace untuk menghapus semua sel yang diblok
                     if (e.key === "Delete" || e.key === "Backspace") {
                         let selectedContainers = document.querySelectorAll(".tid-cell-selected");
-                        if (selectedContainers.length > 1) {
+                        if (selectedContainers.length > 0) {
                             e.preventDefault();
                             selectedContainers.forEach(cont => {
                                 let inp = cont.querySelector(".tid-input");
@@ -298,11 +312,35 @@
                     } else if (e.key === "Enter" || e.key === "ArrowDown") {
                         e.preventDefault();
                         let nextIndex = currentIndex + 1;
-                        if (nextIndex < inputs.length) { clearSelection(); selectCell(nextIndex); }
+                        if (nextIndex < inputs.length) { 
+                            clearSelection(); 
+                            selectCell(nextIndex); 
+                            inputs[nextIndex].focus();
+                        }
                     } else if (e.key === "ArrowUp") {
                         e.preventDefault();
                         let prevIndex = currentIndex - 1;
-                        if (prevIndex >= 0) { clearSelection(); selectCell(prevIndex); }
+                        if (prevIndex >= 0) { 
+                            clearSelection(); 
+                            selectCell(prevIndex); 
+                            inputs[prevIndex].focus();
+                        }
+                    }
+                });
+
+                // Fitur Copy (Ctrl+C) dari sel-sel yang diblok untuk dipindah ke Excel
+                input.addEventListener("copy", function(e) {
+                    let selectedContainers = document.querySelectorAll(".tid-cell-selected");
+                    if (selectedContainers.length > 1) {
+                        e.preventDefault();
+                        let copiedValues = [];
+                        selectedContainers.forEach(cont => {
+                            let inp = cont.querySelector(".tid-input");
+                            if (inp) copiedValues.push(inp.value);
+                        });
+                        // Format agar pas saat di-paste ke Excel (baris baru per sel)
+                        let textToCopy = copiedValues.join("\n");
+                        e.clipboardData.setData("text/plain", textToCopy);
                     }
                 });
 
