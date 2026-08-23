@@ -6,7 +6,7 @@
     <title>PT. Bringin Gigantara - Management Kunci</title>
     <!-- Tailwind CSS untuk styling modern -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS untuk membaca file Excel (.xlsx, .xls) dengan akurat -->
+    <!-- SheetJS untuk membaca dan mengekspor file Excel (.xlsx, .xls) dengan akurat -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @media print {
@@ -100,11 +100,11 @@
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
             <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
             <div class="flex items-center gap-2">
-                <button onclick="downloadSystemBackup()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
-                    💾 Backup Data Otomatis / Manual
+                <button onclick="downloadMasterdataExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
+                    📊 Download Masterdata (Excel)
                 </button>
                 <label class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow cursor-pointer transition flex items-center gap-1">
-                    📂 Restore Data
+                    📂 Restore Data (.json)
                     <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
                 </label>
             </div>
@@ -243,54 +243,46 @@
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
                 localStorage.setItem("bgi_appPassword", currentAppPassword);
-                
-                triggerAutoFileBackup();
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
         }
 
-        function triggerAutoFileBackup() {
+        // Fungsi Download Masterdata ke File Excel (.xlsx) secara Instan
+        function downloadMasterdataExcel() {
             try {
-                const backupData = {
-                    version: "V7",
-                    timestamp: new Date().toISOString(),
-                    masterDatabase: masterDatabase,
-                    batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers,
-                    appPassword: currentAppPassword
-                };
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BGI_BEKASI_BACKUP_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                document.body.removeChild(downloadAnchor);
-            } catch (err) {
-                console.log("Auto-backup background info:", err);
-            }
-        }
+                let keys = Object.keys(masterDatabase);
+                if (keys.length === 0) {
+                    alert("Belum ada data master untuk di-download.");
+                    return;
+                }
 
-        function downloadSystemBackup() {
-            try {
-                const backupData = {
-                    version: "V7",
-                    timestamp: new Date().toISOString(),
-                    masterDatabase: masterDatabase,
-                    batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers,
-                    appPassword: currentAppPassword
-                };
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BGI_BACKUP_MANUAL_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-                alert("File backup berhasil diunduh dan diamankan di folder komputer Anda!");
+                let excelRows = [];
+                keys.forEach((tid, index) => {
+                    let item = masterDatabase[tid];
+                    excelRows.push({
+                        "NO": index + 1,
+                        "TID": tid,
+                        "LOKASI ATM": item.lokasi || "",
+                        "BARCODE RPL": item.rpl || "",
+                        "BARCODE FLM": item.flm || "",
+                        "RAK": item.rak || "",
+                        "BARIS": item.baris || "",
+                        "KOLOM": item.kolom || ""
+                    });
+                });
+
+                // Buat worksheet dan workbook menggunakan SheetJS
+                const worksheet = XLSX.utils.json_to_sheet(excelRows);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Masterdata");
+
+                // Download file Excel
+                XLSX.writeFile(workbook, `MASTERDATA_KUNCI_BGI_${new Date().toISOString().slice(0,10)}.xlsx`);
+                alert("File Excel Masterdata berhasil diunduh!");
             } catch (e) {
-                alert("Gagal melakukan backup data.");
+                console.error("Gagal mendownload masterdata Excel:", e);
+                alert("Terjadi kesalahan saat mengunduh file Excel.");
             }
         }
 
@@ -508,7 +500,7 @@
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>💡 <strong>Tips:</strong> Gunakan tombol <strong>Backup Data Otomatis</strong> di atas untuk menyimpan file cadangan (.json) ke komputer Anda agar aman dari error redeploy Vercel.</span>
+                        <span>💡 <strong>Tips:</strong> Gunakan tombol <strong>Download Masterdata (Excel)</strong> di atas untuk mengunduh laporan master data ke file Excel (.xlsx).</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
