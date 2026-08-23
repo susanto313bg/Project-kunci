@@ -9,6 +9,7 @@ PASSWORDS = {
     "01": {"role": "ADMIN KUNCI", "name": "ADMIN KUNCI", "id": "1471191"}
 }
 
+# Rute Utama sekarang menampilkan halaman Login (index.html)
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -26,12 +27,17 @@ def login():
         return jsonify({"success": True, "user": user_info})
     return jsonify({"success": False, "message": "Password salah!"})
 
-# Rute untuk memproses dan menampilkan halaman cetak secara dinamis (Realtime)
+# Rute Dashboard (Form Input) setelah berhasil login
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+# Rute untuk memproses dan menampilkan halaman cetak secara dinamis
 @app.route("/cetak-dokumen", methods=["POST", "GET"])
 def cetak_dokumen():
     if request.method == "POST":
         nama_team = request.form.get("nama_team", "TEAM TANPA NAMA")
-        list_tid = request.form.getlist("tid[]") # Menangkap semua input TID
+        list_tid = request.form.getlist("tid[]")
         
         items = [{"tid": tid} for tid in list_tid if tid.strip() != ""]
         
