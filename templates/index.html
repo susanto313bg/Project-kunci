@@ -167,16 +167,15 @@
                 <div class="mb-4">
                     <div class="flex items-center gap-2 mb-1">
                         <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
-                        <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua TID</button>
                     </div>
                     <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
                 </div>
 
-                <!-- Layout 2 Kolom: Kiri (Input), Kanan (Real-time Preview Table) -->
+                <!-- Layout 2 Kolom Sejajar Atas -->
                 <div class="flex flex-wrap gap-6 items-start">
-                    <!-- Kolom Kiri: Tabel Input -->
-                    <div>
-                        <div class="border border-slate-400 rounded overflow-hidden inline-block mb-4 bg-white shadow-sm">
+                    <!-- Kolom Kiri: Tabel Input & Tombol Aksi Bawah -->
+                    <div class="flex flex-col gap-2">
+                        <div class="border border-slate-400 rounded overflow-hidden bg-white shadow-sm">
                             <table class="border-collapse text-sm">
                                 <thead>
                                     <tr>
@@ -208,9 +207,14 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="flex gap-2 w-[180px]">
-                            <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-2 py-2 rounded">🖨️ Cetak</button>
-                            <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2 py-2 rounded">💾 Simpan</button>
+                        
+                        <!-- Tombol Aksi di Bawah Tabel Kiri -->
+                        <div class="flex flex-col gap-2 w-full">
+                            <div class="flex gap-2">
+                                <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-2 py-2 rounded">🖨️ Cetak</button>
+                                <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2 py-2 rounded">💾 Simpan</button>
+                            </div>
+                            <button onclick="clearAllTids('${teamName}')" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-2 py-2 rounded shadow">🗑️ Hapus Semua TID</button>
                         </div>
                     </div>
 
@@ -545,7 +549,7 @@
                         <tbody>
             `;
 
-            item.data.forEach((row, rIdx) => {
+            item.data.rows.forEach((row, rIdx) => {
                 let bg = rIdx % 2 === 0 ? "bg-slate-50" : "bg-white";
                 html += `
                     <tr class="${bg}">
