@@ -26,25 +26,32 @@ def login():
         return jsonify({"success": True, "user": user_info})
     return jsonify({"success": False, "message": "Password salah!"})
 
-# Rute untuk halaman cetak dokumen per team (1 team = 1 halaman cetak)
-@app.route("/cetak-dokumen")
+# Rute untuk memproses dan menampilkan halaman cetak secara dinamis (Realtime)
+@app.route("/cetak-dokumen", methods=["POST", "GET"])
 def cetak_dokumen():
-    # Data simulasi team yang akan dicetak
-    data_team = [
-        {
-            "nama_team": "TEAM RPL MALAM 1",
-            "items": [
-                {"tid": "k,k..", "lokasi": "ATM-k,k.. (BEKASI)", "barcode": "RPL-k,k..-99", "rak": "R-01", "baris": "B-01", "kolom": "K-01", "keterangan": "Ready"},
-                {"tid": "k,k2..", "lokasi": "ATM-k,k2 (BEKASI)", "barcode": "RPL-k,k2-99", "rak": "R-01", "baris": "B-01", "kolom": "K-02", "keterangan": "Ready"}
-            ]
-        },
-        {
-            "nama_team": "TEAM RPL MALAM 2",
-            "items": [
-                {"tid": "ghgtnhm", "lokasi": "ATM-ghgtnhm (BEKASI)", "barcode": "RPL-ghgtnhm-99", "rak": "R-01", "baris": "B-01", "kolom": "K-01", "keterangan": "Ready"}
-            ]
-        }
-    ]
+    if request.method == "POST":
+        # Menangkap data yang dikirim secara realtime dari form web
+        nama_team = request.form.get("nama_team", "TEAM TANPA NAMA")
+        list_tid = request.form.getlist("tid[]") # Menangkap semua input TID
+        
+        # Menyusun data ke format item tabel
+        items = [{"tid": tid} for tid in list_tid if tid.strip() != ""]
+        
+        data_team = [
+            {
+                "nama_team": nama_team,
+                "items": items if items else [{"tid": "-"}]
+            }
+        ]
+    else:
+        # Data default jika diakses langsung via URL (GET)
+        data_team = [
+            {
+                "nama_team": "SUSANTO",
+                "items": [{"tid": "48494998+"}, {"tid": "465846596"}, {"tid": "369596565"}]
+            }
+        ]
+        
     return render_template("cetak_team.html", list_team=data_team)
 
 # Baris ini penting agar Vercel mendeteksi aplikasi Flask
