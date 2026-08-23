@@ -175,13 +175,18 @@
                 <div class="flex flex-wrap gap-6 items-start">
                     <!-- Kolom Kiri: Tabel Input & Tombol Aksi Bawah -->
                     <div class="flex flex-col gap-2">
+                        <!-- Tombol Aksi di Atas Tabel Kiri -->
+                        <div class="flex flex-col gap-2 w-full">
+                            <div class="flex gap-2">
+                                <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-2 py-2 rounded">🖨️ Cetak</button>
+                                <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2 py-2 rounded">💾 Simpan</button>
+                            </div>
+                            <button onclick="clearAllTids('${teamName}')" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-2 py-2 rounded shadow">🗑️ Hapus Semua TID</button>
+                        </div>
+
                         <div class="border border-slate-400 rounded overflow-hidden bg-white shadow-sm">
                             <table class="border-collapse text-sm">
                                 <thead>
-                                    <!-- Baris Kosong Penyeimbang agar sejajar dengan Header 'PRATINJAU REAL-TIME:' di sebelah kanan -->
-                                    <tr>
-                                        <th colspan="2" class="bg-transparent border-0 p-[15px]"></th>
-                                    </tr>
                                     <tr>
                                         <th colspan="2" class="bg-amber-500 border border-slate-400 p-1.5 text-left">
                                             <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-amber-500 text-black font-bold placeholder-black px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="autoSaveDraft('${teamName}')">
@@ -211,15 +216,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <!-- Tombol Aksi di Bawah Tabel Kiri -->
-                        <div class="flex flex-col gap-2 w-full">
-                            <div class="flex gap-2">
-                                <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-2 py-2 rounded">🖨️ Cetak</button>
-                                <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2 py-2 rounded">💾 Simpan</button>
-                            </div>
-                            <button onclick="clearAllTids('${teamName}')" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-2 py-2 rounded shadow">🗑️ Hapus Semua TID</button>
-                        </div>
                     </div>
 
                     <!-- Kolom Kanan: Real-Time Preview Table -->
@@ -228,15 +224,14 @@
                         <table class="w-full border-collapse text-xs">
                             <thead>
                                 <tr>
-                                    <th colspan="3" class="bg-amber-500 text-white border border-slate-400 p-2 text-left font-bold text-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
-                                    <th colspan="4" class="bg-amber-500 text-white border border-slate-400 p-2 text-center font-bold text-sm">NAMA TEAM</th>
-                                    <th class="bg-amber-500 text-white border border-slate-400 p-2"></th>
+                                    <th colspan="9" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
                                 </tr>
-                                <tr class="bg-blue-900 text-white">
+                                <tr class="bg-slate-400 text-slate-900">
                                     <th class="border border-slate-400 p-1 w-10">NO</th>
                                     <th class="border border-slate-400 p-1 w-20">TID</th>
-                                    <th class="border border-slate-400 p-1 text-left px-2">LOKASI</th>
-                                    <th class="border border-slate-400 p-1">BARCODE RPL</th>
+                                    <th class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">LOKASI</th>
+                                    <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE RPL</th>
+                                    <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE FLM</th>
                                     <th class="border border-slate-400 p-1 w-12">RAK</th>
                                     <th class="border border-slate-400 p-1 w-12">BARIS</th>
                                     <th class="border border-slate-400 p-1 w-12">KOLOM</th>
@@ -254,12 +249,13 @@
                         <tr class="${bg}" id="preview-row-${i}">
                             <td class="border border-slate-400 p-1 text-center">${i + 1}</td>
                             <td class="border border-slate-400 p-1 text-center font-bold">${tid}</td>
-                            <td class="border border-slate-400 p-1 px-2">ATM-${tid} (BEKASI)</td>
-                            <td class="border border-slate-400 p-1 text-center font-mono">RPL-${tid}-99</td>
+                            <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">ATM-${tid} (BEKASI)</td>
+                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">RPL-${tid}-99</td>
+                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">FLM-${tid}-88</td>
                             <td class="border border-slate-400 p-1 text-center">R-0${(i % 3) + 1}</td>
                             <td class="border border-slate-400 p-1 text-center">B-0${(i % 4) + 1}</td>
                             <td class="border border-slate-400 p-1 text-center">K-0${(i % 5) + 1}</td>
-                            <td class="border border-slate-400 p-1 text-center text-emerald-600 font-bold">Ready</td>
+                            <td class="border border-slate-400 p-1 text-center"></td>
                         </tr>
                     `;
                 } else {
@@ -267,12 +263,13 @@
                         <tr class="${bg}" id="preview-row-${i}" style="display: none;">
                             <td class="border border-slate-400 p-1 text-center">${i + 1}</td>
                             <td class="border border-slate-400 p-1 text-center font-bold"></td>
-                            <td class="border border-slate-400 p-1 px-2"></td>
-                            <td class="border border-slate-400 p-1 text-center font-mono"></td>
+                            <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap"></td>
+                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono"></td>
+                            <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
                             <td class="border border-slate-400 p-1 text-center"></td>
-                            <td class="border border-slate-400 p-1 text-center text-emerald-600 font-bold"></td>
+                            <td class="border border-slate-400 p-1 text-center"></td>
                         </tr>
                     `;
                 }
@@ -314,10 +311,11 @@
                         row.cells[1].innerText = tid;
                         row.cells[2].innerText = `ATM-${tid} (BEKASI)`;
                         row.cells[3].innerText = `RPL-${tid}-99`;
-                        row.cells[4].innerText = `R-0${(i % 3) + 1}`;
-                        row.cells[5].innerText = `B-0${(i % 4) + 1}`;
-                        row.cells[6].innerText = `K-0${(i % 5) + 1}`;
-                        row.cells[7].innerText = "Ready";
+                        row.cells[4].innerText = `FLM-${tid}-88`;
+                        row.cells[5].innerText = `R-0${(i % 3) + 1}`;
+                        row.cells[6].innerText = `B-0${(i % 4) + 1}`;
+                        row.cells[7].innerText = `K-0${(i % 5) + 1}`;
+                        row.cells[8].innerText = "";
                     } else {
                         row.style.display = "none";
                     }
@@ -498,10 +496,11 @@
                         tid,
                         `ATM-${tid} (BEKASI)`,
                         `RPL-${tid}-99`,
+                        `FLM-${tid}-88`,
                         `R-0${(i % 3) + 1}`,
                         `B-0${(i % 4) + 1}`,
                         `K-0${(i % 5) + 1}`,
-                        "Ready"
+                        ""
                     ]);
                 });
                 previewPayload.push({ team_name: tName + memberName, data: teamRows });
@@ -535,15 +534,14 @@
                     <table class="w-full border-collapse text-xs">
                         <thead>
                             <tr>
-                                <th colspan="3" class="bg-amber-500 text-white border border-slate-400 p-2 text-left font-bold text-sm">${item.team_name}</th>
-                                <th colspan="4" class="bg-amber-500 text-white border border-slate-400 p-2 text-center font-bold text-sm">NAMA TEAM</th>
-                                <th class="bg-amber-500 text-white border border-slate-400 p-2"></th>
+                                <th colspan="9" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm">${item.team_name}</th>
                             </tr>
-                            <tr class="bg-blue-900 text-white">
+                            <tr class="bg-slate-400 text-slate-900">
                                 <th class="border border-slate-400 p-1 w-10">NO</th>
                                 <th class="border border-slate-400 p-1 w-20">TID</th>
-                                <th class="border border-slate-400 p-1 text-left px-2">LOKASI</th>
-                                <th class="border border-slate-400 p-1">BARCODE RPL</th>
+                                <th class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">LOKASI</th>
+                                <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE RPL</th>
+                                <th class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap">BARCODE FLM</th>
                                 <th class="border border-slate-400 p-1 w-12">RAK</th>
                                 <th class="border border-slate-400 p-1 w-12">BARIS</th>
                                 <th class="border border-slate-400 p-1 w-12">KOLOM</th>
@@ -559,12 +557,13 @@
                     <tr class="${bg}">
                         <td class="border border-slate-400 p-1 text-center">${row[0]}</td>
                         <td class="border border-slate-400 p-1 text-center font-bold">${row[1]}</td>
-                        <td class="border border-slate-400 p-1 px-2">${row[2]}</td>
-                        <td class="border border-slate-400 p-1 text-center font-mono">${row[3]}</td>
-                        <td class="border border-slate-400 p-1 text-center">${row[4]}</td>
+                        <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">${row[2]}</td>
+                        <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">${row[3]}</td>
+                        <td class="border border-slate-400 p-1 px-2 text-center whitespace-nowrap font-mono">${row[4]}</td>
                         <td class="border border-slate-400 p-1 text-center">${row[5]}</td>
                         <td class="border border-slate-400 p-1 text-center">${row[6]}</td>
-                        <td class="border border-slate-400 p-1 text-center text-emerald-600 font-bold">${row[7]}</td>
+                        <td class="border border-slate-400 p-1 text-center">${row[7]}</td>
+                        <td class="border border-slate-400 p-1 text-center">${row[8]}</td>
                     </tr>
                 `;
             });
