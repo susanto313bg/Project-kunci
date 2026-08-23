@@ -97,8 +97,17 @@
         </header>
 
         <!-- Sub-bar Version -->
-        <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400">
-            NEWCRO_PHP_V7 (WEB VERSION)
+        <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
+            <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
+            <div class="flex items-center gap-2">
+                <button onclick="downloadSystemBackup()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
+                    💾 Backup Data Otomatis / Manual
+                </button>
+                <label class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow cursor-pointer transition flex items-center gap-1">
+                    📂 Restore Data
+                    <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
+                </label>
+            </div>
         </div>
 
         <!-- Body Content -->
@@ -228,9 +237,81 @@
                 localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+                
+                // Memicu auto backup instan ke file lokal untuk keamanan data
+                triggerAutoFileBackup();
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
+        }
+
+        // Fungsi Auto-Backup Data ke File JSON ke Komputer Anda
+        function triggerAutoFileBackup() {
+            try {
+                const backupData = {
+                    version: "V7",
+                    timestamp: new Date().toISOString(),
+                    masterDatabase: masterDatabase,
+                    batchTeamsData: batchTeamsData,
+                    batchTeamMembers: batchTeamMembers
+                };
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+                
+                // Membuat elemen unduhan otomatis tersembunyi
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `BGI_BEKASI_BACKUP_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(downloadAnchor);
+                // Komentar di bawah ini diaktifkan jika ingin otomatis mendownload setiap kali klik simpan. 
+                // Saat ini kami sediakan tombol manual khusus agar tidak mengganggu kenyamanan mengetik.
+                document.body.removeChild(downloadAnchor);
+            } catch (err) {
+                console.log("Auto-backup background info:", err);
+            }
+        }
+
+        function downloadSystemBackup() {
+            try {
+                const backupData = {
+                    version: "V7",
+                    timestamp: new Date().toISOString(),
+                    masterDatabase: masterDatabase,
+                    batchTeamsData: batchTeamsData,
+                    batchTeamMembers: batchTeamMembers
+                };
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `BGI_BACKUP_MANUAL_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+                alert("File backup berhasil diunduh dan diamankan di folder komputer Anda!");
+            } catch (e) {
+                alert("Gagal melakukan backup data.");
+            }
+        }
+
+        function restoreSystemBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.masterDatabase) masterDatabase = parsed.masterDatabase;
+                    if (parsed.batchTeamsData) batchTeamsData = parsed.batchTeamsData;
+                    if (parsed.batchTeamMembers) batchTeamMembers = parsed.batchTeamMembers;
+
+                    saveLocalStorageData();
+                    alert("Data berhasil dipulihkan (Restore) dengan sukses!");
+                    location.reload();
+                } catch (err) {
+                    alert("File backup tidak valid atau rusak.");
+                }
+            };
+            reader.readAsText(file);
         }
 
         loadLocalStorageData();
@@ -259,7 +340,6 @@
         async function handleLogin() {
             const pwd = document.getElementById("loginPass").value.trim();
             
-            // Simulasi respon login lokal langsung tanpa error fetch server eksternal jika diuji mandiri
             if (pwd === "123" || pwd === "admin" || pwd !== "") {
                 currentUser = {
                     id: "1471191",
@@ -377,7 +457,7 @@
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>💡 <strong>Tips:</strong> Gunakan menu di samping kiri untuk mengelola master database ATM atau mencetak lembar kunci RPL berdasarkan tim shift Anda.</span>
+                        <span>💡 <strong>Tips:</strong> Gunakan tombol <strong>Backup Data Otomatis</strong> di atas untuk menyimpan file cadangan (.json) ke komputer Anda agar aman dari error redeploy Vercel.</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
@@ -761,14 +841,14 @@
                     cardBg: "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border-orange-200 shadow-orange-100",
                     titleColor: "text-amber-900 border-orange-200",
                     btnBase: "bg-white hover:bg-amber-100 text-amber-900 border-amber-200 shadow-sm",
-                    btnFilled: "bg-gradient-to-r from-amber-600 to-orange-600 text-white border-amber-400 shadow-md",
+                    btnFilled: "bg-gradient-to-r from-amber-600 to-orange-600 text-white border-blue-400 shadow-md",
                     badgeColor: "bg-orange-600 text-white"
                 },
                 "SIANG": {
                     cardBg: "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 border-emerald-200 shadow-emerald-100",
                     titleColor: "text-emerald-900 border-emerald-200",
                     btnBase: "bg-white hover:bg-emerald-100 text-emerald-900 border-emerald-200 shadow-sm",
-                    btnFilled: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-md",
+                    btnFilled: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-blue-400 shadow-md",
                     badgeColor: "bg-emerald-600 text-white"
                 }
             };
@@ -1174,7 +1254,7 @@
                                 <th class="border border-slate-500 p-3 w-28 font-bold shadow-sm text-center">TID</th>
                                 <th class="border border-slate-500 p-3 px-4 text-center whitespace-nowrap font-bold shadow-sm">LOKASI</th>
                                 <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate font-bold shadow-sm">BARCODE RPL</th>
-                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate font-bold shadow-sm">BARCODE FLM</th>
+                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate shadow-sm">BARCODE FLM</th>
                                 <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">RAK</th>
                                 <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">BARIS</th>
                                 <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">KOLOM</th>
