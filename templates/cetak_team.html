@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cetak Dokumen Kunci</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 15mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .page-container {
+            width: 280px;
+            page-break-after: always;
+            break-after: page;
+            margin-bottom: 20px;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11pt;
+        }
+
+        th, td {
+            border: 1px solid #000000;
+            padding: 5px 8px;
+            text-align: left;
+        }
+
+        .header-team th {
+            background-color: #f6ad55;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .header-kolom th {
+            background-color: #28a745;
+            color: #ffffff;
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        .col-no {
+            width: 25%;
+            text-align: center;
+        }
+
+        td {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    {% for team in list_team %}
+    <div class="page-container">
+        <table>
+            <tr class="header-team">
+                <th colspan="2">{{ team.nama_team }}</th>
+            </tr>
+            <tr class="header-kolom">
+                <th class="col-no">NO</th>
+                <th>TID</th>
+            </tr>
+            <tbody>
+                {% for item in team.items %}
+                <tr>
+                    <td class="col-no">{{ loop.index }}</td>
+                    <td><b>{{ item.tid }}</b></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+</body>
+</html>
