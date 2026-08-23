@@ -123,8 +123,6 @@
 
         function renderTeamMenuHtml() {
             const content = document.getElementById("contentArea");
-            
-            // Periksa apakah ada minimal satu team yang sudah diisi datanya
             let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
 
             let html = `
@@ -154,7 +152,6 @@
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
             
-            // Ambil data sementara dari input di layar jika ada, atau dari memori tersimpan
             let previousTids = [];
             let activeInputs = document.querySelectorAll(".tid-input");
             if (activeInputs.length > 0) {
@@ -212,10 +209,9 @@
 
             content.innerHTML = html;
 
-            setupExcelInteractions();
+            setupExcelInteractions(teamName);
         }
 
-        // Simpan otomatis ke memori setiap ada ketikan agar tidak hilang
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
             let inputs = document.querySelectorAll(".tid-input");
@@ -245,7 +241,7 @@
             preparePreview(singleData);
         }
 
-        function setupExcelInteractions() {
+        function setupExcelInteractions(teamName) {
             const inputs = document.querySelectorAll(".tid-input");
             const containers = document.querySelectorAll(".cell-container");
             let isMouseDown = false;
@@ -285,9 +281,21 @@
                     if (e.ctrlKey) { containers[idx].classList.toggle("tid-cell-selected"); }
                 });
 
+                // Tombol Delete / Backspace untuk menghapus sel yang diblok sekaligus
                 input.addEventListener("keydown", function(e) {
                     let currentIndex = parseInt(this.getAttribute("data-index"));
-                    if (e.key === "Enter" || e.key === "ArrowDown") {
+
+                    if (e.key === "Delete" || e.key === "Backspace") {
+                        let selectedContainers = document.querySelectorAll(".tid-cell-selected");
+                        if (selectedContainers.length > 1) {
+                            e.preventDefault();
+                            selectedContainers.forEach(cont => {
+                                let inp = cont.querySelector(".tid-input");
+                                if (inp) inp.value = "";
+                            });
+                            autoSaveDraft(teamName);
+                        }
+                    } else if (e.key === "Enter" || e.key === "ArrowDown") {
                         e.preventDefault();
                         let nextIndex = currentIndex + 1;
                         if (nextIndex < inputs.length) { clearSelection(); selectCell(nextIndex); }
@@ -310,7 +318,7 @@
                             inputs[targetIdx].value = line; 
                         }
                     });
-                    autoSaveDraft(inputs[0].closest('div').id); // trigger save
+                    autoSaveDraft(teamName);
                 });
             });
         }
@@ -348,7 +356,6 @@
             let item = previewPayload[currentSlideIndex];
 
             let html = `
-                <!-- Tombol Navigasi Slide & Aksi -->
                 <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2 rounded">
                     <button onclick="renderTeamMenuHtml()" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
                     
@@ -361,7 +368,6 @@
                     <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded">🖨️ CETAK DOKUMEN</button>
                 </div>
 
-                <!-- Tampilan Dokumen per Slide -->
                 <div class="border border-slate-400 bg-white p-2">
                     <table class="w-full border-collapse text-xs">
                         <thead>
