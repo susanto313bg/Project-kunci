@@ -178,6 +178,10 @@
                         <div class="border border-slate-400 rounded overflow-hidden bg-white shadow-sm">
                             <table class="border-collapse text-sm">
                                 <thead>
+                                    <!-- Baris Kosong Penyeimbang agar sejajar dengan Header 'PRATINJAU REAL-TIME:' di sebelah kanan -->
+                                    <tr>
+                                        <th colspan="2" class="bg-transparent border-0 p-[15px]"></th>
+                                    </tr>
                                     <tr>
                                         <th colspan="2" class="bg-amber-500 border border-slate-400 p-1.5 text-left">
                                             <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-amber-500 text-black font-bold placeholder-black px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="autoSaveDraft('${teamName}')">
@@ -549,7 +553,7 @@
                         <tbody>
             `;
 
-            item.data.rows.forEach((row, rIdx) => {
+            item.data.forEach((row, rIdx) => {
                 let bg = rIdx % 2 === 0 ? "bg-slate-50" : "bg-white";
                 html += `
                     <tr class="${bg}">
