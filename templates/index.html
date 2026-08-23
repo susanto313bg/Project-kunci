@@ -20,34 +20,34 @@
         }
     </style>
 </head>
-<body class="bg-[#EBF2FA] font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#0F172A] font-sans antialiased min-h-screen flex flex-col">
 
     <!-- LAYAR LOGIN -->
-    <div id="loginScreen" class="fixed inset-0 bg-[#1E293B] flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-[380px] text-center">
-            <h2 class="text-xl font-bold text-[#1E3A8A]">PT. Bringin Gigantara</h2>
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white/95 backdrop-blur p-8 rounded-xl shadow-2xl border border-white/20 w-[380px] text-center">
+            <h2 class="text-xl font-extrabold text-[#1E3A8A] tracking-wide">PT. Bringin Gigantara</h2>
             <p class="text-xs italic text-slate-500 mb-6">Integrated Cash Solutions</p>
             
-            <label class="block text-left text-sm font-medium text-slate-700 mb-2">Masukkan Password Akses:</label>
-            <input type="password" id="loginPass" class="w-full text-center text-lg border border-slate-300 rounded p-2 mb-4 focus:outline-none focus:border-blue-600" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()">
+            <label class="block text-left text-sm font-semibold text-slate-700 mb-2">Masukkan Password Akses:</label>
+            <input type="password" id="loginPass" class="w-full text-center text-lg border border-slate-300 rounded-lg p-2.5 mb-4 shadow-inner focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()">
             
-            <button onclick="handleLogin()" class="w-full bg-[#1E3A8A] text-white font-bold py-2 rounded hover:bg-blue-900 transition">LOGIN</button>
+            <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900 text-white font-bold py-2.5 rounded-lg shadow-md transition transform active:scale-[0.98]">LOGIN</button>
         </div>
     </div>
 
     <!-- APLIKASI UTAMA -->
     <div id="mainApp" class="hidden flex flex-col flex-1">
-        <!-- Header -->
-        <header class="bg-[#0F172A] h-20 flex items-center justify-between px-6 text-white shadow">
+        <!-- Header dengan Efek 3D / Gradasi Elegan -->
+        <header class="bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1E293B] h-20 flex items-center justify-between px-6 text-white shadow-xl border-b border-blue-900/50">
             <div class="flex items-center space-x-3">
-                <span class="text-3xl font-bold text-[#F97316]">∞ bgi</span>
-                <span class="text-xs text-slate-400 leading-tight">Integrated<br>Cash Solutions</span>
+                <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ bgi</span>
+                <span class="text-xs text-slate-300 leading-tight font-medium">Integrated<br>Cash Solutions</span>
             </div>
-            <h1 class="text-xl font-bold tracking-wide">PT. Bringin Gigantara</h1>
+            <h1 class="text-xl font-bold tracking-wider drop-shadow">PT. Bringin Gigantara</h1>
         </header>
 
         <!-- Sub-bar Version -->
-        <div class="bg-[#CBD5E1] px-6 py-1 text-xs font-bold text-[#334155] pl-[170px]">
+        <div class="bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400">
             NEWCRO_PHP_V7 (WEB VERSION)
         </div>
 
@@ -55,26 +55,26 @@
         <div class="flex flex-1 p-3 gap-3">
             <!-- Sidebar -->
             <aside class="w-[200px] flex flex-col gap-3">
-                <div class="bg-[#DBEAFE] border border-blue-200 p-3 rounded text-xs">
-                    <div id="sidebarRole" class="font-bold text-[#1E3A8A] text-center mb-2">TEKNISI<br>BG BEKASI</div>
-                    <div class="space-y-1 font-mono text-[11px] text-slate-800">
-                        <div>USER ID : <span id="lblUserId">---</span></div>
-                        <div>NAMA : <span id="lblUserName">---</span></div>
-                        <div>DATE : <span id="lblDate">---</span></div>
-                        <div>LOGIN : <span id="lblLoginTime">---</span></div>
+                <div class="bg-gradient-to-b from-[#DBEAFE] to-[#BFDBFE] border border-blue-300 p-3.5 rounded-xl shadow-lg">
+                    <div id="sidebarRole" class="font-extrabold text-[#1E3A8A] text-center mb-2 tracking-wide text-xs">TEKNISI<br>BG BEKASI</div>
+                    <div class="space-y-1.5 font-mono text-[11px] text-slate-800 border-t border-blue-200/60 pt-2">
+                        <div>USER ID : <span id="lblUserId" class="font-bold">---</span></div>
+                        <div>NAMA : <span id="lblUserName" class="font-bold">---</span></div>
+                        <div>DATE : <span id="lblDate" class="font-bold">---</span></div>
+                        <div>LOGIN : <span id="lblLoginTime" class="font-bold">---</span></div>
                     </div>
                 </div>
 
-                <button onclick="renderTeamMenuHtml()" class="text-left bg-[#DBEAFE] hover:bg-blue-200 text-[#1E3A8A] font-bold py-2 px-3 rounded text-xs transition">
+                <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 to-indigo-100 hover:from-blue-200 hover:to-indigo-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-200">
                     🌺 CETAK KUNCI RPL
                 </button>
-                <button onclick="location.reload()" class="text-left bg-[#FEE2E2] hover:bg-red-200 text-[#991B1B] font-bold py-2 px-3 rounded text-xs transition">
+                <button onclick="location.reload()" class="text-left bg-gradient-to-r from-red-100 to-rose-100 hover:from-red-200 hover:to-rose-200 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-red-200">
                     🚨 Logout
                 </button>
             </aside>
 
             <!-- Main Dynamic Content Area -->
-            <main id="contentArea" class="flex-1 bg-white p-4 rounded shadow-sm border border-slate-200 overflow-y-auto">
+            <main id="contentArea" class="flex-1 bg-white/95 backdrop-blur-md p-5 rounded-xl shadow-2xl border border-slate-200 overflow-y-auto">
                 <div class="flex items-center justify-center h-full text-slate-400 italic">
                     Silakan klik tombol 'CETAK KUNCI RPL' di menu sebelah kiri.
                 </div>
@@ -126,22 +126,22 @@
             let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
 
             let html = `
-                <div class="flex justify-between items-center mb-4 pb-2 border-b">
-                    <span class="font-bold text-slate-700">Pilih Team RPL</span>
-                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded">🖨️ Pratinjau / Cetak Semua Team</button>` : ''}
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <span class="font-bold text-slate-800 text-base">Pilih Team RPL</span>
+                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow transition">🖨️ Pratinjau / Cetak Semua Team</button>` : ''}
                 </div>
                 <div class="grid grid-cols-1 gap-2 max-w-md">
             `;
 
             teamsList.forEach(team => {
                 if (team === "*") {
-                    html += `<div class="bg-slate-200 text-center text-slate-500 font-bold text-xs py-1">*</div>`;
+                    html += `<div class="bg-slate-100 text-center text-slate-400 font-bold text-xs py-1.5 rounded border border-slate-200">*</div>`;
                 } else {
                     let isFilled = batchTeamsData[team] && batchTeamsData[team].length > 0;
                     let btnText = isFilled ? `✓ ${team} (${batchTeamsData[team].length} TID)` : team;
-                    let btnBg = isFilled ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-white text-slate-800 border-slate-200 hover:bg-slate-50";
+                    let btnBg = isFilled ? "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-900 border-emerald-300 shadow-sm" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 shadow-sm";
                     
-                    html += `<button onclick="openTeamInput('${team}')" class="text-left border px-4 py-2 rounded text-sm font-bold transition ${btnBg}">${btnText}</button>`;
+                    html += `<button onclick="openTeamInput('${team}')" class="text-left border px-4 py-2.5 rounded-lg text-sm font-bold transition transform active:scale-[0.99] ${btnBg}">${btnText}</button>`;
                 }
             });
 
@@ -165,36 +165,36 @@
 
             let html = `
                 <div class="mb-4">
-                    <div class="flex items-center gap-2 mb-1">
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
                     </div>
-                    <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
+                    <div class="text-xs text-slate-600 font-bold">INPUT TID - ${teamName}</div>
                 </div>
 
                 <!-- Layout 2 Kolom Sejajar Atas -->
                 <div class="flex flex-wrap gap-6 items-start">
                     <!-- Kolom Kiri: Tabel Input & Tombol Aksi Bawah -->
-                    <div class="flex flex-col gap-2">
+                    <div class="flex flex-col gap-3">
                         <!-- Tombol Aksi di Atas Tabel Kiri -->
                         <div class="flex flex-col gap-2 w-full">
                             <div class="flex gap-2">
-                                <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-2 py-2 rounded">🖨️ Cetak</button>
-                                <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2 py-2 rounded">💾 Simpan</button>
+                                <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white text-xs font-bold px-2.5 py-2.5 rounded-lg shadow">🖨️ Cetak</button>
+                                <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-2.5 py-2.5 rounded-lg shadow">💾 Simpan</button>
                             </div>
-                            <button onclick="clearAllTids('${teamName}')" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-2 py-2 rounded shadow">🗑️ Hapus Semua TID</button>
+                            <button onclick="clearAllTids('${teamName}')" class="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-2.5 py-2 rounded-lg shadow">🗑️ Hapus Semua TID</button>
                         </div>
 
-                        <div class="border border-slate-400 rounded overflow-hidden bg-white shadow-sm">
-                            <table class="border-collapse text-sm">
+                        <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md">
+                            <table class="border-collapse text-sm w-full">
                                 <thead>
                                     <tr>
-                                        <th colspan="2" class="bg-amber-500 border border-slate-400 p-1.5 text-left">
-                                            <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-amber-500 text-black font-bold placeholder-black px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="autoSaveDraft('${teamName}')">
+                                        <th colspan="2" class="bg-gradient-to-r from-amber-500 to-orange-500 border border-slate-400 p-1.5 text-left shadow-inner">
+                                            <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-transparent text-slate-900 font-extrabold placeholder-slate-800 px-1 py-0.5 border-none outline-none text-sm uppercase text-center drop-shadow-sm" oninput="autoSaveDraft('${teamName}')">
                                         </th>
                                     </tr>
-                                    <tr class="bg-emerald-600 text-white">
-                                        <th class="border border-slate-400 p-1 w-10 text-center font-bold text-xs">NO</th>
-                                        <th class="border border-slate-400 p-1 px-2 font-bold text-center w-24 text-xs">TID</th>
+                                    <tr class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
+                                        <th class="border border-slate-400 p-1.5 w-10 text-center font-bold text-xs shadow-inner">NO</th>
+                                        <th class="border border-slate-400 p-1.5 px-2 font-bold text-center w-24 text-xs shadow-inner">TID</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tidTableBody">
@@ -204,7 +204,7 @@
                 let val = previousTids[i] || "";
                 html += `
                     <tr>
-                        <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs">${i + 1}</td>
+                        <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs bg-slate-100/60">${i + 1}</td>
                         <td class="border border-slate-400 p-0.5 cell-container" data-index="${i}">
                             <input type="text" maxlength="15" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent" value="${val}" data-index="${i}" oninput="handleTidInput('${teamName}')">
                         </td>
@@ -218,25 +218,27 @@
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan: Real-Time Preview Table -->
-                    <div class="flex-1 border border-slate-400 bg-white p-3 rounded shadow-sm overflow-x-auto min-w-[500px]">
-                        <div class="text-xs font-bold text-slate-600 mb-2">PRATINJAU REAL-TIME:</div>
-                        <table class="w-full border-collapse text-xs">
+                    <!-- Kolom Kanan: Real-Time Preview Table dengan Tema 3D / Gradasi Header -->
+                    <div class="flex-1 border border-slate-300 bg-white p-3.5 rounded-xl shadow-lg overflow-x-auto min-w-[500px]">
+                        <div class="text-xs font-extrabold text-slate-700 mb-2 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PRATINJAU REAL-TIME:
+                        </div>
+                        <table class="w-full border-collapse text-xs shadow-sm rounded-lg overflow-hidden">
                             <thead>
                                 <tr>
-                                    <th colspan="10" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
+                                    <th colspan="10" class="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-slate-900 border-2 border-slate-400 p-2 text-left font-extrabold text-sm shadow-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
                                 </tr>
-                                <tr class="bg-slate-400 text-slate-900">
-                                    <th class="border border-slate-400 p-1 w-10">NO</th>
-                                    <th class="border border-slate-400 p-1 w-20">TID</th>
-                                    <th class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">LOKASI</th>
-                                    <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE RPL</th>
-                                    <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE FLM</th>
-                                    <th class="border border-slate-400 p-1 w-12">RAK</th>
-                                    <th class="border border-slate-400 p-1 w-12">BARIS</th>
-                                    <th class="border border-slate-400 p-1 w-12">KOLOM</th>
-                                    <th class="border border-slate-400 p-1 w-20">KETERANGAN</th>
-                                    <th class="border border-slate-400 p-1 w-20"></th>
+                                <tr class="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 text-white font-bold shadow-inner">
+                                    <th class="border border-slate-500 p-1.5 w-10 shadow-sm">NO</th>
+                                    <th class="border border-slate-500 p-1.5 w-20 shadow-sm">TID</th>
+                                    <th class="border border-slate-500 p-1.5 px-3 text-center whitespace-nowrap shadow-sm">LOKASI</th>
+                                    <th class="border border-slate-500 p-1.5 px-1 text-center w-[100px] truncate shadow-sm">BARCODE RPL</th>
+                                    <th class="border border-slate-500 p-1.5 px-1 text-center w-[100px] truncate shadow-sm">BARCODE FLM</th>
+                                    <th class="border border-slate-500 p-1.5 w-12 shadow-sm">RAK</th>
+                                    <th class="border border-slate-500 p-1.5 w-12 shadow-sm">BARIS</th>
+                                    <th class="border border-slate-500 p-1.5 w-12 shadow-sm">KOLOM</th>
+                                    <th class="border border-slate-500 p-1.5 w-20 shadow-sm">KETERANGAN</th>
+                                    <th class="border border-slate-500 p-1.5 w-20 shadow-sm"></th>
                                 </tr>
                             </thead>
                             <tbody id="realtimePreviewBody">
@@ -244,35 +246,35 @@
 
             for (let i = 0; i < 16; i++) {
                 let tid = previousTids[i] || "";
-                let bg = i % 2 === 0 ? "bg-slate-50" : "bg-white";
+                let bg = i % 2 === 0 ? "bg-slate-50/80" : "bg-white";
                 if (tid) {
                     html += `
                         <tr class="${bg}" id="preview-row-${i}">
-                            <td class="border border-slate-400 p-1 text-center">${i + 1}</td>
-                            <td class="border border-slate-400 p-1 text-center font-bold">${tid}</td>
-                            <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">ATM-${tid} (BEKASI)</td>
-                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">RPL-${tid}-99</td>
-                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">FLM-${tid}-88</td>
-                            <td class="border border-slate-400 p-1 text-center">R-0${(i % 3) + 1}</td>
-                            <td class="border border-slate-400 p-1 text-center">B-0${(i % 4) + 1}</td>
-                            <td class="border border-slate-400 p-1 text-center">K-0${(i % 5) + 1}</td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center">${i + 1}</td>
+                            <td class="border border-slate-300 p-1 text-center font-bold text-blue-900">${tid}</td>
+                            <td class="border border-slate-300 p-1 px-3 text-center whitespace-nowrap">ATM-${tid} (BEKASI)</td>
+                            <td class="border border-slate-300 p-1 px-1 text-center font-mono truncate max-w-[100px]">RPL-${tid}-99</td>
+                            <td class="border border-slate-300 p-1 px-1 text-center font-mono truncate max-w-[100px]">FLM-${tid}-88</td>
+                            <td class="border border-slate-300 p-1 text-center">R-0${(i % 3) + 1}</td>
+                            <td class="border border-slate-300 p-1 text-center">B-0${(i % 4) + 1}</td>
+                            <td class="border border-slate-300 p-1 text-center">K-0${(i % 5) + 1}</td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
                         </tr>
                     `;
                 } else {
                     html += `
                         <tr class="${bg}" id="preview-row-${i}" style="display: none;">
-                            <td class="border border-slate-400 p-1 text-center">${i + 1}</td>
-                            <td class="border border-slate-400 p-1 text-center font-bold"></td>
-                            <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap"></td>
-                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]"></td>
-                            <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]"></td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
-                            <td class="border border-slate-400 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center">${i + 1}</td>
+                            <td class="border border-slate-300 p-1 text-center font-bold text-blue-900"></td>
+                            <td class="border border-slate-300 p-1 px-3 text-center whitespace-nowrap"></td>
+                            <td class="border border-slate-300 p-1 px-1 text-center font-mono truncate max-w-[100px]"></td>
+                            <td class="border border-slate-300 p-1 px-1 text-center font-mono truncate max-w-[100px]"></td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
+                            <td class="border border-slate-300 p-1 text-center"></td>
                         </tr>
                     `;
                 }
@@ -296,7 +298,7 @@
 
         function updateRealtimePreview() {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
-            let teamNameElement = document.querySelector(".text-xs.text-slate-500.font-semibold");
+            let teamNameElement = document.querySelector(".text-xs.text-slate-600.font-bold");
             let baseTeamName = teamNameElement ? teamNameElement.innerText.replace("INPUT TID - ", "") : "";
             
             let titleElem = document.getElementById("previewTeamTitle");
@@ -523,54 +525,54 @@
             let item = previewPayload[currentSlideIndex];
 
             let html = `
-                <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2 rounded">
-                    <button onclick="renderTeamMenuHtml()" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali ke Daftar Team</button>
+                <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                    <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
                     
                     <div class="flex items-center gap-2">
-                        <button onclick="prevSlide()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded ${currentSlideIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>◀ Sebelumnya</button>
+                        <button onclick="prevSlide()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>◀ Sebelumnya</button>
                         <span class="text-xs font-bold text-slate-700">Slide ${currentSlideIndex + 1} dari ${totalPages}</span>
-                        <button onclick="nextSlide()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded ${currentSlideIndex === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === totalPages - 1 ? 'disabled' : ''}>Selanjutnya ▶</button>
+                        <button onclick="nextSlide()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === totalPages - 1 ? 'disabled' : ''}>Selanjutnya ▶</button>
                     </div>
 
-                    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded">🖨️ CETAK DOKUMEN</button>
+                    <button onclick="window.print()" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK DOKUMEN</button>
                 </div>
 
-                <div class="border border-slate-400 bg-white p-2">
-                    <table class="w-full border-collapse text-xs">
+                <div class="border border-slate-300 bg-white p-3 rounded-xl shadow-md">
+                    <table class="w-full border-collapse text-xs rounded-lg overflow-hidden shadow-sm">
                         <thead>
                             <tr>
-                                <th colspan="10" class="bg-slate-300 text-slate-800 border border-slate-400 p-2 text-left font-bold text-sm">${item.team_name}</th>
+                                <th colspan="10" class="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-slate-900 border-2 border-slate-400 p-2.5 text-left font-extrabold text-sm shadow-sm">${item.team_name}</th>
                             </tr>
-                            <tr class="bg-slate-400 text-slate-900">
-                                <th class="border border-slate-400 p-1 w-10">NO</th>
-                                <th class="border border-slate-400 p-1 w-20">TID</th>
-                                <th class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">LOKASI</th>
-                                <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE RPL</th>
-                                <th class="border border-slate-400 p-1 px-1 text-center w-[100px] truncate">BARCODE FLM</th>
-                                <th class="border border-slate-400 p-1 w-12">RAK</th>
-                                <th class="border border-slate-400 p-1 w-12">BARIS</th>
-                                <th class="border border-slate-400 p-1 w-12">KOLOM</th>
-                                <th class="border border-slate-400 p-1 w-20">KETERANGAN</th>
-                                <th class="border border-slate-400 p-1 w-20"></th>
+                            <tr class="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 text-white font-bold shadow-inner">
+                                <th class="border border-slate-500 p-1.5 w-10 font-bold shadow-sm">NO</th>
+                                <th class="border border-slate-500 p-1.5 w-20 font-bold shadow-sm">TID</th>
+                                <th class="border border-slate-500 p-1.5 px-3 text-center whitespace-nowrap font-bold shadow-sm">LOKASI</th>
+                                <th class="border border-slate-500 p-1.5 px-1 text-center w-[100px] truncate font-bold shadow-sm">BARCODE RPL</th>
+                                <th class="border border-slate-500 p-1.5 px-1 text-center w-[100px] truncate font-bold shadow-sm">BARCODE FLM</th>
+                                <th class="border border-slate-500 p-1.5 w-12 font-bold shadow-sm">RAK</th>
+                                <th class="border border-slate-500 p-1.5 w-12 font-bold shadow-sm">BARIS</th>
+                                <th class="border border-slate-500 p-1.5 w-12 font-bold shadow-sm">KOLOM</th>
+                                <th class="border border-slate-500 p-1.5 w-20 font-bold shadow-sm">KETERANGAN</th>
+                                <th class="border border-slate-500 p-1.5 w-20 font-bold shadow-sm"></th>
                             </tr>
                         </thead>
                         <tbody>
             `;
 
             item.data.forEach((row, rIdx) => {
-                let bg = rIdx % 2 === 0 ? "bg-slate-50" : "bg-white";
+                let bg = rIdx % 2 === 0 ? "bg-slate-50/80" : "bg-white";
                 html += `
                     <tr class="${bg}">
-                        <td class="border border-slate-400 p-1 text-center">${row[0]}</td>
-                        <td class="border border-slate-400 p-1 text-center font-bold">${row[1]}</td>
-                        <td class="border border-slate-400 p-1 px-3 text-center whitespace-nowrap">${row[2]}</td>
-                        <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">${row[3]}</td>
-                        <td class="border border-slate-400 p-1 px-1 text-center font-mono truncate max-w-[100px]">${row[4]}</td>
-                        <td class="border border-slate-400 p-1 text-center">${row[5]}</td>
-                        <td class="border border-slate-400 p-1 text-center">${row[6]}</td>
-                        <td class="border border-slate-400 p-1 text-center">${row[7]}</td>
-                        <td class="border border-slate-400 p-1 text-center">${row[8]}</td>
-                        <td class="border border-slate-400 p-1 text-center">${row[9]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[0]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-bold text-blue-900">${row[1]}</td>
+                        <td class="border border-slate-300 p-1 px-3 text-center whitespace-nowrap">${row[2]}</td>
+                        <td class="border border-slate-300 p-1 px-1 text-center font-mono truncate max-w-[100px]">${row[3]}</td>
+                        <td class="border border-slate-300 p-1 px-1 text-center font-mono truncate max-w-[100px]">${row[4]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[5]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[6]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[7]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[8]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[9]}</td>
                     </tr>
                 `;
             });
