@@ -96,10 +96,18 @@
             </div>
         </header>
 
-        <!-- Sub-bar Version -->
+        <!-- Sub-bar Version dengan Tombol Sinkron Google Sheets -->
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
             <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
             <div class="flex items-center gap-2">
+                <!-- Tombol Upload ke Google Sheets (PC A) -->
+                <button onclick="uploadToGoogleSheets()" id="btnUploadSheet" class="bg-amber-700 hover:bg-amber-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
+                    ☁️ Upload ke Google Sheets
+                </button>
+                <!-- Tombol Sinkron Google Sheets (PC B) -->
+                <button onclick="syncFromGoogleSheets()" id="btnSyncSheet" class="bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
+                    ☁️ Sinkron Google Sheets
+                </button>
                 <button onclick="downloadMasterdataExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
                     📊 Download Masterdata (Excel)
                 </button>
@@ -219,6 +227,9 @@
         let masterDatabase = {}; 
         let currentAppPassword = "123"; // Password default sistem
 
+        // URL Google Apps Script Web App (Kosongkan atau isi dengan URL deployment GAS Anda)
+        const GOOGLE_SHEETS_API_URL = "";
+
         function loadLocalStorageData() {
             try {
                 const savedMaster = localStorage.getItem("bgi_masterDatabase");
@@ -248,6 +259,73 @@
             }
         }
 
+        // Fungsi Upload data ke Google Sheets pusat (PC A)
+        async function uploadToGoogleSheets() {
+            if (!GOOGLE_SHEETS_API_URL) {
+                alert("URL Google Sheets API belum dikonfigurasi di dalam skrip!");
+                return;
+            }
+            const btn = document.getElementById("btnUploadSheet");
+            btn.innerText = "Mengunggah...";
+            btn.disabled = true;
+
+            try {
+                let payload = {
+                    action: "upload",
+                    masterDatabase: masterDatabase,
+                    batchTeamsData: batchTeamsData,
+                    batchTeamMembers: batchTeamMembers
+                };
+
+                let response = await fetch(GOOGLE_SHEETS_API_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                let result = await response.json();
+                alert(result.message || "Data berhasil diunggah ke Google Sheets pusat!");
+            } catch (e) {
+                console.error("Gagal mengunggah:", e);
+                alert("Gagal mengunggah data ke Google Sheets.");
+            } finally {
+                btn.innerText = "☁️ Upload ke Google Sheets";
+                btn.disabled = false;
+            }
+        }
+
+        // Fungsi Sinkron/Tarik data dari Google Sheets pusat (PC B)
+        async function syncFromGoogleSheets() {
+            if (!GOOGLE_SHEETS_API_URL) {
+                alert("URL Google Sheets API belum dikonfigurasi di dalam skrip!");
+                return;
+            }
+            const btn = document.getElementById("btnSyncSheet");
+            btn.innerText = "Menyinkronkan...";
+            btn.disabled = true;
+
+            try {
+                let response = await fetch(GOOGLE_SHEETS_API_URL + "?action=sync");
+                let result = await response.json();
+
+                if (result.masterDatabase) {
+                    masterDatabase = result.masterDatabase;
+                    if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
+                    if (result.batchTeamMembers) batchTeamMembers = result.batchTeamMembers;
+
+                    saveLocalStorageData();
+                    alert("Data berhasil disinkronkan dari Google Sheets pusat!");
+                    location.reload();
+                } else {
+                    alert("Format data sinkron tidak valid.");
+                }
+            } catch (e) {
+                console.error("Gagal sinkronisasi:", e);
+                alert("Gagal mengambil data dari Google Sheets.");
+            } finally {
+                btn.innerText = "☁️ Sinkron Google Sheets";
+                btn.disabled = false;
+            }
+        }
+
         // Fungsi Download Masterdata ke File Excel (.xlsx) secara Instan
         function downloadMasterdataExcel() {
             try {
@@ -272,12 +350,10 @@
                     });
                 });
 
-                // Buat worksheet dan workbook menggunakan SheetJS
                 const worksheet = XLSX.utils.json_to_sheet(excelRows);
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Masterdata");
 
-                // Download file Excel
                 XLSX.writeFile(workbook, `MASTERDATA_KUNCI_BGI_${new Date().toISOString().slice(0,10)}.xlsx`);
                 alert("File Excel Masterdata berhasil diunduh!");
             } catch (e) {
@@ -500,7 +576,7 @@
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>💡 <strong>Tips:</strong> Gunakan tombol <strong>Download Masterdata (Excel)</strong> di atas untuk mengunduh laporan master data ke file Excel (.xlsx).</span>
+                        <span>💡 <strong>Tips:</strong> Gunakan tombol <strong>Upload ke Google Sheets</strong> dan <strong>Sinkron Google Sheets</strong> di atas untuk sinkronisasi data antar PC secara mudah.</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
