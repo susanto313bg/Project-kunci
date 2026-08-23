@@ -30,11 +30,9 @@ def login():
 @app.route("/cetak-dokumen", methods=["POST", "GET"])
 def cetak_dokumen():
     if request.method == "POST":
-        # Menangkap data yang dikirim secara realtime dari form web
         nama_team = request.form.get("nama_team", "TEAM TANPA NAMA")
         list_tid = request.form.getlist("tid[]") # Menangkap semua input TID
         
-        # Menyusun data ke format item tabel
         items = [{"tid": tid} for tid in list_tid if tid.strip() != ""]
         
         data_team = [
@@ -44,7 +42,6 @@ def cetak_dokumen():
             }
         ]
     else:
-        # Data default jika diakses langsung via URL (GET)
         data_team = [
             {
                 "nama_team": "SUSANTO",
@@ -54,6 +51,5 @@ def cetak_dokumen():
         
     return render_template("cetak_team.html", list_team=data_team)
 
-# Baris ini penting agar Vercel mendeteksi aplikasi Flask
 if __name__ == "__main__":
     app.run(debug=True)
