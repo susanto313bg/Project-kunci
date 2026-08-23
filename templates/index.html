@@ -157,19 +157,19 @@
                     <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
                 </div>
 
-                <div class="border border-slate-400 rounded overflow-hidden max-w-sm mb-4 bg-white shadow-sm">
-                    <table class="w-full border-collapse text-sm">
+                <div class="border border-slate-400 rounded overflow-hidden inline-block mb-4 bg-white shadow-sm">
+                    <table class="border-collapse text-sm">
                         <thead>
-                            <!-- Baris Header Nama Team (Menyatu seperti Excel) -->
+                            <!-- Baris Header Nama Team -->
                             <tr>
                                 <th colspan="2" class="bg-amber-500 border border-slate-400 p-1.5 text-left">
                                     <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="MASUKKAN NAMA TEAM..." class="w-full bg-amber-500 text-black font-bold placeholder-slate-700 px-1 py-0.5 border-none outline-none text-sm uppercase">
                                 </th>
                             </tr>
-                            <!-- Baris Header Tabel NO dan TID -->
+                            <!-- Baris Header Tabel NO dan TID (Lebar TID disesuaikan ± 7 karakter) -->
                             <tr class="bg-emerald-600 text-white">
                                 <th class="border border-slate-400 p-1 w-12 text-center font-bold">NO</th>
-                                <th class="border border-slate-400 p-1 text-left px-3 font-bold">TID</th>
+                                <th class="border border-slate-400 p-1 px-3 font-bold text-left w-32">TID</th>
                             </tr>
                         </thead>
                         <tbody id="tidTableBody">
@@ -177,9 +177,8 @@
 
             for (let i = 0; i < 16; i++) {
                 let val = previousTids[i] || "";
-                let bgRow = i % 2 === 0 ? "bg-white" : "bg-white";
                 html += `
-                    <tr class="${bgRow}">
+                    <tr>
                         <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs">${i + 1}</td>
                         <td class="border border-slate-400 p-0.5">
                             <input type="text" class="tid-input w-full px-2 py-0.5 border-none text-sm outline-none bg-transparent" value="${val}" data-index="${i}">
@@ -192,17 +191,23 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="flex gap-2 max-w-sm">
-                    <button onclick="saveTeam('${teamName}', true)" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3 py-2 rounded">🖨️ Cetak Langsung</button>
-                    <button onclick="saveTeam('${teamName}', false)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded">➕ Simpan Team</button>
+                <div class="flex gap-2 w-[200px]">
+                    <button onclick="saveTeam('${teamName}', true)" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3 py-2 rounded">🖨️ Cetak</button>
+                    <button onclick="saveTeam('${teamName}', false)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded">➕ Simpan</button>
                 </div>
             `;
 
             content.innerHTML = html;
 
-            // Fitur Enter Pindah ke Bawah & Paste Excel
+            // Fitur Enter Pindah ke Bawah, Paste Excel, dan Blok dengan Ctrl + Klik
             const inputs = document.querySelectorAll(".tid-input");
             inputs.forEach(input => {
+                input.addEventListener("click", function(e) {
+                    if (e.ctrlKey) {
+                        this.select(); // Blok teks di dalam textbox jika Ctrl + Klik
+                    }
+                });
+
                 input.addEventListener("keydown", function(e) {
                     if (e.key === "Enter") {
                         e.preventDefault();
