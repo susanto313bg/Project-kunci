@@ -65,12 +65,12 @@
         <!-- Dynamic Right Panel -->
         <div class="flex-1 bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
             
-            <!-- VIEW 1: Dashboard Awal (Tampilan Default Sesuai Keinginanmu) -->
+            <!-- VIEW 1: Dashboard Awal (Tampil default pas baru login) -->
             <div id="view-dashboard" class="flex-1 flex items-center justify-center p-12 text-center text-gray-400 italic text-sm">
                 Silahkan klik tombol 'CETAK KUNCI RPL' di menu sebelah kiri.
             </div>
 
-            <!-- VIEW 2: Pilih Team RPL (Muncul saat tombol CETAK KUNCI RPL diklik) -->
+            <!-- VIEW 2: Pilih Team RPL (Tampil setelah tombol CETAK KUNCI RPL diklik) -->
             <div id="view-team" class="hidden flex-1 flex flex-col">
                 <h2 class="text-lg font-bold text-slate-800 mb-6 pb-2 border-b border-slate-200">Pilih Team RPL</h2>
                 <div class="space-y-3 max-w-xl">
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: Input TID Table (Muncul setelah memilih team) -->
+            <!-- VIEW 3: Input TID Table (Tampil HANYA jika salah satu Team diklik) -->
             <div id="view-input" class="hidden flex-1 flex flex-col">
                 <div class="mb-4">
                     <button onclick="showView('team')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-medium py-1.5 px-3 rounded flex items-center space-x-1 transition">
@@ -125,13 +125,15 @@
         </div>
     </div>
 
-    <!-- Script Navigasi Interaktif -->
+    <!-- Script Kontrol Tampilan -->
     <script>
         function showView(viewName) {
+            // Sembunyikan semua tampilan terlebih dahulu
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-team').classList.add('hidden');
             document.getElementById('view-input').classList.add('hidden');
 
+            // Tampilkan hanya view yang dipilih
             if(viewName === 'dashboard') {
                 document.getElementById('view-dashboard').classList.remove('hidden');
             } else if(viewName === 'team') {
