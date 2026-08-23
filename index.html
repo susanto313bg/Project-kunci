@@ -189,12 +189,14 @@
         </div>
     </div>
 
+    <!-- AREA CETAK KHUSUS -->
+    <div id="printArea" class="hidden"></div>
+
     <script>
         let currentUser = null;
         let batchTeamsData = {}; 
         let batchTeamMembers = {}; 
         let previewPayload = [];
-        let currentSlideIndex = 0;
         let masterDatabase = {}; 
         let uploadedFilesArchive = {}; 
 
@@ -236,7 +238,6 @@
                     return;
                 }
 
-                // Ubah format masterDatabase menjadi array objek standar Excel
                 let excelRows = keys.map((tid, index) => {
                     let item = masterDatabase[tid];
                     return {
@@ -251,12 +252,10 @@
                     };
                 });
 
-                // Buat Worksheet & Workbook menggunakan SheetJS
                 let worksheet = XLSX.utils.json_to_sheet(excelRows);
                 let workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Master Data Kunci");
 
-                // Ekspor file dengan nama dan tanggal otomatis
                 let fileName = `BG_BEKASI_MASTER_DATA_${new Date().toISOString().slice(0,10)}.xlsx`;
                 XLSX.writeFile(workbook, fileName);
                 
@@ -696,6 +695,7 @@
             content.innerHTML = html;
         }
 
+        // FUNGSI UTAMA YANG HILANG SEBELUMNYA DIKEMBALIKAN UTUH
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
             let previousTids = batchTeamsData[teamName] || [];
@@ -703,30 +703,44 @@
 
             content.innerHTML = `
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg border">
-                    <button onclick="renderTeamMenuHtml()" class="bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali</button>
+                    <button onclick="renderTeamMenuHtml()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
                     <div class="flex gap-2">
-                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-sky-600 text-white text-xs font-bold px-3 py-1.5 rounded">🖨️ Cetak</button>
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded">💾 Simpan</button>
+                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
                     </div>
                 </div>
-                <div class="flex gap-6 items-start">
-                    <div class="border rounded-lg bg-white shadow-md">
-                        <table class="border-collapse text-sm w-full">
+                <div class="bg-white border rounded-xl p-4 shadow-md max-w-xl">
+                    <h3 class="text-xs font-black text-slate-800 mb-3 uppercase tracking-wider">Input Data Kunci: <span class="text-blue-700">${teamName}</span></h3>
+                    <div class="mb-3">
+                        <label class="block text-[10px] font-bold text-slate-600 mb-1 uppercase">Nama / Keterangan Team</label>
+                        <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="Masukkan Nama Team..." class="w-full border border-slate-300 rounded p-2 text-xs uppercase font-bold outline-none focus:border-blue-600" oninput="autoSaveDraft('${teamName}')">
+                    </div>
+                    <div class="border rounded-lg overflow-hidden shadow-inner">
+                        <table class="border-collapse text-xs w-full">
                             <thead>
-                                <tr><th colspan="2" class="p-2"><input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="NAMA TEAM" class="w-full text-center font-bold text-xs uppercase border-b p-1" oninput="autoSaveDraft('${teamName}')"></th></tr>
-                                <tr class="bg-emerald-600 text-white text-xs"><th class="border p-1.5 w-10">NO</th><th class="border p-1.5 w-24">TID</th></tr>
+                                <tr class="bg-slate-800 text-white text-center">
+                                    <th class="border border-slate-600 p-1.5 w-12">NO</th>
+                                    <th class="border border-slate-600 p-1.5">NOMOR TID / LOKASI OTOMATIS</th>
+                                </tr>
                             </thead>
                             <tbody>
             `;
             for (let i = 0; i < 16; i++) {
                 html += `
-                    <tr>
-                        <td class="border p-1 text-center text-xs bg-slate-100">${i + 1}</td>
-                        <td class="border p-0.5"><input type="text" maxlength="15" class="tid-input w-full px-1 py-0.5 text-center text-sm outline-none bg-transparent" value="${previousTids[i] || ''}" oninput="autoSaveDraft('${teamName}')"></td>
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
+                        <td class="border border-slate-300 p-1.5 text-center font-bold text-slate-500">${i + 1}</td>
+                        <td class="border border-slate-300 p-1">
+                            <input type="text" maxlength="15" class="tid-input w-full px-2 py-1 text-xs font-bold text-blue-900 uppercase outline-none bg-transparent" value="${previousTids[i] || ''}" placeholder="Ketik TID..." oninput="autoSaveDraft('${teamName}')">
+                        </td>
                     </tr>
                 `;
             }
-            html += `</tbody></table></div></div>`;
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
         }
 
         function autoSaveDraft(teamName) {
@@ -746,7 +760,7 @@
 
         function saveTeamAndPrint(teamName) {
             autoSaveDraft(teamName);
-            alert("Data shift berhasil disimpan!");
+            alert("Data shift team berhasil disimpan!");
         }
     </script>
 </body>
