@@ -166,7 +166,7 @@
             let html = `
                 <div class="mb-4">
                     <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded mb-3">⬅ Kembali ke Daftar Team</button>
-                    <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName} (Gunakan Shift/Drag untuk blok beruntun, atau Ctrl+Klik untuk pilih sel terpisah)</div>
+                    <div class="text-xs text-slate-500 font-semibold">INPUT TID - ${teamName}</div>
                 </div>
 
                 <div class="border border-slate-400 rounded overflow-hidden inline-block mb-4 bg-white shadow-sm">
@@ -174,7 +174,7 @@
                         <thead>
                             <tr>
                                 <th colspan="2" class="bg-amber-500 border border-slate-400 p-1.5 text-left">
-                                    <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="MASUKKAN NAMA TEAM..." class="w-full bg-amber-500 text-black font-bold placeholder-slate-700 px-1 py-0.5 border-none outline-none text-sm uppercase" oninput="autoSaveDraft('${teamName}')">
+                                    <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-amber-500 text-black font-bold placeholder-black px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="autoSaveDraft('${teamName}')">
                                 </th>
                             </tr>
                             <tr class="bg-emerald-600 text-white">
@@ -249,7 +249,6 @@
 
             containers.forEach((container, idx) => {
                 container.addEventListener("mousedown", function(e) {
-                    // Jika menekan Ctrl, biarkan event mousedown mengatur toggle seleksi sel
                     if (e.ctrlKey) {
                         e.preventDefault();
                         container.classList.toggle("tid-cell-selected");
@@ -283,7 +282,6 @@
             }
 
             inputs.forEach(input => {
-                // Ketika diklik biasa atau dengan Ctrl
                 input.addEventListener("mousedown", function(e) {
                     let idx = parseInt(this.getAttribute("data-index"));
                     if (e.ctrlKey) {
@@ -298,7 +296,6 @@
                 input.addEventListener("keydown", function(e) {
                     let currentIndex = parseInt(this.getAttribute("data-index"));
 
-                    // Tombol Delete atau Backspace untuk menghapus semua sel yang diblok
                     if (e.key === "Delete" || e.key === "Backspace") {
                         let selectedContainers = document.querySelectorAll(".tid-cell-selected");
                         if (selectedContainers.length > 0) {
@@ -328,7 +325,6 @@
                     }
                 });
 
-                // Fitur Copy (Ctrl+C) dari sel-sel yang diblok untuk dipindah ke Excel
                 input.addEventListener("copy", function(e) {
                     let selectedContainers = document.querySelectorAll(".tid-cell-selected");
                     if (selectedContainers.length > 1) {
@@ -338,7 +334,6 @@
                             let inp = cont.querySelector(".tid-input");
                             if (inp) copiedValues.push(inp.value);
                         });
-                        // Format agar pas saat di-paste ke Excel (baris baru per sel)
                         let textToCopy = copiedValues.join("\n");
                         e.clipboardData.setData("text/plain", textToCopy);
                     }
