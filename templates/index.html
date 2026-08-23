@@ -37,13 +37,18 @@
 
     <!-- APLIKASI UTAMA -->
     <div id="mainApp" class="hidden flex flex-col flex-1">
-        <!-- Header dengan Efek 3D / Gradasi Elegan -->
-        <header class="bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1E293B] h-20 flex items-center justify-between px-6 text-white shadow-xl border-b border-blue-900/50">
-            <div class="flex items-center space-x-3">
+        <!-- Header dengan Efek 3D / Gradasi Elegan & Teks Berjalan -->
+        <header class="bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1E293B] h-20 flex items-center justify-between px-6 text-white shadow-xl border-b border-blue-900/50 overflow-hidden">
+            <div class="flex items-center space-x-3 z-10 bg-[#0F172A] pr-4">
                 <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ bgi</span>
                 <span class="text-xs text-slate-300 leading-tight font-medium">Integrated<br>Cash Solutions</span>
             </div>
-            <h1 class="text-xl font-bold tracking-wider drop-shadow">PT. Bringin Gigantara</h1>
+            <!-- Teks Berjalan (Marquee) -->
+            <div class="flex-1 overflow-hidden mx-6">
+                <marquee scrollamount="5" class="text-xl font-bold tracking-wider drop-shadow text-amber-300">
+                    PT. BRINGIN GIGANTARA — INTEGRATED CASH SOLUTIONS — MANAJEMEN KUNCI & TID AREA BEKASI
+                </marquee>
+            </div>
         </header>
 
         <!-- Sub-bar Version -->
@@ -164,26 +169,23 @@
             let previousMemberName = memberElem ? memberElem.value : (batchTeamMembers[teamName] || "");
 
             let html = `
-                <div class="mb-4">
-                    <div class="flex items-center gap-2 mb-1.5">
+                <!-- Baris Tombol Aksi di Atas Sejajar dengan Tombol Kembali -->
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2">
                         <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
+                        <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${teamName}</span>
                     </div>
-                    <div class="text-xs text-slate-600 font-bold">INPUT TID - ${teamName}</div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
+                        <button onclick="clearAllTids('${teamName}')" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua TID</button>
+                    </div>
                 </div>
 
                 <!-- Layout 2 Kolom Sejajar Atas -->
                 <div class="flex flex-wrap gap-6 items-start">
-                    <!-- Kolom Kiri: Tabel Input & Tombol Aksi Bawah -->
+                    <!-- Kolom Kiri: Tabel Input -->
                     <div class="flex flex-col gap-3">
-                        <!-- Tombol Aksi di Atas Tabel Kiri -->
-                        <div class="flex flex-col gap-2 w-full">
-                            <div class="flex gap-2">
-                                <button onclick="saveTeamAndPrint('${teamName}')" class="flex-1 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white text-xs font-bold px-2.5 py-2.5 rounded-lg shadow">🖨️ Cetak</button>
-                                <button onclick="saveAndReturnMenu('${teamName}')" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-2.5 py-2.5 rounded-lg shadow">💾 Simpan</button>
-                            </div>
-                            <button onclick="clearAllTids('${teamName}')" class="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-2.5 py-2 rounded-lg shadow">🗑️ Hapus Semua TID</button>
-                        </div>
-
                         <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md">
                             <table class="border-collapse text-sm w-full">
                                 <thead>
@@ -298,11 +300,14 @@
 
         function updateRealtimePreview() {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
-            let teamNameElement = document.querySelector(".text-xs.text-slate-600.font-bold");
-            let baseTeamName = teamNameElement ? teamNameElement.innerText.replace("INPUT TID - ", "") : "";
+            let headerTextElem = document.querySelector(".flex.flex-wrap.justify-between.items-center.mb-4 span.text-xs.text-slate-700.font-bold");
+            let baseTeamName = "";
+            if (headerTextElem) {
+                baseTeamName = headerTextElem.innerText.replace("INPUT TID - ", "").trim();
+            }
             
             let titleElem = document.getElementById("previewTeamTitle");
-            if (titleElem) {
+            if (titleElem && baseTeamName) {
                 titleElem.innerText = baseTeamName + (memberName ? ` - ${memberName}` : "");
             }
 
