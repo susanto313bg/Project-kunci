@@ -11,6 +11,13 @@
             .no-print { display: none !important; }
             .page-break { page-break-after: always; break-after: page; }
         }
+        /* Efek sel aktif ala Excel */
+        .tid-cell-selected {
+            background-color: #FEF08A !important; /* Kuning cerah */
+            outline: 2px solid #2563EB !important; /* Border biru tebal */
+            z-index: 10;
+            position: relative;
+        }
     </style>
 </head>
 <body class="bg-[#EBF2FA] font-sans antialiased min-h-screen flex flex-col">
@@ -166,10 +173,10 @@
                                     <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="MASUKKAN NAMA TEAM..." class="w-full bg-amber-500 text-black font-bold placeholder-slate-700 px-1 py-0.5 border-none outline-none text-sm uppercase">
                                 </th>
                             </tr>
-                            <!-- Baris Header Tabel NO dan TID (Lebar TID disesuaikan ± 7 karakter) -->
+                            <!-- Baris Header Tabel NO dan TID (Lebar pas untuk ± 6 karakter) -->
                             <tr class="bg-emerald-600 text-white">
-                                <th class="border border-slate-400 p-1 w-12 text-center font-bold">NO</th>
-                                <th class="border border-slate-400 p-1 px-3 font-bold text-left w-32">TID</th>
+                                <th class="border border-slate-400 p-1 w-10 text-center font-bold text-xs">NO</th>
+                                <th class="border border-slate-400 p-1 px-2 font-bold text-center w-24 text-xs">TID</th>
                             </tr>
                         </thead>
                         <tbody id="tidTableBody">
@@ -180,8 +187,8 @@
                 html += `
                     <tr>
                         <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs">${i + 1}</td>
-                        <td class="border border-slate-400 p-0.5">
-                            <input type="text" class="tid-input w-full px-2 py-0.5 border-none text-sm outline-none bg-transparent" value="${val}" data-index="${i}">
+                        <td class="border border-slate-400 p-0.5 cell-container" data-index="${i}">
+                            <input type="text" maxlength="15" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent" value="${val}" data-index="${i}">
                         </td>
                     </tr>
                 `;
@@ -191,31 +198,88 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="flex gap-2 w-[200px]">
-                    <button onclick="saveTeam('${teamName}', true)" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3 py-2 rounded">🖨️ Cetak</button>
-                    <button onclick="saveTeam('${teamName}', false)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded">➕ Simpan</button>
+                <div class="flex gap-2 w-[180px]">
+                    <button onclick="saveTeam('${teamName}', true)" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-2 py-2 rounded">🖨️ Cetak</button>
+                    <button onclick="saveTeam('${teamName}', false)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2 py-2 rounded">➕ Simpan</button>
                 </div>
             `;
 
             content.innerHTML = html;
 
-            // Fitur Enter Pindah ke Bawah, Paste Excel, dan Blok dengan Ctrl + Klik
+            // Fitur Interaksi Sel & Keyboard ala Excel
             const inputs = document.querySelectorAll(".tid-input");
+            const containers = document.querySelectorAll(".cell-container");
+            let isMouseDown = false;
+            let startIndex = null;
+
+            containers.forEach((container, idx) => {
+                container.addEventListener("mousedown", function(e) {
+                    isMouseDown = true;
+                    startIndex = idx;
+                    
+                    if (!e.ctrlKey && !e.shiftKey) {
+                        clearSelection();
+                    }
+                    
+                    selectCell(idx);
+                });
+
+                container.addEventListener("mouseenter", function() {
+                    if (isMouseDown && startIndex !== null) {
+                        clearSelection();
+                        let min = Math.min(startIndex, idx);
+                        let max = Math.max(startIndex, idx);
+                        for (let i = min; i <= max; i++) {
+                            selectCell(i);
+                        }
+                    }
+                });
+            });
+
+            document.addEventListener("mouseup", function() {
+                isMouseDown = false;
+            });
+
+            function selectCell(index) {
+                containers[index].classList.add("tid-cell-selected");
+                inputs[index].focus();
+            }
+
+            function clearSelection() {
+                containers.forEach(c => c.classList.remove("tid-cell-selected"));
+            }
+
             inputs.forEach(input => {
                 input.addEventListener("click", function(e) {
+                    let idx = parseInt(this.getAttribute("data-index"));
                     if (e.ctrlKey) {
-                        this.select(); // Blok teks di dalam textbox jika Ctrl + Klik
+                        containers[idx].classList.toggle("tid-cell-selected");
                     }
                 });
 
                 input.addEventListener("keydown", function(e) {
+                    let currentIndex = parseInt(this.getAttribute("data-index"));
+                    
                     if (e.key === "Enter") {
                         e.preventDefault();
-                        let currentIndex = parseInt(this.getAttribute("data-index"));
                         let nextIndex = currentIndex + 1;
                         if (nextIndex < inputs.length) {
-                            inputs[nextIndex].focus();
-                            inputs[nextIndex].select();
+                            clearSelection();
+                            selectCell(nextIndex);
+                        }
+                    } else if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        let nextIndex = currentIndex + 1;
+                        if (nextIndex < inputs.length) {
+                            clearSelection();
+                            selectCell(nextIndex);
+                        }
+                    } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        let prevIndex = currentIndex - 1;
+                        if (prevIndex >= 0) {
+                            clearSelection();
+                            selectCell(prevIndex);
                         }
                     }
                 });
