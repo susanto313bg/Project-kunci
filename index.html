@@ -33,12 +33,15 @@
                 break-after: page; 
             }
         }
+        /* Efek sel aktif ala Excel */
         .tid-cell-selected {
             background-color: #FEF08A !important;
             outline: 2px solid #2563EB !important;
             z-index: 10;
             position: relative;
         }
+
+        /* Animasi Teks Berjalan dari Kiri ke Kanan sampai Ujung */
         @keyframes marqueeRight {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
@@ -48,6 +51,8 @@
             white-space: nowrap;
             animation: marqueeRight 12s linear infinite;
         }
+
+        /* 3D Neumorphism Style untuk Kotak Profil Sidebar dengan Textbox Terang */
         .neumorphic-profile {
             background: #1e222d;
             border-radius: 16px;
@@ -61,6 +66,14 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#0F172A] font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- TOMBOL SALIN KODE SELURUHNYA -->
+    <div class="no-print bg-slate-900 border-b border-slate-700 px-4 py-2 flex justify-between items-center text-white">
+        <span class="text-xs font-mono text-amber-400">INDEX_5.HTML - FULL SCRIPT READY</span>
+        <button onclick="copyAllCode()" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-extrabold text-xs px-4 py-1.5 rounded-lg shadow transition transform active:scale-95 flex items-center gap-1.5">
+            📋 Salin Seluruh Script
+        </button>
+    </div>
 
     <!-- LAYAR LOGIN -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
@@ -83,6 +96,7 @@
                 <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ bgi</span>
                 <span class="text-xs text-slate-300 leading-tight font-medium">Integrated<br>Cash Solutions</span>
             </div>
+            <!-- Teks Berjalan dari Kiri ke Kanan sampai Ujung -->
             <div class="flex-1 overflow-hidden mx-6 relative flex items-center">
                 <div class="animate-marquee-right text-xl font-bold tracking-wider drop-shadow text-amber-300">
                     9930 BG BEKASI
@@ -90,27 +104,16 @@
             </div>
         </header>
 
-        <!-- Sub-bar Version & Auto-Backup Status -->
-        <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-2 text-xs font-bold text-[#1E293B] shadow-inner border-b border-slate-400 flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-3">
-                <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
-                <span id="autoBackupStatus" class="text-[10px] bg-emerald-800 text-white px-2 py-0.5 rounded-full font-normal shadow-sm">🛡️ Auto-Backup Aktif</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="downloadSystemBackup()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded shadow transition flex items-center gap-1.5">
-                    💾 Download Backup Master & Excel
-                </button>
-                <label class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1.5 rounded shadow cursor-pointer transition flex items-center gap-1.5">
-                    📂 Restore Data (.json)
-                    <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
-                </label>
-            </div>
+        <!-- Sub-bar Version -->
+        <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400">
+            NEWCRO_PHP_V7 (WEB VERSION)
         </div>
 
         <!-- Body Content -->
         <div class="flex flex-1 p-3 gap-3">
             <!-- Sidebar -->
             <aside class="no-print w-[220px] flex flex-col gap-3 shrink-0">
+                <!-- Kotak Profil (Gaya 3D Neumorphism dengan Textbox Terang) -->
                 <div class="neumorphic-profile p-3.5">
                     <div id="sidebarRole" class="font-black text-amber-400 text-center mb-3 tracking-wider text-xs uppercase border-b border-white/10 pb-2">TEKNISI<br>BG BEKASI</div>
                     <div class="space-y-2 font-mono text-[11px] font-bold">
@@ -133,58 +136,74 @@
                     </div>
                 </div>
 
-                <button onclick="renderHomeDashboardHtml()" class="text-left bg-gradient-to-r from-sky-100 via-blue-100 to-indigo-100 hover:from-sky-200 hover:to-indigo-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
+                <!-- MENU TOMBOL SAMPING -->
+                <button onclick="renderHomeDashboardHtml()" class="text-left bg-gradient-to-r from-sky-100 via-blue-100 to-indigo-100 hover:from-sky-200 hover:to-indigo-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-blue-300 transform active:scale-[0.98]">
                     🏠 BERANDA DASHBOARD
                 </button>
 
-                <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
+                <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-amber-300 transform active:scale-[0.98]">
                     📊 MASTER DATA
                 </button>
 
-                <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 hover:to-indigo-300 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
+                <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 hover:to-indigo-300 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-blue-300 transform active:scale-[0.98]">
                     🌺 CETAK KUNCI RPL
                 </button>
 
                 <!-- MENU DROPDOWN SETTING -->
                 <div class="flex flex-col">
-                    <button onclick="toggleSettingDropdown()" class="w-full text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-purple-300 flex justify-between items-center">
+                    <button onclick="toggleSettingDropdown()" class="w-full text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-purple-300 transform active:scale-[0.98] flex justify-between items-center">
                         <span>⚙️ SETTING</span>
                         <span id="settingArrow" class="transform transition-transform text-[10px]">▼</span>
                     </button>
+                    <!-- Sub-menu Dropdown -->
                     <div id="settingDropdownContent" class="hidden flex flex-col gap-1.5 mt-1.5 pl-1">
-                        <!-- FORM HAPUS BERDASARKAN TID -->
+                        <button onclick="renderPlaceholderSetting(1)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
+                            • (Kosong)
+                        </button>
+                        <button onclick="renderPlaceholderSetting(2)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
+                            • (Kosong)
+                        </button>
+                        <button onclick="renderPlaceholderSetting(3)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
+                            • Hapus Kunci
+                        </button>
+
+                        <!-- FORM HAPUS BERDASARKAN TID (DI DALAM SIDEBAR) -->
                         <div class="bg-purple-50/90 border border-purple-200 p-2.5 rounded-lg shadow-inner space-y-2 mt-1">
                             <div class="text-[11px] font-extrabold text-[#6B21A8] uppercase">🗑️ Hapus Berdasarkan TID</div>
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Masukkan Nomor TID</label>
                                 <input type="text" id="sidebarInputTid" oninput="checkSidebarTid()" class="w-full border border-slate-300 rounded p-1.5 text-[11px] bg-white font-bold text-blue-900 outline-none focus:border-purple-500" placeholder="Ketik TID...">
                             </div>
+
                             <div id="sidebarTidDetail" class="hidden bg-white border border-blue-200 p-2 rounded space-y-1 text-[10px] text-slate-800 shadow-sm">
                                 <div><strong>Lokasi:</strong> <span id="sideDetLokasi" class="text-blue-900 font-semibold">-</span></div>
                                 <div><strong>RPL:</strong> <span id="sideDetRpl" class="font-mono text-slate-900">-</span></div>
                                 <div><strong>FLM:</strong> <span id="sideDetFlm" class="font-mono text-slate-900">-</span></div>
                             </div>
+
                             <div id="sidebarConfirmBox" class="hidden">
                                 <label class="flex items-start gap-1.5 cursor-pointer bg-red-50 border border-red-200 p-1.5 rounded text-[10px] font-bold text-red-700">
                                     <input type="checkbox" id="sideChkConfirm" class="w-3.5 h-3.5 text-red-600 rounded mt-0.5">
                                     <span>Ya, yakin hapus permanen</span>
                                 </label>
                             </div>
+
                             <div class="flex gap-1.5">
-                                <button id="sideBtnSubmit" onclick="submitSidebarDeleteTid()" class="hidden flex-1 bg-gradient-to-r from-red-600 to-rose-700 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow">Hapus</button>
-                                <button id="sideBtnCancel" onclick="resetSidebarDeleteForm()" class="w-full bg-gradient-to-r from-slate-400 to-slate-500 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow">Batal</button>
+                                <button id="sideBtnSubmit" onclick="submitSidebarDeleteTid()" class="hidden flex-1 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow transition">Hapus</button>
+                                <button id="sideBtnCancel" onclick="resetSidebarDeleteForm()" class="w-full bg-gradient-to-r from-slate-400 to-slate-500 hover:from-slate-500 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow transition">Batal</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="location.reload()" class="text-left bg-gradient-to-r from-red-100 via-rose-100 to-red-200 hover:from-red-200 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-red-300">
+                <button onclick="location.reload()" class="text-left bg-gradient-to-r from-red-100 via-rose-100 to-red-200 hover:from-red-200 hover:to-rose-300 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-red-300 transform active:scale-[0.98]">
                     🚨 Logout
                 </button>
             </aside>
 
-            <!-- Main Content Area -->
+            <!-- Main Dynamic Content Area -->
             <main id="contentArea" class="flex-1 bg-white/95 backdrop-blur-md p-5 rounded-xl shadow-2xl border border-slate-200 overflow-y-auto">
+                <!-- Konten awal dimuat via JavaScript -->
             </main>
         </div>
     </div>
@@ -196,7 +215,6 @@
         let previewPayload = [];
         let currentSlideIndex = 0;
         let masterDatabase = {}; 
-        let uploadedFilesArchive = {}; 
 
         function loadLocalStorageData() {
             try {
@@ -208,9 +226,6 @@
 
                 const savedMembers = localStorage.getItem("bgi_batchTeamMembers");
                 if (savedMembers) batchTeamMembers = JSON.parse(savedMembers);
-
-                const savedFiles = localStorage.getItem("bgi_uploadedFilesArchive");
-                if (savedFiles) uploadedFilesArchive = JSON.parse(savedFiles);
             } catch (e) {
                 console.error("Gagal memuat local storage:", e);
             }
@@ -221,95 +236,45 @@
                 localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
-                localStorage.setItem("bgi_uploadedFilesArchive", JSON.stringify(uploadedFilesArchive));
-                
-                triggerAutoFileBackup();
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
         }
 
-        function triggerAutoFileBackup() {
-            try {
-                const backupData = {
-                    version: "V7_SECURE",
-                    timestamp: new Date().toISOString(),
-                    masterDatabase: masterDatabase,
-                    batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers,
-                    uploadedFilesArchive: uploadedFilesArchive
-                };
-                
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BG_BEKASI_AUTO_BACKUP_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.remove();
-            } catch (err) {
-                console.log("Auto-backup background info:", err);
-            }
-        }
-
-        function downloadSystemBackup() {
-            try {
-                const backupData = {
-                    version: "V7_SECURE",
-                    timestamp: new Date().toISOString(),
-                    masterDatabase: masterDatabase,
-                    batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers,
-                    uploadedFilesArchive: uploadedFilesArchive
-                };
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BG_BEKASI_BACKUP_LENGKAP_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-                alert("File backup lengkap (Master Data & Arsip Excel) berhasil diunduh ke folder komputer Anda!");
-            } catch (e) {
-                alert("Gagal melakukan backup data.");
-            }
-        }
-
-        function restoreSystemBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed.masterDatabase) masterDatabase = parsed.masterDatabase;
-                    if (parsed.batchTeamsData) batchTeamsData = parsed.batchTeamsData;
-                    if (parsed.batchTeamMembers) batchTeamMembers = parsed.batchTeamMembers;
-                    if (parsed.uploadedFilesArchive) uploadedFilesArchive = parsed.uploadedFilesArchive;
-
-                    saveLocalStorageData();
-                    alert("Data Master & Arsip File berhasil dipulihkan (Restore) dengan sukses!");
-                    location.reload();
-                } catch (err) {
-                    alert("File backup tidak valid atau rusak.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
         loadLocalStorageData();
 
         const teamGroups = {
-            "PAGI": ["TEAM RPL PAGI 1", "TEAM RPL PAGI 2", "TEAM RPL PAGI 3", "TEAM RPL PAGI 4", "TEAM RPL PAGI 5", "TEAM RPL PAGI 6", "TEAM RPL PAGI 7", "TEAM RPL PAGI 8", "TEAM RPL PAGI 9"],
-            "MALAM": ["TEAM RPL MALAM 1", "TEAM RPL MALAM 2"],
-            "MIDLE": ["TEAM RPL MIDLE 1", "TEAM RPL MIDLE 2", "TEAM RPL MIDLE 3"],
-            "SIANG": ["TEAM RPL SIANG 1", "TEAM RPL SIANG 2", "TEAM RPL SIANG 3", "TEAM RPL SIANG 4"]
+            "PAGI": [
+                "TEAM RPL PAGI 1", "TEAM RPL PAGI 2", "TEAM RPL PAGI 3", 
+                "TEAM RPL PAGI 4", "TEAM RPL PAGI 5", "TEAM RPL PAGI 6", 
+                "TEAM RPL PAGI 7", "TEAM RPL PAGI 8", "TEAM RPL PAGI 9"
+            ],
+            "MALAM": [
+                "TEAM RPL MALAM 1", 
+                "TEAM RPL MALAM 2"
+            ],
+            "MIDLE": [
+                "TEAM RPL MIDLE 1", 
+                "TEAM RPL MIDLE 2", 
+                "TEAM RPL MIDLE 3"
+            ],
+            "SIANG": [
+                "TEAM RPL SIANG 1", "TEAM RPL SIANG 2", 
+                "TEAM RPL SIANG 3", "TEAM RPL SIANG 4"
+            ]
         };
 
         async function handleLogin() {
             const pwd = document.getElementById("loginPass").value.trim();
-            if (pwd !== "") {
-                currentUser = { id: "1471191", name: "ADMIN KUNCI", role: "TEKNISI", today_date: "24 Aug, 2026", login_time: "00:20" };
+            
+            if (pwd === "123" || pwd === "admin" || pwd !== "") {
+                currentUser = {
+                    id: "1471191",
+                    name: "ADMIN KUNCI",
+                    role: "TEKNISI",
+                    today_date: "24 Aug, 2026",
+                    login_time: "00:20"
+                };
                 document.getElementById("loginScreen").classList.add("hidden");
                 document.getElementById("mainApp").classList.remove("hidden");
                 
@@ -329,7 +294,23 @@
             const dropdown = document.getElementById("settingDropdownContent");
             const arrow = document.getElementById("settingArrow");
             dropdown.classList.toggle("hidden");
-            arrow.style.transform = dropdown.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)";
+            if (dropdown.classList.contains("hidden")) {
+                arrow.style.transform = "rotate(0deg)";
+            } else {
+                arrow.style.transform = "rotate(180deg)";
+            }
+        }
+
+        function renderPlaceholderSetting(index) {
+            const content = document.getElementById("contentArea");
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <span class="font-extrabold text-slate-800 text-base">⚙️ SETTING - MENU ${index}</span>
+                </div>
+                <div class="p-8 text-slate-400 italic bg-slate-50 rounded-xl border border-dashed border-slate-300 text-center">
+                    Menu ini masih kosong dan sedang dalam tahap pengembangan berikutnya.
+                </div>
+            `;
         }
 
         function renderHomeDashboardHtml() {
@@ -339,21 +320,39 @@
             content.innerHTML = `
                 <div class="flex flex-col h-full gap-6">
                     <div class="relative bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-900 rounded-2xl p-8 text-white shadow-2xl border border-blue-800/60 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="absolute left-1/3 top-0 w-32 h-32 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
+
                         <div class="z-10 space-y-3 max-w-xl text-left">
                             <div class="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
                                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Secured Cash & Vault Management
                             </div>
-                            <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white">PT. BRINGIN GIGANTARA</h1>
+                            <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
+                                PT. BRINGIN GIGANTARA
+                            </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
                                 Pusat Kontrol Administrasi Status Mesin ATM, Pengelolaan Ketersediaan Kas, Gudang Kunci RPL/FLM, dan Operasional Cash Processing Center <strong class="text-amber-300">BG Bekasi</strong>.
                             </p>
                             <div class="pt-2 flex flex-wrap gap-3">
-                                <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2">
+                                <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
                                     <span>📊</span> Kelola Master Data (${totalTidCount} TID)
                                 </button>
-                                <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2">
+                                <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
                                     <span>🌺</span> Cetak Kunci RPL Shift
                                 </button>
+                            </div>
+                        </div>
+
+                        <div class="z-10 grid grid-cols-2 gap-3 shrink-0">
+                            <div class="bg-slate-900/80 border border-blue-500/30 p-4 rounded-xl text-center shadow-xl backdrop-blur flex flex-col items-center justify-center w-36 h-32 transform hover:scale-105 transition">
+                                <span class="text-3xl mb-1">🗝️</span>
+                                <span class="text-[11px] font-bold text-slate-300">Kunci Tombak ATM</span>
+                                <span class="text-[9px] text-amber-400 font-mono mt-0.5">Special Vault Key</span>
+                            </div>
+                            <div class="bg-slate-900/80 border border-amber-500/30 p-4 rounded-xl text-center shadow-xl backdrop-blur flex flex-col items-center justify-center w-36 h-32 transform hover:scale-105 transition">
+                                <span class="text-3xl mb-1">🔢</span>
+                                <span class="text-[11px] font-bold text-slate-300">Kombinasi Brankas</span>
+                                <span class="text-[9px] text-emerald-400 font-mono mt-0.5">Vault Combination</span>
                             </div>
                         </div>
                     </div>
@@ -366,6 +365,7 @@
                             </div>
                             <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center text-xl shadow-inner">📋</div>
                         </div>
+
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-xl shadow-md flex items-center justify-between">
                             <div>
                                 <p class="text-xs font-bold text-amber-800 uppercase">Shift Operasional</p>
@@ -373,17 +373,18 @@
                             </div>
                             <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center text-xl shadow-inner">⏰</div>
                         </div>
+
                         <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 p-4 rounded-xl shadow-md flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold text-emerald-800 uppercase">Status Proteksi Data</p>
-                                <h3 class="text-xl font-black text-emerald-700 mt-1">AMAN <span class="w-2 h-2 inline-block rounded-full bg-emerald-500 animate-pulse"></span></h3>
+                                <p class="text-xs font-bold text-emerald-800 uppercase">Status Sistem</p>
+                                <h3 class="text-xl font-black text-emerald-700 mt-1">ONLINE <span class="w-2 h-2 inline-block rounded-full bg-emerald-500 animate-pulse"></span></h3>
                             </div>
                             <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl shadow-inner">🔒</div>
                         </div>
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>🛡️ <strong>Keamanan Data:</strong> Master Data dan arsip Excel Anda terlindungi dari risiko hilang saat *redeploy* dengan fitur Backup & Arsip Otomatis.</span>
+                        <span>💡 <strong>Tips:</strong> Gunakan menu di samping kiri untuk mengelola master database ATM atau mencetak lembar kunci RPL berdasarkan tim shift Anda.</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
@@ -409,6 +410,8 @@
                 detailBox.classList.add("hidden");
                 confirmBox.classList.add("hidden");
                 submitBtn.classList.add("hidden");
+                let chk = document.getElementById("sideChkConfirm");
+                if(chk) chk.checked = false;
             }
         }
 
@@ -421,16 +424,25 @@
             let tidInput = document.getElementById("sidebarInputTid").value.trim();
             let chk = document.getElementById("sideChkConfirm");
 
-            if (!tidInput || !masterDatabase[tidInput] || !chk || !chk.checked) {
-                alert("Periksa kembali nomor TID atau centang kotak konfirmasi!");
+            if (!tidInput || !masterDatabase[tidInput]) {
+                alert("Nomor TID tidak valid atau belum ditemukan!");
+                return;
+            }
+
+            if (!chk || !chk.checked) {
+                alert("Silakan centang kotak konfirmasi hapus data terlebih dahulu!");
                 return;
             }
 
             delete masterDatabase[tidInput];
             saveLocalStorageData();
             alert(`Data TID ${tidInput} berhasil dihapus.`);
+            
             resetSidebarDeleteForm();
-            if(document.getElementById("masterTableBody")) renderMasterTable();
+
+            if(document.getElementById("masterTableBody")) {
+                renderMasterTable();
+            }
         }
 
         function renderMasterDataHtml() {
@@ -439,7 +451,7 @@
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
                     <span class="font-extrabold text-slate-800 text-base">📊 MASTER DATA KUNCI & LOKASI ATM</span>
                     <div class="flex gap-2">
-                        <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
+                        <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
                             📁 Upload File Master (Excel/CSV)
                             <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
                         </label>
@@ -449,16 +461,18 @@
                 <div class="flex flex-col gap-5">
                     <div class="flex flex-col gap-3">
                         <div class="flex gap-2 items-center">
-                            <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                            <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span id="btnFormIcon" class="text-sm font-extrabold">+</span> <span id="btnFormText">Tambah Data</span>
                             </button>
-                            <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+
+                            <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span>✏️</span> <span>Ubah Data</span>
                             </button>
                         </div>
 
                         <div id="masterFormContainer" class="hidden bg-slate-50 border border-slate-300 p-4 rounded-xl shadow-inner max-w-lg">
                             <h3 class="text-xs font-extrabold text-slate-700 mb-3 uppercase tracking-wider">➕ TAMBAH / UPDATE DATA MASTER TID</h3>
+                            
                             <div class="space-y-3 mb-4">
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">TID</label>
@@ -491,20 +505,23 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="flex gap-2">
-                                <button onclick="saveMasterItemManual()" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold text-xs px-4 py-2 rounded shadow">Submit</button>
-                                <button onclick="toggleMasterForm()" class="bg-gradient-to-r from-slate-400 to-slate-500 text-white font-bold text-xs px-4 py-2 rounded shadow">Batal</button>
+                                <button onclick="saveMasterItemManual()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-xs px-4 py-2 rounded shadow transition">Submit</button>
+                                <button onclick="toggleMasterForm()" class="bg-gradient-to-r from-slate-400 to-slate-500 hover:from-slate-500 hover:to-slate-600 text-white font-bold text-xs px-4 py-2 rounded shadow transition">Batal</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4 overflow-x-auto w-full">
                         <div class="flex flex-wrap justify-between items-center mb-3 bg-blue-50 border border-blue-200 p-2.5 rounded-lg shadow-sm gap-2">
-                            <span class="text-xs font-extrabold text-blue-900">📋 DATABASE MASTER AKTIF (TERARSIP AMAN)</span>
+                            <span class="text-xs font-extrabold text-blue-900">📋 DATABASE MASTER AKTIF</span>
                             <div class="flex items-center gap-3">
-                                <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none w-48 shadow-inner">
-                                <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black">
-                                    Total Aset: <span id="masterCountBadge" class="text-blue-700">0</span> TID
+                                <div class="relative">
+                                    <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-300 w-48 shadow-inner">
+                                </div>
+                                <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black shadow-inner">
+                                    Total Aset Tersimpan: <span id="masterCountBadge" class="text-blue-700">0</span> TID
                                 </div>
                             </div>
                         </div>
@@ -522,27 +539,33 @@
                                 </tr>
                             </thead>
                             <tbody id="masterTableBody">
-                                <tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master.</td></tr>
+                                <tr>
+                                    <td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master. Silakan klik tombol "Tambah Data" di atas atau upload file.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             `;
             renderMasterTable();
+            setupMasterInputNavigation();
         }
 
         function toggleMasterForm() {
             const formContainer = document.getElementById("masterFormContainer");
             const btnText = document.getElementById("btnFormText");
             const btnIcon = document.getElementById("btnFormIcon");
+            
             if (formContainer.classList.contains("hidden")) {
                 formContainer.classList.remove("hidden");
                 btnText.innerText = "Tutup Form";
                 btnIcon.innerText = "✕";
+                document.getElementById("m_tid").focus();
             } else {
                 formContainer.classList.add("hidden");
                 btnText.innerText = "Tambah Data";
                 btnIcon.innerText = "+";
+                clearMasterForm();
             }
         }
 
@@ -550,12 +573,18 @@
             let tidTarget = prompt("Masukkan nomor TID yang ingin diubah datanya:");
             if (!tidTarget) return;
             tidTarget = tidTarget.trim();
+
             if (!masterDatabase[tidTarget]) {
-                alert("Nomor TID tidak ditemukan!");
+                alert("Nomor TID tidak ditemukan di dalam database master!");
                 return;
             }
+
             let item = masterDatabase[tidTarget];
-            if (document.getElementById("masterFormContainer").classList.contains("hidden")) toggleMasterForm();
+            
+            const formContainer = document.getElementById("masterFormContainer");
+            if (formContainer.classList.contains("hidden")) {
+                toggleMasterForm();
+            }
 
             document.getElementById("m_tid").value = tidTarget;
             document.getElementById("m_tid").setAttribute("readonly", true);
@@ -565,12 +594,45 @@
             document.getElementById("m_rak").value = item.rak || "";
             document.getElementById("m_baris").value = item.baris || "";
             document.getElementById("m_kolom").value = item.kolom || "";
+            
+            document.getElementById("m_lokasi").focus();
+        }
+
+        function setupMasterInputNavigation() {
+            const inputs = document.querySelectorAll(".master-input");
+            inputs.forEach(input => {
+                input.addEventListener("keydown", function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        let currentIndex = parseInt(this.getAttribute("data-index"));
+                        let nextIndex = currentIndex + 1;
+                        if (nextIndex < inputs.length) {
+                            inputs[nextIndex].focus();
+                        } else {
+                            saveMasterItemManual();
+                        }
+                    }
+                });
+            });
+        }
+
+        function clearMasterForm() {
+            let tidInput = document.getElementById("m_tid");
+            tidInput.removeAttribute("readonly");
+            tidInput.value = "";
+            document.getElementById("m_lokasi").value = "";
+            document.getElementById("m_rpl").value = "";
+            document.getElementById("m_flm").value = "";
+            document.getElementById("m_rak").value = "";
+            document.getElementById("m_baris").value = "";
+            document.getElementById("m_kolom").value = "";
         }
 
         function saveMasterItemManual() {
             let tid = document.getElementById("m_tid").value.trim();
             if (!tid) {
                 alert("Nomor TID wajib diisi!");
+                document.getElementById("m_tid").focus();
                 return;
             }
             masterDatabase[tid] = {
@@ -581,10 +643,11 @@
                 baris: document.getElementById("m_baris").value.trim() || "",
                 kolom: document.getElementById("m_kolom").value.trim() || ""
             };
+
             saveLocalStorageData();
-            renderMasterTable();
+            clearMasterForm();
+            renderMasterTable(); 
             toggleMasterForm();
-            alert("Data master berhasil disimpan & ter-backup otomatis!");
         }
 
         function handleMasterUpload(event) {
@@ -598,34 +661,38 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
                     
+                    const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
                     let count = 0;
+
                     jsonRows.forEach(row => {
                         let tid = String(row['TID'] || row['tid'] || '').trim();
                         if (!tid) return;
 
+                        let lokasi = String(row['LOKASI ATM'] || row['Lokasi ATM'] || row['lokasi'] || `ATM-${tid} (BEKASI)`).trim();
+                        let rpl = String(row['BARCODE RPL'] || row['Barcode RPL'] || row['rpl'] || `RPL-${tid}-99`).trim();
+                        let flm = String(row['BARCODE FLM'] || row['Barcode FLM'] || row['flm'] || '').trim();
+                        let rak = String(row['RAK'] || row['Rak'] || row['rak'] || '').trim();
+                        let baris = String(row['BARIS'] || row['Baris'] || row['baris'] || '').trim();
+                        let kolom = String(row['KOLOM'] || row['Kolom'] || row['kolom'] || '').trim();
+
                         masterDatabase[tid] = {
-                            lokasi: String(row['LOKASI ATM'] || row['Lokasi ATM'] || row['lokasi'] || `ATM-${tid} (BEKASI)`).trim(),
-                            rpl: String(row['BARCODE RPL'] || row['Barcode RPL'] || row['rpl'] || `RPL-${tid}-99`).trim(),
-                            flm: String(row['BARCODE FLM'] || row['Barcode FLM'] || row['flm'] || '').trim(),
-                            rak: String(row['RAK'] || row['Rak'] || row['rak'] || '').trim(),
-                            baris: String(row['BARIS'] || row['Baris'] || row['baris'] || '').trim(),
-                            kolom: String(row['KOLOM'] || row['Kolom'] || row['kolom'] || '').trim()
+                            lokasi: lokasi,
+                            rpl: rpl,
+                            flm: flm,
+                            rak: rak,
+                            baris: baris,
+                            kolom: kolom
                         };
                         count++;
                     });
 
-                    uploadedFilesArchive[file.name] = {
-                        upload_date: new Date().toISOString(),
-                        total_rows: count
-                    };
-
                     saveLocalStorageData();
                     renderMasterTable();
-                    alert(`Berhasil mengimpor ${count} data master dari file Excel "${file.name}" & otomatis ter-backup!`);
+                    alert(`Berhasil mengimpor dan menyimpan ${count} data master dari file secara otomatis!`);
                 } catch (err) {
-                    alert("Gagal membaca file Excel.");
+                    console.error("Gagal membaca file Excel:", err);
+                    alert("Terjadi kesalahan saat membaca file. Pastikan format file Excel/CSV valid.");
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -634,16 +701,31 @@
         function renderMasterTable() {
             let tbody = document.getElementById("masterTableBody");
             let countBadge = document.getElementById("masterCountBadge");
-            let keyword = document.getElementById("masterSearchInput") ? document.getElementById("masterSearchInput").value.toLowerCase().trim() : "";
+            let searchInput = document.getElementById("masterSearchInput");
+            let keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            
             let keys = Object.keys(masterDatabase);
             
             if(countBadge) countBadge.innerText = keys.length;
+
             if (keys.length === 0) {
-                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master.</td></tr>`;
+                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master. Silakan klik tombol "Tambah Data" di atas atau upload file.</td></tr>`;
                 return;
             }
 
-            let filteredKeys = keys.filter(tid => tid.toLowerCase().includes(keyword) || masterDatabase[tid].lokasi.toLowerCase().includes(keyword));
+            let filteredKeys = keys.filter(tid => {
+                let item = masterDatabase[tid];
+                return tid.toLowerCase().includes(keyword) || 
+                       item.lokasi.toLowerCase().includes(keyword) || 
+                       item.rpl.toLowerCase().includes(keyword) || 
+                       item.flm.toLowerCase().includes(keyword);
+            });
+
+            if (filteredKeys.length === 0) {
+                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Data tidak ditemukan dengan kata kunci "${keyword}".</td></tr>`;
+                return;
+            }
+
             let html = "";
             filteredKeys.forEach((tid, i) => {
                 let item = masterDatabase[tid];
@@ -667,79 +749,273 @@
             const content = document.getElementById("contentArea");
             let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
 
+            const groupThemes = {
+                "PAGI": {
+                    cardBg: "bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 border-blue-200 shadow-blue-100",
+                    titleColor: "text-blue-900 border-blue-200",
+                    btnBase: "bg-white hover:bg-blue-100 text-blue-900 border-blue-200 shadow-sm",
+                    btnFilled: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-400 shadow-md",
+                    badgeColor: "bg-blue-600 text-white"
+                },
+                "MALAM": {
+                    cardBg: "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-indigo-800 shadow-indigo-950/30",
+                    titleColor: "text-amber-300 border-indigo-800/80",
+                    btnBase: "bg-indigo-900/60 hover:bg-indigo-800 text-indigo-100 border-indigo-700/60",
+                    btnFilled: "bg-gradient-to-r from-indigo-700 to-blue-700 text-white border-blue-400 shadow-md",
+                    badgeColor: "bg-amber-400 text-slate-950"
+                },
+                "MIDLE": {
+                    cardBg: "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border-orange-200 shadow-orange-100",
+                    titleColor: "text-amber-900 border-orange-200",
+                    btnBase: "bg-white hover:bg-amber-100 text-amber-900 border-amber-200 shadow-sm",
+                    btnFilled: "bg-gradient-to-r from-amber-600 to-orange-600 text-white border-amber-400 shadow-md",
+                    badgeColor: "bg-orange-600 text-white"
+                },
+                "SIANG": {
+                    cardBg: "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 border-emerald-200 shadow-emerald-100",
+                    titleColor: "text-emerald-900 border-emerald-200",
+                    btnBase: "bg-white hover:bg-emerald-100 text-emerald-900 border-emerald-200 shadow-sm",
+                    btnFilled: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-md",
+                    badgeColor: "bg-emerald-600 text-white"
+                }
+            };
+
             let html = `
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
                     <div>
                         <span class="font-extrabold text-slate-800 text-base">🌺 CETAK KUNCI RPL - PILIH TEAM</span>
-                        <p class="text-xs text-slate-500">Pilih team berdasarkan kelompok shift operasional</p>
+                        <p class="text-xs text-slate-500">Pilih team berdasarkan kelompok shift operasional di bawah ini</p>
                     </div>
-                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow">🖨️ Pratinjau / Cetak Semua Team</button>` : ''}
+                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition flex items-center gap-1.5">🖨️ Pratinjau / Cetak Semua Team</button>` : ''}
                 </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pb-4">
             `;
 
             for (let [groupName, teams] of Object.entries(teamGroups)) {
+                let theme = groupThemes[groupName];
+                
                 html += `
-                    <div class="bg-slate-50 border rounded-2xl p-4 shadow-xl flex flex-col gap-3">
-                        <div class="flex justify-between items-center pb-2 border-b font-black text-sm uppercase text-slate-800">
-                            <span>SHIFT ${groupName}</span>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200">${teams.length} Team</span>
+                    <div class="${theme.cardBg} border rounded-2xl p-4 shadow-xl flex flex-col gap-3 transition">
+                        <div class="flex justify-between items-center pb-2 border-b ${theme.titleColor}">
+                            <span class="font-black text-sm tracking-wider uppercase flex items-center gap-2">
+                                🌙 ☀️ ⛅ ⚡ SHIFT ${groupName}
+                            </span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">
+                                ${teams.length} Team
+                            </span>
                         </div>
+                        
                         <div class="grid grid-cols-1 gap-2">
                 `;
+
                 teams.forEach(team => {
                     let isFilled = batchTeamsData[team] && batchTeamsData[team].length > 0;
                     let count = isFilled ? batchTeamsData[team].length : 0;
+                    let btnStyle = isFilled ? theme.btnFilled : theme.btnBase;
+
                     html += `
-                        <button onclick="openTeamInput('${team}')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex justify-between items-center ${isFilled ? 'bg-blue-600 text-white border-blue-500' : 'bg-white hover:bg-blue-50 text-slate-800 border-slate-300'}">
+                        <button onclick="openTeamInput('${team}')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition transform active:scale-[0.98] flex justify-between items-center ${btnStyle}">
                             <span>${team}</span>
-                            ${isFilled ? `<span class="text-[10px] bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full font-extrabold">${count} TID</span>` : `<span class="text-[10px] opacity-60">Kosong</span>`}
+                            ${isFilled ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${theme.badgeColor} shadow-sm">${count} TID</span>` : `<span class="text-[10px] opacity-60 font-normal">Kosong</span>`}
                         </button>
                     `;
                 });
-                html += `</div></div>`;
+
+                html += `
+                        </div>
+                    </div>
+                `;
             }
+
             html += `</div>`;
             content.innerHTML = html;
         }
 
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
-            let previousTids = batchTeamsData[teamName] || [];
-            let previousMemberName = batchTeamMembers[teamName] || "";
+            
+            let previousTids = [];
+            let activeInputs = document.querySelectorAll(".tid-input");
+            if (activeInputs.length > 0) {
+                activeInputs.forEach(inp => previousTids.push(inp.value.trim()));
+            } else {
+                previousTids = batchTeamsData[teamName] || [];
+            }
 
-            content.innerHTML = `
-                <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg border">
-                    <button onclick="renderTeamMenuHtml()" class="bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali</button>
-                    <div class="flex gap-2">
-                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-sky-600 text-white text-xs font-bold px-3 py-1.5 rounded">🖨️ Cetak</button>
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded">💾 Simpan</button>
+            let memberElem = document.getElementById("inputTeamMember");
+            let previousMemberName = memberElem ? memberElem.value : (batchTeamMembers[teamName] || "");
+
+            let html = `
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
+                        <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${teamName}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
+                        <button onclick="clearAllTids('${teamName}')" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua TID</button>
                     </div>
                 </div>
-                <div class="flex gap-6 items-start">
-                    <div class="border rounded-lg bg-white shadow-md">
-                        <table class="border-collapse text-sm w-full">
-                            <thead>
-                                <tr><th colspan="2" class="p-2"><input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="NAMA TEAM" class="w-full text-center font-bold text-xs uppercase border-b p-1" oninput="autoSaveDraft('${teamName}')"></th></tr>
-                                <tr class="bg-emerald-600 text-white text-xs"><th class="border p-1.5 w-10">NO</th><th class="border p-1.5 w-24">TID</th></tr>
-                            </thead>
-                            <tbody>
+
+                <div class="flex flex-wrap gap-6 items-start">
+                    <div class="flex flex-col gap-3">
+                        <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md">
+                            <table class="border-collapse text-sm w-full">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" class="bg-transparent border-0 p-[11.5px] text-left select-none opacity-0 pointer-events-none">Spacer</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" class="bg-gradient-to-r from-amber-500 to-orange-500 border border-slate-400 p-1.5 text-left shadow-inner">
+                                            <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-transparent text-slate-900 font-extrabold placeholder-slate-800 px-1 py-0.5 border-none outline-none text-sm uppercase text-center drop-shadow-sm" oninput="autoSaveDraft('${teamName}')">
+                                        </th>
+                                    </tr>
+                                    <tr class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
+                                        <th class="border border-slate-400 p-1.5 w-10 text-center font-bold text-xs shadow-inner">NO</th>
+                                        <th class="border border-slate-400 p-1.5 px-2 font-bold text-center w-24 text-xs shadow-inner">TID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tidTableBody">
             `;
+
             for (let i = 0; i < 16; i++) {
+                let val = previousTids[i] || "";
                 html += `
                     <tr>
-                        <td class="border p-1 text-center text-xs bg-slate-100">${i + 1}</td>
-                        <td class="border p-0.5"><input type="text" maxlength="15" class="tid-input w-full px-1 py-0.5 text-center text-sm outline-none bg-transparent" value="${previousTids[i] || ''}" oninput="autoSaveDraft('${teamName}')"></td>
+                        <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs bg-slate-100/60">${i + 1}</td>
+                        <td class="border border-slate-400 p-0.5 cell-container" data-index="${i}">
+                            <input type="text" maxlength="15" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent" value="${val}" data-index="${i}" oninput="handleTidInput('${teamName}')">
+                        </td>
                     </tr>
                 `;
             }
-            html += `</tbody></table></div></div>`;
+
+            html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 border border-slate-300 bg-white p-4 rounded-xl shadow-lg overflow-x-auto min-w-[500px]">
+                        <div class="text-xs font-extrabold text-slate-700 mb-3 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PRATINJAU REAL-TIME (SINKRON MASTER DATA):
+                        </div>
+                        <table class="w-full border-collapse text-base shadow-sm rounded-lg overflow-hidden">
+                            <thead>
+                                <tr>
+                                    <th colspan="10" class="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-lg shadow-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
+                                </tr>
+                                <tr class="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 text-white font-bold shadow-inner text-base">
+                                    <th class="border border-slate-500 p-3 w-14 shadow-sm text-center">NO</th>
+                                    <th class="border border-slate-500 p-3 w-28 shadow-sm text-center">TID</th>
+                                    <th class="border border-slate-500 p-3 px-4 text-center whitespace-nowrap shadow-sm">LOKASI</th>
+                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate shadow-sm">BARCODE RPL</th>
+                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate shadow-sm">BARCODE FLM</th>
+                                    <th class="border border-slate-500 p-3 w-16 shadow-sm text-center">RAK</th>
+                                    <th class="border border-slate-500 p-3 w-16 shadow-sm text-center">BARIS</th>
+                                    <th class="border border-slate-500 p-3 w-16 shadow-sm text-center">KOLOM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="realtimePreviewBody">
+            `;
+
+            for (let i = 0; i < 16; i++) {
+                let tid = previousTids[i] || "";
+                let bg = i % 2 === 0 ? "bg-slate-50/80" : "bg-white";
+                let master = masterDatabase[tid] || {};
+                let lokasi = master.lokasi || (tid ? `ATM-${tid} (BEKASI)` : "");
+                let rpl = master.rpl || (tid ? `RPL-${tid}-99` : "");
+                let flm = master.flm || "";
+                let rak = master.rak || "";
+                let baris = master.baris || "";
+                let kolom = master.kolom || "";
+
+                html += `
+                    <tr class="${bg}" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
+                        <td class="border border-slate-300 p-3 text-center text-base">${i + 1}</td>
+                        <td class="border border-slate-300 p-3 text-center font-bold text-blue-900 text-base">${tid}</td>
+                        <td class="border border-slate-300 p-3 px-4 text-center whitespace-nowrap text-base">${lokasi}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${rpl}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${flm}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${rak}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${baris}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${kolom}</td>
+                    </tr>
+                `;
+            }
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            setupExcelInteractions(teamName);
+        }
+
+        function handleTidInput(teamName) {
+            autoSaveDraft(teamName);
+            updateRealtimePreview();
+        }
+
+        function updateRealtimePreview() {
+            let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
+            let headerTextElem = document.querySelector(".flex.flex-wrap.justify-between.items-center.mb-4 span.text-xs.text-slate-700.font-bold");
+            let baseTeamName = "";
+            if (headerTextElem) {
+                baseTeamName = headerTextElem.innerText.replace("INPUT TID - ", "").trim();
+            }
+            
+            let titleElem = document.getElementById("previewTeamTitle");
+            if (titleElem && baseTeamName) {
+                titleElem.innerText = baseTeamName + (memberName ? ` - ${memberName}` : "");
+            }
+
+            let inputs = document.querySelectorAll(".tid-input");
+            
+            inputs.forEach((inp, i) => {
+                let tidRaw = inp.value.trim();
+                let row = document.getElementById(`preview-row-${i}`);
+                if (row) {
+                    if (tidRaw !== "") {
+                        let master = masterDatabase[tidRaw] || {};
+                        
+                        row.style.display = "";
+                        row.cells[1].innerText = tidRaw;
+                        row.cells[2].innerText = master.lokasi || `ATM-${tidRaw} (BEKASI)`;
+                        row.cells[3].innerText = master.rpl || `RPL-${tidRaw}-99`;
+                        row.cells[4].innerText = master.flm || "";
+                        row.cells[5].innerText = master.rak || "";
+                        row.cells[6].innerText = master.baris || "";
+                        row.cells[7].innerText = master.kolom || "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
+        }
+
+        function clearAllTids(teamName) {
+            if (confirm("Apakah Anda yakin ingin menghapus semua TID yang terisi di tabel ini?")) {
+                const inputs = document.querySelectorAll(".tid-input");
+                inputs.forEach(inp => inp.value = "");
+                batchTeamsData[teamName] = [];
+                saveLocalStorageData();
+                updateRealtimePreview();
+            }
         }
 
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
+            let inputs = document.querySelectorAll(".tid-input");
             let tids = [];
-            document.querySelectorAll(".tid-input").forEach(inp => { if(inp.value.trim() !== "") tids.push(inp.value.trim()); });
+            inputs.forEach(inp => {
+                if(inp.value.trim() !== "") tids.push(inp.value.trim());
+            });
 
             batchTeamsData[teamName] = tids;
             if(memberName) batchTeamMembers[teamName] = memberName;
@@ -753,7 +1029,219 @@
 
         function saveTeamAndPrint(teamName) {
             autoSaveDraft(teamName);
-            alert("Data shift berhasil disimpan!");
+            let tids = batchTeamsData[teamName] || [];
+            if (tids.length === 0) {
+                alert("Harap masukkan minimal 1 TID!");
+                return;
+            }
+            let singleData = {};
+            singleData[teamName] = tids;
+            preparePreview(singleData);
+        }
+
+        function setupExcelInteractions(teamName) {
+            const inputs = document.querySelectorAll(".tid-input");
+            const containers = document.querySelectorAll(".cell-container");
+            let isMouseDown = false;
+            let startIndex = null;
+
+            containers.forEach((container, idx) => {
+                container.addEventListener("mousedown", function(e) {
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        container.classList.toggle("tid-cell-selected");
+                        return;
+                    }
+
+                    isMouseDown = true;
+                    startIndex = idx;
+                    if (!e.shiftKey) { clearSelection(); }
+                    selectCell(idx);
+                });
+
+                container.addEventListener("mouseenter", function() {
+                    if (isMouseDown && startIndex !== null) {
+                        clearSelection();
+                        let min = Math.min(startIndex, idx);
+                        let max = Math.max(startIndex, idx);
+                        for (let i = min; i <= max; i++) { selectCell(i); }
+                    }
+                });
+            });
+
+            document.addEventListener("mouseup", function() { isMouseDown = false; });
+
+            function selectCell(index) { containers[index].classList.add("tid-cell-selected"); }
+            function clearSelection() { containers.forEach(c => c.classList.remove("tid-cell-selected")); }
+
+            inputs.forEach(input => {
+                input.addEventListener("keydown", function(e) {
+                    let currentIndex = parseInt(this.getAttribute("data-index"));
+
+                    if (e.ctrlKey && e.key.toLowerCase() === 'a') {
+                        e.preventDefault();
+                        containers.forEach(c => c.classList.add("tid-cell-selected"));
+                        return;
+                    }
+
+                    if (e.key === "Delete" || e.key === "Backspace") {
+                        let selectedContainers = document.querySelectorAll(".tid-cell-selected");
+                        if (selectedContainers.length > 0) {
+                            e.preventDefault();
+                            selectedContainers.forEach(cont => {
+                                let inp = cont.querySelector(".tid-input");
+                                if (inp) inp.value = "";
+                            });
+                            autoSaveDraft(teamName);
+                            updateRealtimePreview();
+                        }
+                    } else if (e.key === "Enter" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                        let nextIndex = currentIndex + 1;
+                        if (nextIndex < inputs.length) { clearSelection(); selectCell(nextIndex); inputs[nextIndex].focus(); }
+                    } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        let prevIndex = currentIndex - 1;
+                        if (prevIndex >= 0) { clearSelection(); selectCell(prevIndex); inputs[prevIndex].focus(); }
+                    }
+                });
+
+                input.addEventListener("paste", function(e) {
+                    e.preventDefault();
+                    let clipboardData = e.clipboardData || window.clipboardData;
+                    let pastedData = clipboardData.getData("Text");
+                    let lines = pastedData.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+                    let startIndex = parseInt(this.getAttribute("data-index"));
+                    lines.forEach((line, idx) => {
+                        let targetIdx = startIndex + idx;
+                        if (targetIdx < inputs.length) { inputs[targetIdx].value = line; }
+                    });
+                    autoSaveDraft(teamName);
+                    updateRealtimePreview();
+                });
+            });
+        }
+
+        function preparePreview(dataDict) {
+            previewPayload = [];
+            for (let [tName, tids] of Object.entries(dataDict)) {
+                if (!tids || tids.length === 0) continue;
+                let memberName = batchTeamMembers[tName] ? ` - ${batchTeamMembers[tName]}` : "";
+                let teamRows = [];
+                tids.forEach((tid, i) => {
+                    let master = masterDatabase[tid] || {};
+                    teamRows.push([
+                        i + 1,
+                        tid,
+                        master.lokasi || `ATM-${tid} (BEKASI)`,
+                        master.rpl || `RPL-${tid}-99`,
+                        master.flm || "",
+                        master.rak || "",
+                        master.baris || "",
+                        master.kolom || "",
+                        "",
+                        ""
+                    ]);
+                });
+                previewPayload.push({ team_name: tName + memberName, data: teamRows });
+            }
+
+            currentSlideIndex = 0;
+            renderSlideView();
+        }
+
+        function renderSlideView() {
+            const content = document.getElementById("contentArea");
+            let totalPages = previewPayload.length;
+            if (totalPages === 0) return;
+
+            let item = previewPayload[currentSlideIndex];
+
+            let html = `
+                <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                    <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="prevSlide()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>◀ Sebelumnya</button>
+                        <span class="text-xs font-bold text-slate-700">Slide ${currentSlideIndex + 1} dari ${totalPages}</span>
+                        <button onclick="nextSlide()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === totalPages - 1 ? 'disabled' : ''}>Selanjutnya ▶</button>
+                    </div>
+
+                    <button onclick="window.print()" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK DOKUMEN</button>
+                </div>
+
+                <div id="printArea" class="border border-slate-300 bg-white p-4 rounded-xl shadow-md">
+                    <table class="w-full border-collapse text-base rounded-lg overflow-hidden shadow-sm">
+                        <thead>
+                            <tr>
+                                <th colspan="10" class="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-left font-extrabold text-lg shadow-sm">${item.team_name}</th>
+                            </tr>
+                            <tr class="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 text-white font-bold shadow-inner text-base">
+                                <th class="border border-slate-500 p-3 w-14 font-bold shadow-sm text-center">NO</th>
+                                <th class="border border-slate-500 p-3 w-28 font-bold shadow-sm text-center">TID</th>
+                                <th class="border border-slate-500 p-3 px-4 text-center whitespace-nowrap font-bold shadow-sm">LOKASI</th>
+                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate font-bold shadow-sm">BARCODE RPL</th>
+                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate font-bold shadow-sm">BARCODE FLM</th>
+                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">RAK</th>
+                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">BARIS</th>
+                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">KOLOM</th>
+                                <th class="border border-slate-500 p-3 w-28 font-bold shadow-sm text-center">KETERANGAN</th>
+                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            item.data.forEach((row, rIdx) => {
+                let bg = rIdx % 2 === 0 ? "bg-slate-50/80" : "bg-white";
+                html += `
+                    <tr class="${bg}">
+                        <td class="border border-slate-300 p-3 text-center text-base">${row[0]}</td>
+                        <td class="border border-slate-300 p-3 text-center font-bold text-blue-900 text-base">${row[1]}</td>
+                        <td class="border border-slate-300 p-3 px-4 text-center whitespace-nowrap text-base">${row[2]}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${row[3]}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${row[4]}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${row[5]}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${row[6]}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${row[7]}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${row[8]}</td>
+                        <td class="border border-slate-300 p-3 text-center text-base">${row[9]}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                renderSlideView();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < previewPayload.length - 1) {
+                currentSlideIndex++;
+                renderSlideView();
+            }
+        }
+
+        // Fungsi Tombol Salin Seluruh Script
+        function copyAllCode() {
+            const fullCode = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(fullCode).then(() => {
+                alert("Berhasil menyalin seluruh script HTML ke clipboard!");
+            }).catch(err => {
+                console.error("Gagal menyalin:", err);
+                alert("Gagal menyalin otomatis. Silakan pilih dan salin manual.");
+            });
         }
     </script>
 </body>
