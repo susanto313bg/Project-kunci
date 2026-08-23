@@ -549,7 +549,7 @@
                         <tbody>
             `;
 
-            item.data.rows.forEach((row, rIdx) => {
+            item.data.forEach((row, rIdx) => {
                 let bg = rIdx % 2 === 0 ? "bg-slate-50" : "bg-white";
                 html += `
                     <tr class="${bg}">
