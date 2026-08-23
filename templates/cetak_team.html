@@ -2,118 +2,105 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Cetak Dokumen Kunci Per Team</title>
+    <title>Cetak Dokumen Kunci</title>
     <style>
-        /* Mengatur ukuran kertas Landscape A4 dan margin cetak */
+        /* Mengatur kertas cetak landscape dan menghilangkan margin bawaan printer */
         @page {
             size: A4 landscape;
-            margin: 15mm;
-            @bottom-right {
-                content: "Halaman " counter(page) " dari " counter(pages);
-                font-family: Arial, sans-serif;
-                font-size: 9pt;
-                color: #555;
-            }
+            margin: 10mm;
         }
-        
+
         body {
             font-family: Arial, sans-serif;
-            color: #333;
             margin: 0;
             padding: 0;
             background-color: #ffffff;
+            color: #000000;
         }
 
-        /* Kontainer tiap team, otomatis pindah halaman baru di setiap akhir team */
+        /* Pembungkus tiap team, otomatis pindah halaman (slide) per team */
         .page-container {
             width: 100%;
             page-break-after: always;
             break-after: page;
+            margin-bottom: 20px;
         }
-        
-        /* Hilangkan page break untuk halaman terakhir agar tidak ada lembar kosong berlebih */
+
+        /* Mencegah halaman kosong berlebih di lembar terakhir */
         .page-container:last-child {
             page-break-after: avoid;
             break-after: avoid;
         }
 
-        .header-box {
-            background-color: #d69e2e; /* Warna oranye senada dengan gambar */
-            color: #ffffff;
-            padding: 10px 15px;
-            font-size: 13pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-        }
-
+        /* Desain Tabel Persis Seperti Gambar */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 10pt;
+            font-size: 11pt;
         }
 
         th, td {
-            border: 1px solid #bce8f1;
+            border: 1px solid #1a365d;
             padding: 8px 10px;
             text-align: left;
         }
 
-        th {
-            background-color: #1a365d; /* Biru tua elegan untuk header tabel */
-            color: white;
+        /* Baris Header Atas (Nama Team) */
+        .header-team th {
+            background-color: #e68a00; /* Warna Oranye */
+            color: #ffffff;
+            font-size: 12pt;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 9pt;
         }
 
+        .header-team th:last-child {
+            text-align: right;
+        }
+
+        /* Baris Header Kolom (NO, TID, LOKASI, dll) */
+        .header-kolom th {
+            background-color: #1a365d; /* Warna Biru Tua */
+            color: #ffffff;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Isi Baris Tabel */
         tr:nth-child(even) {
             background-color: #f8fafc;
         }
 
         .badge-ready {
-            background-color: #28a745;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
+            color: #008000;
             font-weight: bold;
-            font-size: 8.5pt;
-            display: inline-block;
-        }
-        
-        .doc-header-title {
-            text-align: center;
-            font-size: 14pt;
-            font-weight: bold;
-            color: #1a365d;
-            margin-bottom: 20px;
-            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-    <div class="doc-header-title">Laporan Data Kunci Brangkas Per Team</div>
-
     <!-- Looping data team dari Flask Backend -->
     {% for team in list_team %}
     <div class="page-container">
-        <div class="header-box">{{ team.nama_team }}</div>
         <table>
-            <thead>
-                <tr>
-                    <th style="width: 5%;">NO</th>
-                    <th style="width: 15%;">TID</th>
-                    <th style="width: 30%;">LOKASI</th>
-                    <th style="width: 25%;">BARCODE RPL</th>
-                    <th style="width: 7%;">RAK</th>
-                    <th style="width: 6%;">BARIS</th>
-                    <th style="width: 6%;">KOLOM</th>
-                    <th style="width: 6%;">KETERANGAN</th>
-                </tr>
-            </thead>
+            <!-- Header Team -->
+            <tr class="header-team">
+                <th colspan="4">{{ team.nama_team }}</th>
+                <th colspan="4" style="text-align: right;">NAMA TEAM</th>
+            </tr>
+            <!-- Header Kolom -->
+            <tr class="header-kolom">
+                <th style="width: 5%;">NO</th>
+                <th style="width: 15%;">TID</th>
+                <th style="width: 35%;">LOKASI</th>
+                <th style="width: 25%;">BARCODE RPL</th>
+                <th style="width: 6%;">RAK</th>
+                <th style="width: 6%;">BARIS</th>
+                <th style="width: 6%;">KOLOM</th>
+                <th style="width: 7%;">KETERANGAN</th>
+            </tr>
+            <!-- Data Items -->
             <tbody>
                 {% for item in team.items %}
                 <tr>
@@ -132,11 +119,10 @@
     </div>
     {% endfor %}
 
-    <!-- Script otomatis memunculkan dialog cetak saat halaman dibuka -->
+    <!-- Script untuk otomatis membuka dialog cetak (Print) saat halaman diakses -->
     <script>
         window.onload = function() {
-            // Uncomment baris di bawah jika ingin langsung otomatis membuka print dialog
-            // window.print();
+            window.print();
         }
     </script>
 </body>
