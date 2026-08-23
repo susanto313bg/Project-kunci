@@ -6,7 +6,7 @@
     <title>PT. Bringin Gigantara - Management Kunci</title>
     <!-- Tailwind CSS untuk styling modern -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS untuk membaca file Excel (.xlsx, .xls) dengan akurat -->
+    <!-- SheetJS untuk membaca dan menulis file Excel (.xlsx) dengan akurat -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @media print {
@@ -91,17 +91,17 @@
         </header>
 
         <!-- Sub-bar Version & Auto-Backup Status -->
-        <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
+        <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-2 text-xs font-bold text-[#1E293B] shadow-inner border-b border-slate-400 flex flex-wrap justify-between items-center gap-2">
             <div class="flex items-center gap-3">
                 <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
                 <span id="autoBackupStatus" class="text-[10px] bg-emerald-800 text-white px-2 py-0.5 rounded-full font-normal shadow-sm">🛡️ Auto-Backup Aktif</span>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="downloadSystemBackup()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
-                    💾 Download Backup Master & Excel
+                <button onclick="downloadMasterExcelBackup()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded shadow transition flex items-center gap-1.5">
+                    📊 Download Backup Master (.xlsx)
                 </button>
-                <label class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow cursor-pointer transition flex items-center gap-1">
-                    📂 Restore Data (.json)
+                <label class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1.5 rounded shadow cursor-pointer transition flex items-center gap-1.5">
+                    📂 Restore Sistem (.json)
                     <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
                 </label>
             </div>
@@ -196,7 +196,7 @@
         let previewPayload = [];
         let currentSlideIndex = 0;
         let masterDatabase = {}; 
-        let uploadedFilesArchive = {}; // Menyimpan riwayat file excel/csv yang pernah diupload
+        let uploadedFilesArchive = {}; 
 
         function loadLocalStorageData() {
             try {
@@ -222,59 +222,48 @@
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
                 localStorage.setItem("bgi_uploadedFilesArchive", JSON.stringify(uploadedFilesArchive));
-                
-                // Memicu auto-backup instan ke file JSON di komputer pengguna agar aman dari redeploy
-                triggerAutoFileBackup();
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
         }
 
-        // Fungsi Auto-Backup Komprehensif (Master Data + File Excel Terarsip)
-        function triggerAutoFileBackup() {
+        // FUNGSI UTAMA: Download/Backup Master Data ke format Excel (.xlsx)
+        function downloadMasterExcelBackup() {
             try {
-                const backupData = {
-                    version: "V7_SECURE",
-                    timestamp: new Date().toISOString(),
-                    masterDatabase: masterDatabase,
-                    batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers,
-                    uploadedFilesArchive: uploadedFilesArchive
-                };
-                
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BG_BEKASI_AUTO_BACKUP_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                
-                // Bisa diaktifkan otomatis atau disimpan sebagai file titik aman
-                downloadAnchor.remove();
-            } catch (err) {
-                console.log("Auto-backup background info:", err);
-            }
-        }
+                let keys = Object.keys(masterDatabase);
+                if (keys.length === 0) {
+                    alert("Tidak ada data master yang dapat diunduh (Data masih kosong).");
+                    return;
+                }
 
-        function downloadSystemBackup() {
-            try {
-                const backupData = {
-                    version: "V7_SECURE",
-                    timestamp: new Date().toISOString(),
-                    masterDatabase: masterDatabase,
-                    batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers,
-                    uploadedFilesArchive: uploadedFilesArchive
-                };
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BG_BEKASI_BACKUP_LENGKAP_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-                alert("File backup lengkap (Master Data & Arsip Excel) berhasil diunduh ke folder komputer Anda!");
+                // Ubah format masterDatabase menjadi array objek standar Excel
+                let excelRows = keys.map((tid, index) => {
+                    let item = masterDatabase[tid];
+                    return {
+                        "NO": index + 1,
+                        "TID": tid,
+                        "LOKASI ATM": item.lokasi || "",
+                        "BARCODE RPL": item.rpl || "",
+                        "BARCODE FLM": item.flm || "",
+                        "RAK": item.rak || "",
+                        "BARIS": item.baris || "",
+                        "KOLOM": item.kolom || ""
+                    };
+                });
+
+                // Buat Worksheet & Workbook menggunakan SheetJS
+                let worksheet = XLSX.utils.json_to_sheet(excelRows);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Master Data Kunci");
+
+                // Ekspor file dengan nama dan tanggal otomatis
+                let fileName = `BG_BEKASI_MASTER_DATA_${new Date().toISOString().slice(0,10)}.xlsx`;
+                XLSX.writeFile(workbook, fileName);
+                
+                alert("File Backup Master Data (.xlsx) berhasil diunduh!");
             } catch (e) {
-                alert("Gagal melakukan backup data.");
+                console.error(e);
+                alert("Gagal mengunduh file Excel master data.");
             }
         }
 
@@ -292,10 +281,10 @@
                     if (parsed.uploadedFilesArchive) uploadedFilesArchive = parsed.uploadedFilesArchive;
 
                     saveLocalStorageData();
-                    alert("Data Master & Arsip File berhasil dipulihkan (Restore) dengan sukses!");
+                    alert("Data Master & Sistem berhasil dipulihkan (Restore) dengan sukses!");
                     location.reload();
                 } catch (err) {
-                    alert("File backup tidak valid atau rusak.");
+                    alert("File backup sistem tidak valid.");
                 }
             };
             reader.readAsText(file);
@@ -387,7 +376,7 @@
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>🛡️ <strong>Keamanan Data:</strong> Master Data dan arsip Excel Anda terlindungi dari risiko hilang saat *redeploy* dengan fitur Backup & Arsip Otomatis.</span>
+                        <span>🛡️ <strong>Keamanan Data:</strong> Master Data dapat diunduh kapan saja ke format Excel (.xlsx) melalui tombol di bilah atas aplikasi.</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
@@ -504,7 +493,7 @@
 
                     <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4 overflow-x-auto w-full">
                         <div class="flex flex-wrap justify-between items-center mb-3 bg-blue-50 border border-blue-200 p-2.5 rounded-lg shadow-sm gap-2">
-                            <span class="text-xs font-extrabold text-blue-900">📋 DATABASE MASTER AKTIF (TERARSIP AMAN)</span>
+                            <span class="text-xs font-extrabold text-blue-900">📋 DATABASE MASTER AKTIF</span>
                             <div class="flex items-center gap-3">
                                 <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none w-48 shadow-inner">
                                 <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black">
@@ -588,7 +577,7 @@
             saveLocalStorageData();
             renderMasterTable();
             toggleMasterForm();
-            alert("Data master berhasil disimpan & ter-backup otomatis!");
+            alert("Data master berhasil disimpan!");
         }
 
         function handleMasterUpload(event) {
@@ -620,7 +609,6 @@
                         count++;
                     });
 
-                    // Arsipkan juga nama file excel yang diupload agar tercatat di backup
                     uploadedFilesArchive[file.name] = {
                         upload_date: new Date().toISOString(),
                         total_rows: count
@@ -628,7 +616,7 @@
 
                     saveLocalStorageData();
                     renderMasterTable();
-                    alert(`Berhasil mengimpor ${count} data master dari file Excel "${file.name}" & otomatis ter-backup!`);
+                    alert(`Berhasil mengimpor ${count} data master dari file Excel "${file.name}"!`);
                 } catch (err) {
                     alert("Gagal membaca file Excel.");
                 }
