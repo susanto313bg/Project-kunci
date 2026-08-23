@@ -32,6 +32,161 @@
             break-after: avoid;
         }
 
+        /* Desain Tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11pt;
+            margin-bottom: 15px;
+        }
+
+        th, td {
+            border: 1px solid #1a365d;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        /* Kotak Textbox Nama Team di Atas */
+        .input-team-container {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-team-container label {
+            font-weight: bold;
+            font-size: 11pt;
+            color: #1a365d;
+            text-transform: uppercase;
+        }
+
+        .input-team-box {
+            width: 350px;
+            padding: 8px 12px;
+            font-size: 11pt;
+            font-weight: bold;
+            border: 2px solid #28a745; /* Warna hijau senada dengan gambar Anda */
+            border-radius: 4px;
+            outline: none;
+            background-color: #f9fff9;
+        }
+
+        /* Baris Header Kolom (NO, TID, LOKASI, dll) */
+        .header-kolom th {
+            background-color: #28a745; /* Warna Hijau Utama */
+            color: #ffffff;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Isi Baris Tabel */
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .badge-ready {
+            color: #008000;
+            font-weight: bold;
+        }
+
+        /* Styling khusus saat mode cetak (Print) agar textbox terlihat bersih seperti form cetak */
+        @media print {
+            .input-team-box {
+                border: none;
+                border-bottom: 2px solid #000;
+                background-color: transparent;
+                border-radius: 0;
+                padding: 4px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Looping data team dari Flask Backend -->
+    {% for team in list_team %}
+    <div class="page-container">
+        
+        <!-- Textbox Nama Team di Atas Tabel Hijau -->
+        <div class="input-team-container">
+            <label>NAMA TEAM:</label>
+            <input type="text" class="input-team-box" value="{{ team.nama_team }}" placeholder="Masukkan Nama Team...">
+        </div>
+
+        <table>
+            <!-- Header Kolom Warna Hijau -->
+            <tr class="header-kolom">
+                <th style="width: 5%;">NO</th>
+                <th style="width: 15%;">TID (Bisa Paste Excel di Baris 1)</th>
+                <th style="width: 35%;">LOKASI</th>
+                <th style="width: 25%;">BARCODE RPL</th>
+                <th style="width: 6%;">RAK</th>
+                <th style="width: 6%;">BARIS</th>
+                <th style="width: 6%;">KOLOM</th>
+                <th style="width: 7%;">KETERANGAN</th>
+            </tr>
+            <!-- Data Items -->
+            <tbody>
+                {% for item in team.items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><b>{{ item.tid }}</b></td>
+                    <td>{{ item.lokasi }}</td>
+                    <td>{{ item.barcode }}</td>
+                    <td>{{ item.rak }}</td>
+                    <td>{{ item.baris }}</td>
+                    <td>{{ item.kolom }}</td>
+                    <td><span class="badge-ready">{{ item.keterangan }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+    <!-- Script untuk otomatis membuka dialog cetak (Print) saat halaman diakses -->
+    <script>
+        window.onload = function() {
+            // window.print(); // Uncomment jika ingin langsung otomatis print
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cetak Dokumen Kunci</title>
+    <style>
+        /* Mengatur kertas cetak landscape dan menghilangkan margin bawaan printer */
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* Pembungkus tiap team, otomatis pindah halaman (slide) per team */
+        .page-container {
+            width: 100%;
+            page-break-after: always;
+            break-after: page;
+            margin-bottom: 20px;
+        }
+
+        /* Mencegah halaman kosong berlebih di lembar terakhir */
+        .page-container:last-child {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
         /* Desain Tabel Persis Seperti Gambar */
         table {
             width: 100%;
