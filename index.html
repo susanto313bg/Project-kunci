@@ -33,12 +33,28 @@
                 break-after: page; 
             }
         }
-        /* Efek sel aktif ala Excel */
+        /* Efek sel aktif / terblok ala Excel */
         .tid-cell-selected {
             background-color: #FEF08A !important;
             outline: 2px solid #2563EB !important;
             z-index: 10;
             position: relative;
+        }
+
+        /* Styling Peringatan TID Tidak Terdaftar (Merah Soft) */
+        .tid-not-found {
+            background-color: #FFE4E6 !important; /* Soft Red / Rose */
+            border: 2px solid #F43F5E !important;
+            color: #9F1239 !important;
+            font-weight: bold;
+        }
+
+        /* Styling Peringatan TID Duplikat (Biru Soft / Sky) */
+        .tid-duplicate {
+            background-color: #BAE6FD !important; /* Light Sky Blue */
+            border: 2px solid #0284C7 !important;
+            color: #0369A1 !important;
+            font-weight: bold;
         }
 
         /* Animasi Teks Berjalan dari Kiri ke Kanan sampai Ujung */
@@ -63,32 +79,193 @@
             background: #e2e8f0;
             box-shadow: inset 2px 2px 5px #cbd5e1, inset -2px -2px 5px #ffffff;
         }
+
+        /* STYLING KHUSUS 3D GEMBOK & LOGIN LOCK THEME */
+        .lock-3d-card {
+            background: linear-gradient(145deg, #1e2538, #111625);
+            box-shadow: 20px 20px 60px #0b0e17, -20px -20px 60px #232c43, inset 0px 1px 1px rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+        }
+        
+        .padlock-shackle {
+            width: 52px;
+            height: 48px;
+            border: 8px solid #94a3b8;
+            border-bottom: none;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            background: transparent;
+            box-shadow: inset 2px 2px 4px rgba(255,255,255,0.6), inset -2px -2px 4px rgba(0,0,0,0.8);
+            margin: 0 auto -6px auto;
+        }
+
+        .padlock-body {
+            background: linear-gradient(135deg, #2563eb, #1e3a8a);
+            box-shadow: inset 2px 2px 6px rgba(255,255,255,0.3), 0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(37,99,235,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .input-inset-3d {
+            background: #0f172a;
+            box-shadow: inset 3px 3px 6px #080c17, inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-inset-3d:focus-within {
+            box-shadow: inset 3px 3px 6px #080c17, inset -2px -2px 5px rgba(255, 255, 255, 0.05), 0 0 12px rgba(249, 115, 22, 0.5);
+            border-color: #f97316;
+        }
+
+        .input-error-border {
+            border-color: #ef4444 !important;
+            box-shadow: inset 3px 3px 6px #080c17, 0 0 12px rgba(239, 68, 68, 0.6) !important;
+        }
+
+        .btn-3d-lock {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            box-shadow: 0 6px 0 #9a3412, 0 10px 15px rgba(249, 115, 22, 0.3);
+            transition: all 0.15s ease;
+        }
+
+        .btn-3d-lock:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #9a3412, 0 4px 8px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Animasi Shake saat Password Salah */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#0F172A] font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#020617] font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- LAYAR LOGIN -->
-    <div id="loginScreen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-white/95 backdrop-blur p-8 rounded-xl shadow-2xl border border-white/20 w-[380px] text-center">
-            <h2 class="text-xl font-extrabold text-[#1E3A8A] tracking-wide">PT. Bringin Gigantara</h2>
-            <p class="text-xs italic text-slate-500 mb-6">Integrated Cash Solutions</p>
+    <!-- MODAL POPUP OPSI PERBAIKAN & RECOVERY SUPERVISOR -->
+    <div id="modalSupervisorOptions" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 relative">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
+                <h3 class="text-base font-extrabold text-amber-900 flex items-center gap-2">
+                    <span>⚙️</span> OPSI BACKUP & PERBAIKAN SISTEM (SUPERVISOR)
+                </h3>
+                <button onclick="closeSupervisorOptionsModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+            </div>
             
-            <label class="block text-left text-sm font-semibold text-slate-700 mb-2">Masukkan Password Akses:</label>
-            <input type="password" id="loginPass" class="w-full text-center text-lg border border-slate-300 rounded-lg p-2.5 mb-4 shadow-inner focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()">
+            <div class="space-y-4 text-left">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900">
+                    <p class="font-extrabold mb-1">💡 Mencegah & Memperbaiki Sistem Error / Salah Hapus User:</p>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                        Gunakan fitur di bawah ini untuk mengamankan data atau mengembalikan user/sistem yang tidak sengaja terhapus/rusak.
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="downloadSystemBackup()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-xs p-3 rounded-xl shadow flex items-center justify-between">
+                        <span>📥 1. Unduh Cadangan Darurat (.json)</span>
+                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">Simpan Data</span>
+                    </button>
+                    
+                    <label class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs p-3 rounded-xl shadow flex items-center justify-between cursor-pointer">
+                        <span>📂 2. Pulihkan System Dari File Backup (.json)</span>
+                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">Restore File</span>
+                        <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
+                    </label>
+
+                    <button onclick="resetDefaultUsers()" class="w-full bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 text-white font-bold text-xs p-3 rounded-xl shadow flex items-center justify-between">
+                        <span>🔄 3. Reset Ke User Default Sistem</span>
+                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">Perbaiki User</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex gap-2 justify-end mt-6 pt-3 border-t border-slate-100">
+                <button onclick="closeSupervisorOptionsModal()" class="bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Tutup Modal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP TAMBAH USER BARU -->
+    <div id="modalAddUser" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 relative animate-shake">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
+                <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                    <span>➕</span> Tambah User Admin Baru
+                </h3>
+                <button onclick="closeAddUserModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+            </div>
             
-            <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-800 hover:to-indigo-900 text-white font-bold py-2.5 rounded-lg shadow-md transition transform active:scale-[0.98]">LOGIN</button>
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password Akses Baru</label>
+                    <input type="text" id="modalNewPwd" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Contoh: 888">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Role User</label>
+                    <input type="text" value="ADMIN" readonly class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-slate-200 font-extrabold text-blue-900 cursor-not-allowed">
+                    <p class="text-[10px] text-slate-400 mt-1">*Role Supervisor adalah kasta tunggal tertinggi dan tidak dapat ditambah.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan / Nama Petugas</label>
+                    <input type="text" id="modalNewName" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase" placeholder="Contoh: USER ADMIN CPC 2">
+                </div>
+            </div>
+
+            <div class="flex gap-2 justify-end mt-6 pt-3 border-t border-slate-100">
+                <button onclick="closeAddUserModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-lg transition">Batal</button>
+                <button onclick="submitNewUserModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">Simpan Admin Baru</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LAYAR LOGIN 3D GEMBOK LOCK THEME -->
+    <div id="loginScreen" class="fixed inset-0 bg-[#070b14]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div id="loginCard" class="lock-3d-card p-8 w-[390px] text-center relative overflow-hidden">
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-orange-600/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative mb-5 pt-2">
+                <div class="padlock-shackle"></div>
+                <div class="padlock-body w-16 h-14 mx-auto rounded-xl flex items-center justify-center relative">
+                    <div class="w-3.5 h-3.5 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24] flex items-center justify-center">
+                        <div class="w-1.5 h-2 bg-slate-950 rounded-xs mt-1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-black text-white tracking-wider uppercase drop-shadow-md">PT. Bringin Gigantara</h2>
+            <p class="text-[11px] font-bold text-amber-400 tracking-widest uppercase mb-6 drop-shadow">Integrated Cash Solutions</p>
+            
+            <div class="text-left mb-4">
+                <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <span>🔐</span> Masukkan Password Akses:
+                </label>
+                <div id="inputGroup" class="input-inset-3d rounded-xl p-1.5 flex items-center transition">
+                    <input type="password" id="loginPass" class="w-full text-center text-xl font-bold text-white bg-transparent outline-none tracking-[0.3em] placeholder-slate-600 px-3 py-1.5" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()" oninput="clearLoginError()">
+                </div>
+                <p id="loginErrorMsg" class="hidden text-xs font-extrabold text-red-500 text-center mt-2.5 tracking-wide animate-pulse">
+                    ⚠️ Password salah !!!
+                </p>
+            </div>
+            
+            <button onclick="handleLogin()" class="btn-3d-lock w-full text-slate-950 font-black text-sm tracking-wider uppercase py-3 rounded-xl transition transform active:scale-[0.98] flex items-center justify-center gap-2 mt-4">
+                <span>🔓</span> UNLOCK SYSTEM
+            </button>
+            <p class="text-[10px] text-slate-500 font-semibold mt-5 uppercase tracking-widest">Secured Key Management BG Bekasi</p>
         </div>
     </div>
 
     <!-- APLIKASI UTAMA -->
     <div id="mainApp" class="hidden flex flex-col flex-1">
-        <!-- Header -->
         <header class="no-print bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1E293B] h-20 flex items-center justify-between px-6 text-white shadow-xl border-b border-blue-900/50 overflow-hidden">
-            <div class="flex items-center space-x-3 z-10 bg-[#0F172A] pr-4 shrink-0 cursor-pointer" onclick="renderHomeDashboardHtml()">
+            <div class="flex items-center space-x-3 z-10 bg-[#0F172A] pr-4 shrink-0 cursor-pointer" onclick="handleLogoClick()">
                 <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ bgi</span>
                 <span class="text-xs text-slate-300 leading-tight font-medium">Integrated<br>Cash Solutions</span>
             </div>
-            <!-- Teks Berjalan dari Kiri ke Kanan sampai Ujung -->
             <div class="flex-1 overflow-hidden mx-6 relative flex items-center">
                 <div class="animate-marquee-right text-xl font-bold tracking-wider drop-shadow text-amber-300">
                     9930 BG BEKASI
@@ -96,17 +273,14 @@
             </div>
         </header>
 
-        <!-- Sub-bar Version dengan Status Otomatis / Realtime -->
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
-                <!-- Indikator Status Real-time Sync -->
+                <span id="appVersionLabel">NEWCRO_PHP_V7 (WEB VERSION)</span>
                 <span id="syncStatusIndicator" class="text-[10px] bg-emerald-700 text-white px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-inner">
                     <span class="w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span> Real-Time Auto-Sync Active
                 </span>
             </div>
             <div class="flex items-center gap-2">
-                <!-- Tombol Status Otomatis / Realtime (Pengganti Sinkron Manual) -->
                 <button id="btnSyncSheet" class="bg-indigo-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow flex items-center gap-1 cursor-default">
                     ⚡ Live Cloud Connected
                 </button>
@@ -120,100 +294,35 @@
             </div>
         </div>
 
-        <!-- Body Content -->
         <div class="flex flex-1 p-3 gap-3">
-            <!-- Sidebar -->
             <aside class="no-print w-[220px] flex flex-col gap-3 shrink-0">
-                <!-- Kotak Profil (Gaya 3D Neumorphism dengan Textbox Terang) -->
                 <div class="neumorphic-profile p-3.5">
-                    <div id="sidebarRole" class="font-black text-amber-400 text-center mb-3 tracking-wider text-xs uppercase border-b border-white/10 pb-2">TEKNISI<br>BG BEKASI</div>
+                    <div id="sidebarRole" class="font-black text-amber-400 text-center mb-3 tracking-wider text-xs uppercase border-b border-white/10 pb-2">ADMIN<br>BG BEKASI</div>
                     <div class="space-y-2 font-mono text-[11px] font-bold">
-                        <div class="neumorphic-inset-light p-2 rounded-lg flex justify-between items-center">
-                            <span class="text-[9px] text-slate-600 uppercase font-bold">USER ID</span>
-                            <span id="lblUserId" class="text-slate-900">---</span>
+                        <div class="neumorphic-inset-light p-2 rounded-lg flex flex-col justify-center text-left">
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">JAM</span>
+                            <span id="lblTime" class="text-slate-900 text-xs font-extrabold">---</span>
                         </div>
-                        <div class="neumorphic-inset-light p-2 rounded-lg flex justify-between items-center">
-                            <span class="text-[9px] text-slate-600 uppercase font-bold">NAMA</span>
-                            <span id="lblUserName" class="text-slate-900 truncate max-w-[100px]">---</span>
+                        <div class="neumorphic-inset-light p-2 rounded-lg flex flex-col justify-center text-left">
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">TANGGAL, BULAN, TAHUN</span>
+                            <span id="lblDate" class="text-slate-900 text-xs font-extrabold">---</span>
                         </div>
-                        <div class="neumorphic-inset-light p-2 rounded-lg flex justify-between items-center">
-                            <span class="text-[9px] text-slate-600 uppercase font-bold">DATE</span>
-                            <span id="lblDate" class="text-slate-900 text-[10px]">---</span>
+                        <div class="neumorphic-inset-light p-2 rounded-lg flex flex-col justify-center text-left">
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">LOKASI LOGIN</span>
+                            <span id="lblLocation" class="text-slate-900 text-xs font-extrabold">BG BEKASI</span>
                         </div>
-                        <div class="neumorphic-inset-light p-2 rounded-lg flex justify-between items-center">
-                            <span class="text-[9px] text-slate-600 uppercase font-bold">LOGIN</span>
-                            <span id="lblLoginTime" class="text-emerald-700">---</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MENU TOMBOL SAMPING -->
-                <button onclick="renderHomeDashboardHtml()" class="text-left bg-gradient-to-r from-sky-100 via-blue-100 to-indigo-100 hover:from-sky-200 hover:to-indigo-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-blue-300 transform active:scale-[0.98]">
-                    🏠 BERANDA DASHBOARD
-                </button>
-
-                <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-amber-300 transform active:scale-[0.98]">
-                    📊 MASTER DATA
-                </button>
-
-                <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 hover:to-indigo-300 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-blue-300 transform active:scale-[0.98]">
-                    🌺 CETAK KUNCI RPL
-                </button>
-
-                <!-- MENU DROPDOWN SETTING -->
-                <div class="flex flex-col">
-                    <button onclick="toggleSettingDropdown()" class="w-full text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-purple-300 transform active:scale-[0.98] flex justify-between items-center">
-                        <span>⚙️ SETTING</span>
-                        <span id="settingArrow" class="transform transition-transform text-[10px]">▼</span>
-                    </button>
-                    <!-- Sub-menu Dropdown -->
-                    <div id="settingDropdownContent" class="hidden flex flex-col gap-1.5 mt-1.5 pl-1">
-                        <!-- Menu Ubah Password pada Kotak Kosong Paling Atas -->
-                        <button onclick="renderUbahPasswordModal()" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition flex items-center gap-1.5">
-                            <span>🔑</span> Ubah Password
-                        </button>
-                        <button onclick="renderPlaceholderSetting(2)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
-                            • (Kosong)
-                        </button>
-                        <button onclick="renderPlaceholderSetting(3)" class="text-left bg-slate-50 hover:bg-slate-100 text-slate-500 font-semibold py-1.5 px-2.5 rounded-md text-[11px] border border-slate-200 transition">
-                            • Hapus Kunci
-                        </button>
-
-                        <!-- FORM HAPUS BERDASARKAN TID (DI DALAM SIDEBAR) -->
-                        <div class="bg-purple-50/90 border border-purple-200 p-2.5 rounded-lg shadow-inner space-y-2 mt-1">
-                            <div class="text-[11px] font-extrabold text-[#6B21A8] uppercase">🗑️ Hapus Berdasarkan TID</div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Masukkan Nomor TID</label>
-                                <input type="text" id="sidebarInputTid" oninput="checkSidebarTid()" class="w-full border border-slate-300 rounded p-1.5 text-[11px] bg-white font-bold text-blue-900 outline-none focus:border-purple-500" placeholder="Ketik TID...">
-                            </div>
-
-                            <div id="sidebarTidDetail" class="hidden bg-white border border-blue-200 p-2 rounded space-y-1 text-[10px] text-slate-800 shadow-sm">
-                                <div><strong>Lokasi:</strong> <span id="sideDetLokasi" class="text-blue-900 font-semibold">-</span></div>
-                                <div><strong>RPL:</strong> <span id="sideDetRpl" class="font-mono text-slate-900">-</span></div>
-                                <div><strong>FLM:</strong> <span id="sideDetFlm" class="font-mono text-slate-900">-</span></div>
-                            </div>
-
-                            <div id="sidebarConfirmBox" class="hidden">
-                                <label class="flex items-start gap-1.5 cursor-pointer bg-red-50 border border-red-200 p-1.5 rounded text-[10px] font-bold text-red-700">
-                                    <input type="checkbox" id="sideChkConfirm" class="w-3.5 h-3.5 text-red-600 rounded mt-0.5">
-                                    <span>Ya, yakin hapus permanen</span>
-                                </label>
-                            </div>
-
-                            <div class="flex gap-1.5">
-                                <button id="sideBtnSubmit" onclick="submitSidebarDeleteTid()" class="hidden flex-1 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow transition">Hapus</button>
-                                <button id="sideBtnCancel" onclick="resetSidebarDeleteForm()" class="w-full bg-gradient-to-r from-slate-400 to-slate-500 hover:from-slate-500 text-white font-bold text-[10px] py-1.5 px-2 rounded shadow transition">Batal</button>
-                            </div>
+                        <div class="neumorphic-inset-light p-2 rounded-lg flex flex-col justify-center text-left">
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">NAMA / ID USER</span>
+                            <span id="lblUser" class="text-blue-900 text-[11px] font-extrabold truncate">---</span>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="location.reload()" class="text-left bg-gradient-to-r from-red-100 via-rose-100 to-red-200 hover:from-red-200 hover:to-rose-300 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-red-300 transform active:scale-[0.98]">
-                    🚨 Logout
-                </button>
+                <div id="sidebarMenuContainer" class="flex flex-col gap-2">
+                    <!-- Dinamis berdasarkan role user -->
+                </div>
             </aside>
 
-            <!-- Main Dynamic Content Area -->
             <main id="contentArea" class="flex-1 bg-white/95 backdrop-blur-md p-5 rounded-xl shadow-2xl border border-slate-200 overflow-y-auto">
                 <!-- Konten awal dimuat via JavaScript -->
             </main>
@@ -227,11 +336,31 @@
         let previewPayload = [];
         let currentSlideIndex = 0;
         let masterDatabase = {}; 
-        let currentAppPassword = "123"; // Password default sistem
-        let syncTimeout = null; // Pengendali background auto-sync
+        let syncTimeout = null; 
 
-        // URL Google Apps Script Web App pusat
+        /* =========================================================================
+         * 🔑 CATATAN KREDENSIAL PASSWORD SUPERVISOR (KASTA HIGHEST SINGLE USER)
+         * =========================================================================
+         * PASSWORD SUPERVISOR UTAMA: "555"
+         * ========================================================================= */
+        let accessRules = {
+            "555": { role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
+            "00":  { role: "ADMIN", name: "ADMIN IT PENGENDALI", destination: "dashboard" },
+            "123": { role: "ADMIN", name: "ADMIN OPERASIONAL 1", destination: "dashboard" },
+            "777": { role: "ADMIN", name: "ADMIN OPERASIONAL 2", destination: "dashboard" }
+        };
+
+        let activeUserSessions = {};
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
+
+        function getMasterDataByTid(tid) {
+            if (!tid) return null;
+            let target = String(tid).trim().toUpperCase();
+            if (masterDatabase[target]) return masterDatabase[target];
+            
+            let foundKey = Object.keys(masterDatabase).find(k => k.trim().toUpperCase() === target);
+            return foundKey ? masterDatabase[foundKey] : null;
+        }
 
         function loadLocalStorageData() {
             try {
@@ -244,33 +373,43 @@
                 const savedMembers = localStorage.getItem("bgi_batchTeamMembers");
                 if (savedMembers) batchTeamMembers = JSON.parse(savedMembers);
 
-                const savedPass = localStorage.getItem("bgi_appPassword");
-                if (savedPass) currentAppPassword = savedPass;
+                const savedRules = localStorage.getItem("bgi_accessRules");
+                if (savedRules) {
+                    let parsedRules = JSON.parse(savedRules);
+                    accessRules = parsedRules;
+                }
+
+                // PERBAIKAN: Kunci Mati Akun 555 sebagai SUPERVISOR
+                accessRules["555"] = {
+                    role: "SUPERVISOR",
+                    name: (accessRules["555"] && accessRules["555"].name) ? accessRules["555"].name : "SUPERVISOR UTAMA OPERASIONAL",
+                    destination: "it_support_dashboard"
+                };
+
+                const savedSessions = localStorage.getItem("bgi_activeSessions");
+                if (savedSessions) activeUserSessions = JSON.parse(savedSessions);
             } catch (e) {
                 console.error("Gagal memuat local storage:", e);
             }
         }
 
-        // Fungsi penyimpanan lokal yang otomatis mentrigger Background Auto-Sync real-time ke Google Sheets
         function saveLocalStorageData() {
             try {
                 localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
-                localStorage.setItem("bgi_appPassword", currentAppPassword);
+                localStorage.setItem("bgi_accessRules", JSON.stringify(accessRules));
+                localStorage.setItem("bgi_activeSessions", JSON.stringify(activeUserSessions));
 
-                // Auto-sync ke cloud secara background tanpa mengganggu user (Debounced 1.5 detik)
                 if (syncTimeout) clearTimeout(syncTimeout);
                 syncTimeout = setTimeout(() => {
                     backgroundAutoSyncToCloud();
                 }, 1500);
-
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
         }
 
-        // Fungsi background auto-sync ke server pusat
         async function backgroundAutoSyncToCloud() {
             if (!GOOGLE_SHEETS_API_URL) return;
             const indicator = document.getElementById("syncStatusIndicator");
@@ -295,14 +434,12 @@
                     indicator.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span> Real-Time Auto-Sync Active`;
                 }
             } catch (e) {
-                console.error("Auto-sync background gagal:", e);
                 if(indicator) {
                     indicator.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-400"></span> Sync Offline`;
                 }
             }
         }
 
-        // Polling berkala otomatis (mengecek update dari database Google Sheets setiap 15 detik)
         function initRealtimePolling() {
             setInterval(async () => {
                 if (!GOOGLE_SHEETS_API_URL) return;
@@ -313,11 +450,9 @@
                     if (result.masterDatabase && Object.keys(result.masterDatabase).length > 0) {
                         let remoteMasterStr = JSON.stringify(result.masterDatabase);
                         let localMasterStr = JSON.stringify(masterDatabase);
-                        
                         let remoteTeamStr = JSON.stringify(result.batchTeamsData || {});
                         let localTeamStr = JSON.stringify(batchTeamsData);
 
-                        // Update otomatis jika ada perubahan data dari server/PC lain
                         if (remoteMasterStr !== localMasterStr || remoteTeamStr !== localTeamStr) {
                             masterDatabase = result.masterDatabase;
                             if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
@@ -327,23 +462,34 @@
                             localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                             localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
 
-                            // Refresh tabel master jika sedang dibuka
                             if (document.getElementById("masterTableBody")) {
                                 renderMasterTable();
                             }
-                            // Refresh realtime preview team jika sedang mengisi team RPL
-                            if (typeof updateRealtimePreview === "function" && document.getElementById("realtimePreviewBody")) {
-                                updateRealtimePreview();
-                            }
                         }
                     }
-                } catch (err) {
-                    // Silent catch untuk polling background
-                }
-            }, 15000); // Cek setiap 15 detik
+                } catch (err) {}
+            }, 15000);
         }
 
-        // Fungsi Download Masterdata ke File Excel (.xlsx) secara Instan
+        function updateSidebarDateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            const dateString = now.toLocaleDateString('id-ID', options);
+
+            const lblTime = document.getElementById("lblTime");
+            const lblDate = document.getElementById("lblDate");
+
+            if (lblTime) lblTime.innerText = timeString;
+            if (lblDate) lblDate.innerText = dateString;
+        }
+
+        setInterval(updateSidebarDateTime, 1000);
+
         function downloadMasterdataExcel() {
             try {
                 let keys = Object.keys(masterDatabase);
@@ -374,7 +520,6 @@
                 XLSX.writeFile(workbook, `MASTERDATA_KUNCI_BGI_${new Date().toISOString().slice(0,10)}.xlsx`);
                 alert("File Excel Masterdata berhasil diunduh!");
             } catch (e) {
-                console.error("Gagal mendownload masterdata Excel:", e);
                 alert("Terjadi kesalahan saat mengunduh file Excel.");
             }
         }
@@ -390,7 +535,7 @@
                     if (parsed.masterDatabase) masterDatabase = parsed.masterDatabase;
                     if (parsed.batchTeamsData) batchTeamsData = parsed.batchTeamsData;
                     if (parsed.batchTeamMembers) batchTeamMembers = parsed.batchTeamMembers;
-                    if (parsed.appPassword) currentAppPassword = parsed.appPassword;
+                    if (parsed.accessRules) accessRules = parsed.accessRules;
 
                     saveLocalStorageData();
                     alert("Data berhasil dipulihkan (Restore) dengan sukses!");
@@ -403,7 +548,7 @@
         }
 
         loadLocalStorageData();
-        initRealtimePolling(); // Aktifkan sinkronisasi real-time otomatis di background
+        initRealtimePolling();
 
         const teamGroups = {
             "PAGI": [
@@ -426,101 +571,530 @@
             ]
         };
 
+        function clearLoginError() {
+            const errLabel = document.getElementById("loginErrorMsg");
+            const inputGroup = document.getElementById("inputGroup");
+            if (errLabel) errLabel.classList.add("hidden");
+            if (inputGroup) inputGroup.classList.remove("input-error-border");
+        }
+
+        // PERBAIKAN LOGIKA HANDLE LOGIN KHUSUS USER SUPERVISOR (555)
         async function handleLogin() {
-            const pwd = document.getElementById("loginPass").value.trim();
+            const pwdInput = document.getElementById("loginPass");
+            const pwd = pwdInput.value.trim();
+            const errLabel = document.getElementById("loginErrorMsg");
+            const inputGroup = document.getElementById("inputGroup");
+            const card = document.getElementById("loginCard");
             
-            if (pwd === currentAppPassword || pwd === "admin" || pwd !== "") {
+            if (pwd === "555" || (accessRules[pwd] && accessRules[pwd].role === "SUPERVISOR")) {
+                clearLoginError();
                 currentUser = {
-                    id: "1471191",
-                    name: "ADMIN KUNCI",
-                    role: "TEKNISI",
-                    today_date: "24 Aug, 2026",
-                    login_time: "00:20"
+                    id: pwd,
+                    name: "SUPERVISOR UTAMA OPERASIONAL",
+                    role: "SUPERVISOR",
+                    destination: "it_support_dashboard",
+                    location: "BG BEKASI",
+                    loginTime: new Date().toLocaleTimeString('id-ID')
                 };
+
+                activeUserSessions[currentUser.id] = {
+                    name: currentUser.name,
+                    role: currentUser.role,
+                    loginTime: currentUser.loginTime,
+                    status: "ONLINE"
+                };
+                saveLocalStorageData();
+
                 document.getElementById("loginScreen").classList.add("hidden");
                 document.getElementById("mainApp").classList.remove("hidden");
                 
-                document.getElementById("sidebarRole").innerHTML = `${currentUser.role}<br>BG BEKASI`;
-                document.getElementById("lblUserId").innerText = currentUser.id;
-                document.getElementById("lblUserName").innerText = currentUser.name;
-                document.getElementById("lblDate").innerText = currentUser.today_date;
-                document.getElementById("lblLoginTime").innerText = currentUser.login_time;
+                document.getElementById("sidebarRole").innerHTML = `SUPERVISOR<br>BG BEKASI`;
+                document.getElementById("lblLocation").innerText = currentUser.location;
+                document.getElementById("lblUser").innerText = `${currentUser.name}`;
+                
+                updateSidebarDateTime();
+                buildSidebarMenu();
+                renderItSupportDashboard();
+            } else if (accessRules[pwd]) {
+                clearLoginError();
+                let config = accessRules[pwd];
+                
+                currentUser = {
+                    id: pwd,
+                    name: config.name,
+                    role: "ADMIN",
+                    destination: "dashboard",
+                    location: "BG BEKASI",
+                    loginTime: new Date().toLocaleTimeString('id-ID')
+                };
 
+                activeUserSessions[currentUser.id] = {
+                    name: currentUser.name,
+                    role: currentUser.role,
+                    loginTime: currentUser.loginTime,
+                    status: "ONLINE"
+                };
+                saveLocalStorageData();
+
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("mainApp").classList.remove("hidden");
+                
+                document.getElementById("sidebarRole").innerHTML = `ADMIN<br>BG BEKASI`;
+                document.getElementById("lblLocation").innerText = currentUser.location;
+                document.getElementById("lblUser").innerText = `${currentUser.name}`;
+                
+                updateSidebarDateTime();
+                buildSidebarMenu();
                 renderHomeDashboardHtml();
             } else {
-                alert("Password salah!");
+                if (errLabel) errLabel.classList.remove("hidden");
+                if (inputGroup) inputGroup.classList.add("input-error-border");
+                
+                if (card) {
+                    card.classList.remove("animate-shake");
+                    void card.offsetWidth;
+                    card.classList.add("animate-shake");
+                }
+                
+                pwdInput.value = "";
+                pwdInput.focus();
             }
         }
 
-        function toggleSettingDropdown() {
-            const dropdown = document.getElementById("settingDropdownContent");
-            const arrow = document.getElementById("settingArrow");
-            dropdown.classList.toggle("hidden");
-            if (dropdown.classList.contains("hidden")) {
-                arrow.style.transform = "rotate(0deg)";
+        function handleLogout() {
+            if (currentUser && activeUserSessions[currentUser.id]) {
+                delete activeUserSessions[currentUser.id];
+                saveLocalStorageData();
+            }
+            location.reload();
+        }
+
+        function handleLogoClick() {
+            if (currentUser) {
+                if (currentUser.role === "SUPERVISOR") {
+                    renderItSupportDashboard();
+                } else {
+                    renderHomeDashboardHtml();
+                }
+            }
+        }
+
+        function buildSidebarMenu() {
+            const menuContainer = document.getElementById("sidebarMenuContainer");
+            if (!menuContainer) return;
+
+            let html = "";
+            const logoutButtonHtml = `
+                <button onclick="handleLogout()" class="text-left bg-gradient-to-r from-red-100 via-rose-100 to-red-200 hover:from-red-200 hover:to-rose-300 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-red-300 transform active:scale-[0.98]">
+                    🚨 Logout
+                </button>
+            `;
+
+            if (currentUser && currentUser.role === "SUPERVISOR") {
+                html = `
+                    <button onclick="renderItSupportDashboard()" class="text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-purple-300">
+                        👑 DASHBOARD SUPERVISOR
+                    </button>
+                    <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
+                        📊 MASTER DATA
+                    </button>
+                    <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
+                        🌺 CETAK KUNCI RPL
+                    </button>
+                    <button onclick="renderPasswordManagementHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
+                        🔑 MANAJEMEN USER ADMIN
+                    </button>
+                    <button onclick="renderOnlineUsersHtml()" class="text-left bg-gradient-to-r from-emerald-100 via-teal-100 to-emerald-200 hover:from-emerald-200 text-[#065F46] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-emerald-300">
+                        🟢 USER SEDANG ONLINE
+                    </button>
+                    <button onclick="renderSystemLogsHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
+                        📊 MONITORING SISTEM
+                    </button>
+                    <button onclick="renderBackupToolsHtml()" class="text-left bg-gradient-to-r from-teal-100 via-cyan-100 to-teal-200 hover:from-teal-200 text-[#115E59] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-teal-300">
+                        ⚙️ MAINTENANCE & BACKUP
+                    </button>
+                    ${logoutButtonHtml}
+                `;
             } else {
-                arrow.style.transform = "rotate(180deg)";
+                html = `
+                    <button onclick="renderHomeDashboardHtml()" class="text-left bg-gradient-to-r from-sky-100 via-blue-100 to-indigo-100 hover:from-sky-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
+                        🏠 BERANDA DASHBOARD
+                    </button>
+                    <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
+                        📊 MASTER DATA
+                    </button>
+                    <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
+                        🌺 CETAK KUNCI RPL
+                    </button>
+                    ${logoutButtonHtml}
+                `;
             }
+            menuContainer.innerHTML = html;
         }
 
-        function renderUbahPasswordModal() {
+        function renderItSupportDashboard() {
             const content = document.getElementById("contentArea");
+            let onlineCount = Object.keys(activeUserSessions).length;
+            let totalRoles = Object.keys(accessRules).length;
+
             content.innerHTML = `
-                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
-                    <span class="font-extrabold text-slate-800 text-base">🔑 SETTING - UBAH PASSWORD AKSES</span>
-                </div>
-                <div class="max-w-md bg-slate-50 border border-slate-300 p-6 rounded-xl shadow-inner space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Password Lama</label>
-                        <input type="password" id="oldPass" class="w-full border border-slate-300 rounded p-2 text-xs bg-white focus:outline-none focus:border-purple-600" placeholder="••••">
+                <div class="flex flex-col h-full gap-6">
+                    <div class="relative bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-2xl p-8 text-white shadow-2xl border border-purple-800/50 overflow-hidden flex flex-col justify-between">
+                        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="z-10 space-y-2 max-w-2xl text-left">
+                            <span class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/40 text-purple-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                                👑 KASTA TINGGI SUPERVISOR - BG BEKASI
+                            </span>
+                            <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
+                                PANEL SUPERVISOR UTAMA
+                            </h1>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola password akun Admin, serta memantau status sesi operasional BG Bekasi.
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Password Baru</label>
-                        <input type="password" id="newPass" class="w-full border border-slate-300 rounded p-2 text-xs bg-white focus:outline-none focus:border-purple-600" placeholder="••••">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
+                        <div onclick="renderMasterDataHtml()" class="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl p-2.5 bg-amber-500 text-white rounded-xl shadow">📊</span>
+                                <span class="text-[10px] font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-full">Akses Utama</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Master Data</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Kelola data kunci, lokasi ATM, barcode, rak, baris, & kolom.</p>
+                            </div>
+                        </div>
+
+                        <div onclick="renderTeamMenuHtml()" class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl p-2.5 bg-blue-600 text-white rounded-xl shadow">🌺</span>
+                                <span class="text-[10px] font-bold text-blue-800 bg-blue-200/60 px-2 py-0.5 rounded-full">Akses Utama</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Cetak Kunci RPL</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Input data shift tim operasional dan cetak lembar kunci RPL.</p>
+                            </div>
+                        </div>
+
+                        <div onclick="renderPasswordManagementHtml()" class="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl p-2.5 bg-orange-500 text-white rounded-xl shadow">🔑</span>
+                                <span class="text-[10px] font-bold text-orange-800 bg-orange-200/60 px-2 py-0.5 rounded-full">${totalRoles} Akun</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Manajemen Admin & Password</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Tambah Admin tanpa batas, ubah password & opsi recovery Supervisor.</p>
+                            </div>
+                        </div>
+
+                        <div onclick="renderOnlineUsersHtml()" class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl p-2.5 bg-emerald-600 text-white rounded-xl shadow">🟢</span>
+                                <span class="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-full">${onlineCount} Online</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">User Sedang Online</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Pantau sesi aktif Admin & Supervisor.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Konfirmasi Password Baru</label>
-                        <input type="password" id="confirmPass" class="w-full border border-slate-300 rounded p-2 text-xs bg-white focus:outline-none focus:border-purple-600" placeholder="••••">
-                    </div>
-                    <button onclick="processChangePassword()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold text-xs py-2.5 rounded shadow transition">Simpan Perubahan Password</button>
                 </div>
             `;
         }
 
-        function processChangePassword() {
-            let oldP = document.getElementById("oldPass").value.trim();
-            let newP = document.getElementById("newPass").value.trim();
-            let confP = document.getElementById("confirmPass").value.trim();
+        function renderPasswordManagementHtml() {
+            const content = document.getElementById("contentArea");
+            
+            let rulesListHtml = "";
+            let indexNo = 1;
+            for (let [pwd, data] of Object.entries(accessRules)) {
+                let isSupervisor = (pwd === "555" || data.role === "SUPERVISOR");
+                rulesListHtml += `
+                    <tr class="border-b border-slate-200 ${isSupervisor ? 'bg-amber-50/60 font-bold' : ''}">
+                        <td class="p-3 text-center text-slate-700">${indexNo++}</td>
+                        <td class="p-3 font-mono font-bold text-purple-900">${pwd}</td>
+                        <td class="p-3">
+                            ${isSupervisor ? `<span class="bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full border border-amber-600 shadow-sm">👑 SUPERVISOR (KASTA TINGGI)</span>` : `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-200">ADMIN</span>`}
+                        </td>
+                        <td class="p-3 text-slate-800 font-semibold">${data.name}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editPasswordPrompt('${pwd}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">Ubah Password</button>
+                            <button onclick="editNamePrompt('${pwd}')" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">Edit Nama</button>
+                            ${isSupervisor 
+                                ? `<button onclick="openSupervisorOptionsModal()" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex-inline items-center gap-1">⚙️ OPSI RECOVERY</button>` 
+                                : `<button onclick="deleteUserRole('${pwd}')" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">Hapus Admin</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }
 
-            if (oldP !== currentAppPassword) {
-                alert("Password lama yang Anda masukkan salah!");
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">🔑 MANAJEMEN USER ADMIN</span>
+                        <p class="text-xs text-slate-500">Tambah user Admin tanpa batas dan kelola kredensial password sistem BG Bekasi</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openAddUserModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow cursor-pointer transition flex items-center gap-1">➕ Tambah Admin Baru</button>
+                        <button onclick="renderItSupportDashboard()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-300 rounded-xl shadow-md p-6 max-w-5xl">
+                    <h3 class="text-xs font-extrabold text-slate-700 uppercase mb-4 tracking-wider">Daftar Kredensial Pengguna Terdaftar</h3>
+                    <table class="w-full border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-left">
+                                <th class="p-3 border-b text-center w-12">NO</th>
+                                <th class="p-3 border-b">PASSWORD</th>
+                                <th class="p-3 border-b">ROLE / KASTA</th>
+                                <th class="p-3 border-b">KETERANGAN NAMA PETUGAS</th>
+                                <th class="p-3 border-b text-center">AKSI (EDIT / OPSI)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rulesListHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function openSupervisorOptionsModal() {
+            document.getElementById("modalSupervisorOptions").classList.remove("hidden");
+        }
+
+        function closeSupervisorOptionsModal() {
+            document.getElementById("modalSupervisorOptions").classList.add("hidden");
+        }
+
+        function resetDefaultUsers() {
+            if (confirm("Apakah Anda yakin ingin mengembalikan daftar user ke default awal sistem? Ini akan memulihkan akun Supervisor & Admin bawaan jika terjadi eror/salah hapus.")) {
+                accessRules = {
+                    "555": { role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
+                    "00":  { role: "ADMIN", name: "ADMIN IT PENGENDALI", destination: "dashboard" },
+                    "123": { role: "ADMIN", name: "ADMIN OPERASIONAL 1", destination: "dashboard" },
+                    "777": { role: "ADMIN", name: "ADMIN OPERASIONAL 2", destination: "dashboard" }
+                };
+                saveLocalStorageData();
+                closeSupervisorOptionsModal();
+                alert("Daftar user berhasil direcovery ke bawaan sistem!");
+                renderPasswordManagementHtml();
+            }
+        }
+
+        function openAddUserModal() {
+            document.getElementById("modalNewPwd").value = "";
+            document.getElementById("modalNewName").value = "";
+            document.getElementById("modalAddUser").classList.remove("hidden");
+            document.getElementById("modalNewPwd").focus();
+        }
+
+        function closeAddUserModal() {
+            document.getElementById("modalAddUser").classList.add("hidden");
+        }
+
+        function submitNewUserModal() {
+            let newPwd = document.getElementById("modalNewPwd").value.trim();
+            let userName = document.getElementById("modalNewName").value.trim();
+
+            if (!newPwd) {
+                alert("Password wajib diisi!");
                 return;
             }
-            if (!newP) {
-                alert("Password baru tidak boleh kosong!");
+            if (accessRules[newPwd]) {
+                alert("Password tersebut sudah digunakan oleh user lain!");
                 return;
             }
-            if (newP !== confP) {
-                alert("Konfirmasi password baru tidak cocok!");
+            if (!userName) {
+                alert("Keterangan Nama User Admin wajib diisi!");
                 return;
             }
 
-            currentAppPassword = newP;
+            accessRules[newPwd] = {
+                role: "ADMIN",
+                name: userName.toUpperCase(),
+                destination: "dashboard"
+            };
+
             saveLocalStorageData();
-            alert("Password akses berhasil diubah!");
-            renderHomeDashboardHtml();
+            closeAddUserModal();
+            alert("User Admin baru berhasil ditambahkan!");
+            renderPasswordManagementHtml();
         }
 
-        function renderPlaceholderSetting(index) {
+        function editPasswordPrompt(oldPwd) {
+            let config = accessRules[oldPwd];
+            let newPassword = prompt(`Masukkan password baru untuk [${config.name}]:`, oldPwd);
+            if (!newPassword) return;
+            newPassword = newPassword.trim();
+
+            if (newPassword !== oldPwd && accessRules[newPassword]) {
+                alert("Password tersebut sudah digunakan oleh user lain!");
+                return;
+            }
+
+            accessRules[newPassword] = config;
+            if (newPassword !== oldPwd) delete accessRules[oldPwd];
+
+            saveLocalStorageData();
+            alert(`Password untuk ${config.name} berhasil diperbarui!`);
+            renderPasswordManagementHtml();
+        }
+
+        function editNamePrompt(pwd) {
+            let config = accessRules[pwd];
+            let newName = prompt(`Masukkan Keterangan Nama baru untuk akun ini:`, config.name);
+            if (!newName) return;
+            newName = newName.trim().toUpperCase();
+
+            accessRules[pwd].name = newName;
+            saveLocalStorageData();
+            alert(`Nama pengguna untuk password [${pwd}] berhasil diperbarui menjadi: ${newName}`);
+            renderPasswordManagementHtml();
+        }
+
+        function deleteUserRole(pwd) {
+            if (pwd === "555" || (accessRules[pwd] && accessRules[pwd].role === "SUPERVISOR")) {
+                alert("Akun Supervisor Utama tidak boleh dihapus!");
+                return;
+            }
+
+            if (confirm(`Apakah Anda yakin ingin menghapus user Admin [${accessRules[pwd].name}] secara permanen?`)) {
+                delete accessRules[pwd];
+                saveLocalStorageData();
+                alert("✅ User Admin berhasil dihapus dari sistem!");
+                renderPasswordManagementHtml();
+            }
+        }
+
+        function renderOnlineUsersHtml() {
+            const content = document.getElementById("contentArea");
+            let sessionKeys = Object.keys(activeUserSessions);
+
+            let rowsHtml = "";
+            if (sessionKeys.length === 0) {
+                rowsHtml = `<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">Tidak ada user lain yang tercatat sedang online.</td></tr>`;
+            } else {
+                sessionKeys.forEach((id, idx) => {
+                    let sess = activeUserSessions[id];
+                    rowsHtml += `
+                        <tr class="border-b border-slate-200">
+                            <td class="p-3 text-center font-bold">${idx + 1}</td>
+                            <td class="p-3 font-bold text-blue-900">${sess.name}</td>
+                            <td class="p-3 font-bold ${sess.role === 'SUPERVISOR' ? 'text-amber-700' : 'text-blue-800'}">${sess.role}</td>
+                            <td class="p-3 text-center font-mono text-emerald-700 font-bold">🟢 ONLINE (Sejak ${sess.loginTime})</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">🟢 MONITORING USER SEDANG ONLINE</span>
+                        <p class="text-xs text-slate-500">Daftar user aktif yang saat ini terhubung ke dalam sesi aplikasi</p>
+                    </div>
+                    <button onclick="renderItSupportDashboard()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                </div>
+
+                <div class="bg-white border border-slate-300 rounded-xl shadow-md p-6 max-w-3xl">
+                    <table class="w-full border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-left">
+                                <th class="p-3 border-b text-center w-12">NO</th>
+                                <th class="p-3 border-b">NAMA USER</th>
+                                <th class="p-3 border-b">ROLE / HAK AKSES</th>
+                                <th class="p-3 border-b text-center">STATUS SESI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderSystemLogsHtml() {
+            const content = document.getElementById("contentArea");
+            let totalTids = Object.keys(masterDatabase).length;
+            let totalTeams = Object.keys(batchTeamsData).length;
+
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">📊 MONITORING SISTEM & STATISTIK</span>
+                        <p class="text-xs text-slate-500">Informasi kesehatan database dan aktivitas server cloud</p>
+                    </div>
+                    <button onclick="renderItSupportDashboard()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
+                    <div class="bg-slate-50 border border-slate-300 p-5 rounded-xl shadow-sm">
+                        <h4 class="text-xs font-extrabold text-slate-700 uppercase mb-3">Statistik Memori Lokal</h4>
+                        <ul class="space-y-2 text-xs text-slate-600 font-medium">
+                            <li class="flex justify-between border-b pb-1"><span>Total Master TID Tersimpan:</span> <strong class="text-blue-900">${totalTids} Data</strong></li>
+                            <li class="flex justify-between border-b pb-1"><span>Team Shift Terinput:</span> <strong class="text-blue-900">${totalTeams} Team</strong></li>
+                            <li class="flex justify-between border-b pb-1"><span>Status Penyimpanan (LocalStorage):</span> <strong class="text-emerald-700">Aktif & Aman</strong></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-300 p-5 rounded-xl shadow-sm">
+                        <h4 class="text-xs font-extrabold text-slate-700 uppercase mb-3">Koneksi Cloud Google Sheets</h4>
+                        <ul class="space-y-2 text-xs text-slate-600 font-medium">
+                            <li class="flex justify-between border-b pb-1"><span>Status API Endpoint:</span> <strong class="text-emerald-700">Terhubung</strong></li>
+                            <li class="flex justify-between border-b pb-1"><span>Auto-Sync Interval:</span> <strong class="text-slate-900">Setiap 15 Detik</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBackupToolsHtml() {
             const content = document.getElementById("contentArea");
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
-                    <span class="font-extrabold text-slate-800 text-base">⚙️ SETTING - MENU ${index}</span>
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">⚙️ MAINTENANCE & BACKUP SYSTEM</span>
+                        <p class="text-xs text-slate-500">Alat pemeliharaan data dan cadangan sistem darurat</p>
+                    </div>
+                    <button onclick="renderItSupportDashboard()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
                 </div>
-                <div class="p-8 text-slate-400 italic bg-slate-50 rounded-xl border border-dashed border-slate-300 text-center">
-                    Menu ini masih kosong dan sedang dalam tahap pengembangan berikutnya.
+
+                <div class="bg-white border border-slate-300 rounded-xl shadow-md p-6 max-w-xl space-y-4">
+                    <div>
+                        <h4 class="text-xs font-extrabold text-slate-700 uppercase mb-1">Unduh Cadangan Sistem (.json)</h4>
+                        <p class="text-xs text-slate-500 mb-3">Simpan seluruh konfigurasi master data, data team shift, dan password akses ke file lokal.</p>
+                        <button onclick="downloadSystemBackup()" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2 rounded shadow">📥 Download Backup File</button>
+                    </div>
                 </div>
             `;
+        }
+
+        function downloadSystemBackup() {
+            try {
+                let backupData = {
+                    masterDatabase: masterDatabase,
+                    batchTeamsData: batchTeamsData,
+                    batchTeamMembers: batchTeamMembers,
+                    accessRules: accessRules,
+                    backupDate: new Date().toISOString()
+                };
+
+                let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+                let downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `BGI_BACKUP_SYSTEM_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+                alert("File backup sistem berhasil diunduh!");
+            } catch (e) {
+                alert("Gagal mengunduh backup sistem.");
+            }
         }
 
         function renderHomeDashboardHtml() {
@@ -544,10 +1118,10 @@
                                 Pusat Kontrol Administrasi Status Mesin ATM, Pengelolaan Ketersediaan Kas, Gudang Kunci RPL/FLM, dan Operasional Cash Processing Center <strong class="text-amber-300">BG Bekasi</strong>.
                             </p>
                             <div class="pt-2 flex flex-wrap gap-3">
-                                <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
-                                    <span>📊</span> Kelola Master Data (${totalTidCount} TID)
+                                <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
+                                    <span>📊</span> Lihat Master Data (${totalTidCount} TID)
                                 </button>
-                                <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
+                                <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
                                     <span>🌺</span> Cetak Kunci RPL Shift
                                 </button>
                             </div>
@@ -592,76 +1166,19 @@
                             <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl shadow-inner">🔒</div>
                         </div>
                     </div>
-
-                    <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>💡 <strong>Info:</strong> Fitur Real-Time Auto-Sync aktif secara otomatis. Seluruh perubahan data master maupun pengisian team RPL langsung disinkronkan ke server pusat tanpa perlu tombol manual.</span>
-                        <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
-                    </div>
                 </div>
             `;
         }
 
-        function checkSidebarTid() {
-            let tidInput = document.getElementById("sidebarInputTid").value.trim();
-            let detailBox = document.getElementById("sidebarTidDetail");
-            let confirmBox = document.getElementById("sidebarConfirmBox");
-            let submitBtn = document.getElementById("sideBtnSubmit");
-
-            if (tidInput && masterDatabase[tidInput]) {
-                let item = masterDatabase[tidInput];
-                document.getElementById("sideDetLokasi").innerText = item.lokasi;
-                document.getElementById("sideDetRpl").innerText = item.rpl;
-                document.getElementById("sideDetFlm").innerText = item.flm;
-
-                detailBox.classList.remove("hidden");
-                confirmBox.classList.remove("hidden");
-                submitBtn.classList.remove("hidden");
-            } else {
-                detailBox.classList.add("hidden");
-                confirmBox.classList.add("hidden");
-                submitBtn.classList.add("hidden");
-                let chk = document.getElementById("sideChkConfirm");
-                if(chk) chk.checked = false;
-            }
-        }
-
-        function resetSidebarDeleteForm() {
-            document.getElementById("sidebarInputTid").value = "";
-            checkSidebarTid();
-        }
-
-        function submitSidebarDeleteTid() {
-            let tidInput = document.getElementById("sidebarInputTid").value.trim();
-            let chk = document.getElementById("sideChkConfirm");
-
-            if (!tidInput || !masterDatabase[tidInput]) {
-                alert("Nomor TID tidak valid atau belum ditemukan!");
-                return;
-            }
-
-            if (!chk || !chk.checked) {
-                alert("Silakan centang kotak konfirmasi hapus data terlebih dahulu!");
-                return;
-            }
-
-            delete masterDatabase[tidInput];
-            saveLocalStorageData();
-            alert(`Data TID ${tidInput} berhasil dihapus.`);
-            
-            resetSidebarDeleteForm();
-
-            if(document.getElementById("masterTableBody")) {
-                renderMasterTable();
-            }
-        }
-
         function renderMasterDataHtml() {
             const content = document.getElementById("contentArea");
+            let keys = Object.keys(masterDatabase);
+
             content.innerHTML = `
-                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
                     <span class="font-extrabold text-slate-800 text-base">📊 MASTER DATA KUNCI & LOKASI ATM</span>
                     <div class="flex gap-2">
-                        <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
+                        <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
                             📁 Upload File Master (Excel/CSV)
                             <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
                         </label>
@@ -671,22 +1188,20 @@
                 <div class="flex flex-col gap-5">
                     <div class="flex flex-col gap-3">
                         <div class="flex gap-2 items-center">
-                            <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                            <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span id="btnFormIcon" class="text-sm font-extrabold">+</span> <span id="btnFormText">Tambah Data</span>
                             </button>
-
-                            <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                            <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span>✏️</span> <span>Ubah Data</span>
                             </button>
                         </div>
 
                         <div id="masterFormContainer" class="hidden bg-slate-50 border border-slate-300 p-4 rounded-xl shadow-inner max-w-lg">
                             <h3 class="text-xs font-extrabold text-slate-700 mb-3 uppercase tracking-wider">➕ TAMBAH / UPDATE DATA MASTER TID</h3>
-                            
                             <div class="space-y-3 mb-4">
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">TID</label>
-                                    <input type="text" id="m_tid" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-bold text-blue-900" placeholder="Contoh: 12345678" data-index="0">
+                                    <input type="text" id="m_tid" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-bold text-blue-900 uppercase" placeholder="Contoh: 12345678" data-index="0">
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Lokasi ATM</label>
@@ -694,78 +1209,234 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Barcode RPL</label>
-                                    <input type="text" id="m_rpl" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-mono" placeholder="RPL-12345678-99" data-index="2">
+                                    <input type="text" id="m_rpl" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-mono uppercase" placeholder="RPL-12345678-99" data-index="2">
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Barcode FLM</label>
-                                    <input type="text" id="m_flm" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-mono" placeholder="FLM-12345678-88" data-index="3">
+                                    <input type="text" id="m_flm" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white font-mono uppercase" placeholder="FLM-12345678-88" data-index="3">
                                 </div>
                                 <div class="grid grid-cols-3 gap-2">
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Rak</label>
-                                        <input type="text" id="m_rak" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center" placeholder="R-01" data-index="4">
+                                        <input type="text" id="m_rak" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center uppercase" placeholder="R-01" data-index="4">
                                     </div>
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Baris</label>
-                                        <input type="text" id="m_baris" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center" placeholder="B-01" data-index="5">
+                                        <input type="text" id="m_baris" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center uppercase" placeholder="B-01" data-index="5">
                                     </div>
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Kolom</label>
-                                        <input type="text" id="m_kolom" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center" placeholder="K-01" data-index="6">
+                                        <input type="text" id="m_kolom" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center uppercase" placeholder="K-01" data-index="6">
                                     </div>
                                 </div>
                             </div>
-
                             <div class="flex gap-2">
-                                <button onclick="saveMasterItemManual()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-xs px-4 py-2 rounded shadow transition">Submit</button>
-                                <button onclick="toggleMasterForm()" class="bg-gradient-to-r from-slate-400 to-slate-500 hover:from-slate-500 hover:to-slate-600 text-white font-bold text-xs px-4 py-2 rounded shadow transition">Batal</button>
+                                <button onclick="saveMasterItemManual()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded shadow">Submit</button>
+                                <button onclick="toggleMasterForm()" class="bg-slate-500 hover:bg-slate-600 text-white font-bold text-xs px-4 py-2 rounded shadow">Batal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-slate-800 via-slate-900 to-blue-950 p-3.5 rounded-xl shadow-md text-white border border-slate-700">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-2.5">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                                🔍 CARI POSISI KUNCI (RAK / BARIS / KOLOM)
+                            </span>
+                            <span id="searchResultCount" class="text-[11px] font-semibold text-slate-300">
+                                Total Master: <strong class="text-white">${keys.length}</strong> TID
+                            </span>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-end gap-2.5">
+                            <div class="w-14">
+                                <label class="block text-[9px] uppercase font-bold text-slate-300 mb-1 text-center">RAK</label>
+                                <input type="text" id="searchRak" maxlength="3" placeholder="A1" class="search-nav-input w-full text-xs font-bold bg-slate-100 text-slate-900 p-1.5 text-center rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-400 focus:outline-none uppercase" data-nav="0" onkeyup="searchMasterDataRak()">
+                            </div>
+                            <div class="w-14">
+                                <label class="block text-[9px] uppercase font-bold text-slate-300 mb-1 text-center">BARIS</label>
+                                <input type="text" id="searchBaris" maxlength="3" placeholder="6" class="search-nav-input w-full text-xs font-bold bg-slate-100 text-slate-900 p-1.5 text-center rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-400 focus:outline-none uppercase" data-nav="1" onkeyup="searchMasterDataRak()">
+                            </div>
+                            <div class="w-14">
+                                <label class="block text-[9px] uppercase font-bold text-slate-300 mb-1 text-center">KOLOM</label>
+                                <input type="text" id="searchKolom" maxlength="3" placeholder="G" class="search-nav-input w-full text-xs font-bold bg-slate-100 text-slate-900 p-1.5 text-center rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-400 focus:outline-none uppercase" data-nav="2" onkeyup="searchMasterDataRak()">
+                            </div>
+                            <div class="flex gap-2 ml-2">
+                                <button id="btnSearchSubmit" onclick="searchMasterDataRak()" class="search-nav-btn bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs py-1.5 px-4 rounded-lg shadow transition transform active:scale-95 flex items-center justify-center gap-1" data-nav="3">
+                                    🔑 CARI
+                                </button>
+                                <button onclick="resetMasterDataSearch()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs py-1.5 px-3 rounded-lg shadow transition transform active:scale-95 flex items-center justify-center gap-1">
+                                    🔄 RESET
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4 overflow-x-auto w-full">
-                        <div class="flex flex-wrap justify-between items-center mb-3 bg-blue-50 border border-blue-200 p-2.5 rounded-lg shadow-sm gap-2">
-                            <span class="text-xs font-extrabold text-blue-900">📋 DATABASE MASTER AKTIF</span>
+                        <div class="flex flex-wrap justify-between items-center mb-3 bg-blue-50 border border-blue-200 p-2.5 rounded-lg gap-2">
+                            <span class="text-xs font-extrabold text-blue-900">📋 HASIL DATA KUNCI (TAMPILAN HORIZONTAL)</span>
                             <div class="flex items-center gap-3">
-                                <div class="relative">
-                                    <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-300 w-48 shadow-inner">
-                                </div>
-                                <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black shadow-inner">
-                                    Total Aset Tersimpan: <span id="masterCountBadge" class="text-blue-700">0</span> TID
+                                <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none w-48">
+                                <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black">
+                                    Total Aset: <span id="masterCountBadge" class="text-blue-700">0</span> TID
                                 </div>
                             </div>
                         </div>
                         <table class="w-full border-collapse text-xs">
                             <thead>
                                 <tr class="bg-slate-200 text-slate-800 font-bold">
-                                    <th class="border border-slate-300 p-1.5 w-10">NO</th>
-                                    <th class="border border-slate-300 p-1.5">TID</th>
-                                    <th class="border border-slate-300 p-1.5">LOKASI ATM</th>
-                                    <th class="border border-slate-300 p-1.5">BARCODE RPL</th>
-                                    <th class="border border-slate-300 p-1.5">BARCODE FLM</th>
-                                    <th class="border border-slate-300 p-1.5 w-12">RAK</th>
-                                    <th class="border border-slate-300 p-1.5 w-12">BARIS</th>
-                                    <th class="border border-slate-300 p-1.5 w-12">KOLOM</th>
+                                    <th class="border border-slate-300 p-2 w-10">NO</th>
+                                    <th class="border border-slate-300 p-2 w-20">TID</th>
+                                    <th class="border border-slate-300 p-2">LOKASI ATM</th>
+                                    <th class="border border-slate-300 p-2">BARCODE RPL</th>
+                                    <th class="border border-slate-300 p-2">BARCODE FLM</th>
+                                    <th class="border border-slate-300 p-2 w-16">RAK</th>
+                                    <th class="border border-slate-300 p-2 w-16">BARIS</th>
+                                    <th class="border border-slate-300 p-2 w-16">KOLOM</th>
                                 </tr>
                             </thead>
                             <tbody id="masterTableBody">
-                                <tr>
-                                    <td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master. Silakan klik tombol "Tambah Data" di atas atau upload file.</td>
-                                </tr>
+                                <tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master.</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             `;
             renderMasterTable();
+            setupSearchBoxKeyNavigation();
             setupMasterInputNavigation();
+        }
+
+        function setupSearchBoxKeyNavigation() {
+            const inputs = document.querySelectorAll(".search-nav-input");
+            const btnSubmit = document.getElementById("btnSearchSubmit");
+
+            inputs.forEach(input => {
+                input.addEventListener("keydown", function(e) {
+                    let navIndex = parseInt(this.getAttribute("data-nav"));
+
+                    if (e.key === "Enter" || e.key === "ArrowRight") {
+                        e.preventDefault();
+                        if (navIndex < inputs.length - 1) {
+                            inputs[navIndex + 1].focus();
+                            inputs[navIndex + 1].select();
+                        } else {
+                            searchMasterDataRak();
+                            if (btnSubmit) btnSubmit.focus();
+                        }
+                    } else if (e.key === "ArrowLeft") {
+                        e.preventDefault();
+                        if (navIndex > 0) {
+                            inputs[navIndex - 1].focus();
+                            inputs[navIndex - 1].select();
+                        }
+                    }
+                });
+            });
+        }
+
+        function renderMasterTable(filteredKeys = null) {
+            let tbody = document.getElementById("masterTableBody");
+            let countBadge = document.getElementById("masterCountBadge");
+            let searchInput = document.getElementById("masterSearchInput");
+            let keyword = searchInput ? searchInput.value.trim().toUpperCase() : "";
+            
+            let keys = filteredKeys || Object.keys(masterDatabase);
+            if(countBadge) countBadge.innerText = keys.length;
+
+            if (keys.length === 0) {
+                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-red-600 font-black italic text-sm tracking-wide">Data Kosong !!</td></tr>`;
+                return;
+            }
+
+            let finalKeys = keys.filter(tid => {
+                if (filteredKeys) return true;
+                let item = masterDatabase[tid] || {};
+                let searchStr = [
+                    tid,
+                    item.lokasi || '',
+                    item.rpl || '',
+                    item.flm || '',
+                    item.rak || '',
+                    item.baris || '',
+                    item.kolom || ''
+                ].join(" ").toUpperCase();
+                
+                return searchStr.includes(keyword);
+            });
+
+            if (finalKeys.length === 0) {
+                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-red-600 font-black italic text-sm tracking-wide">Data Kosong !!</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            finalKeys.forEach((tid, i) => {
+                let item = masterDatabase[tid] || {};
+                html += `
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 transition">
+                        <td class="border border-slate-300 p-2 text-center font-bold text-slate-500">${i + 1}</td>
+                        <td class="border border-slate-300 p-2 text-center font-bold text-blue-900">${tid}</td>
+                        <td class="border border-slate-300 p-2 px-3 font-semibold text-slate-800">${item.lokasi || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 text-center font-mono">${item.rpl || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 text-center font-mono">${item.flm || '-'}</td>
+                        <td class="border border-slate-300 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/50">${item.rak || '-'}</td>
+                        <td class="border border-slate-300 p-2 text-center font-extrabold text-blue-900 bg-blue-50/50">${item.baris || '-'}</td>
+                        <td class="border border-slate-300 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/50">${item.kolom || '-'}</td>
+                    </tr>
+                `;
+            });
+            if(tbody) tbody.innerHTML = html;
+        }
+
+        function searchMasterDataRak() {
+            const rakInput = document.getElementById("searchRak") ? document.getElementById("searchRak").value.trim().toUpperCase() : "";
+            const barisInput = document.getElementById("searchBaris") ? document.getElementById("searchBaris").value.trim().toUpperCase() : "";
+            const kolomInput = document.getElementById("searchKolom") ? document.getElementById("searchKolom").value.trim().toUpperCase() : "";
+
+            const allKeys = Object.keys(masterDatabase);
+
+            const filteredKeys = allKeys.filter(tid => {
+                let item = masterDatabase[tid] || {};
+                let itemRak = String(item.rak || '').trim().toUpperCase();
+                let itemBaris = String(item.baris || '').trim().toUpperCase();
+                let itemKolom = String(item.kolom || '').trim().toUpperCase();
+
+                let matchRak = rakInput === "" || itemRak === rakInput || itemRak.includes(rakInput);
+                let matchBaris = barisInput === "" || itemBaris === barisInput || itemBaris.includes(barisInput);
+                let matchKolom = kolomInput === "" || itemKolom === kolomInput || itemKolom.includes(kolomInput);
+
+                return matchRak && matchBaris && matchKolom;
+            });
+
+            const countLabel = document.getElementById("searchResultCount");
+            if (countLabel) {
+                countLabel.innerHTML = `Hasil Filter: <strong class="${filteredKeys.length === 0 ? 'text-red-400 font-bold' : 'text-amber-400'}">${filteredKeys.length}</strong> dari ${allKeys.length} TID`;
+            }
+
+            renderMasterTable(filteredKeys);
+        }
+
+        function resetMasterDataSearch() {
+            if (document.getElementById("searchRak")) document.getElementById("searchRak").value = "";
+            if (document.getElementById("searchBaris")) document.getElementById("searchBaris").value = "";
+            if (document.getElementById("searchKolom")) document.getElementById("searchKolom").value = "";
+            if (document.getElementById("masterSearchInput")) document.getElementById("masterSearchInput").value = "";
+
+            const allKeys = Object.keys(masterDatabase);
+            const countLabel = document.getElementById("searchResultCount");
+            if (countLabel) {
+                countLabel.innerHTML = `Total Master: <strong class="text-white">${allKeys.length}</strong> TID`;
+            }
+
+            renderMasterTable();
+            const firstInput = document.getElementById("searchRak");
+            if (firstInput) firstInput.focus();
         }
 
         function toggleMasterForm() {
             const formContainer = document.getElementById("masterFormContainer");
             const btnText = document.getElementById("btnFormText");
             const btnIcon = document.getElementById("btnFormIcon");
-            
             if (formContainer.classList.contains("hidden")) {
                 formContainer.classList.remove("hidden");
                 btnText.innerText = "Tutup Form";
@@ -782,19 +1453,16 @@
         function handleEditDataClick() {
             let tidTarget = prompt("Masukkan nomor TID yang ingin diubah datanya:");
             if (!tidTarget) return;
-            tidTarget = tidTarget.trim();
-
-            if (!masterDatabase[tidTarget]) {
-                alert("Nomor TID tidak ditemukan di dalam database master!");
+            tidTarget = tidTarget.trim().toUpperCase();
+            
+            let item = getMasterDataByTid(tidTarget);
+            if (!item) {
+                alert("Nomor TID tidak ditemukan di database master!");
                 return;
             }
-
-            let item = masterDatabase[tidTarget];
             
             const formContainer = document.getElementById("masterFormContainer");
-            if (formContainer.classList.contains("hidden")) {
-                toggleMasterForm();
-            }
+            if (formContainer.classList.contains("hidden")) toggleMasterForm();
 
             document.getElementById("m_tid").value = tidTarget;
             document.getElementById("m_tid").setAttribute("readonly", true);
@@ -804,7 +1472,6 @@
             document.getElementById("m_rak").value = item.rak || "";
             document.getElementById("m_baris").value = item.baris || "";
             document.getElementById("m_kolom").value = item.kolom || "";
-            
             document.getElementById("m_lokasi").focus();
         }
 
@@ -816,11 +1483,8 @@
                         e.preventDefault();
                         let currentIndex = parseInt(this.getAttribute("data-index"));
                         let nextIndex = currentIndex + 1;
-                        if (nextIndex < inputs.length) {
-                            inputs[nextIndex].focus();
-                        } else {
-                            saveMasterItemManual();
-                        }
+                        if (nextIndex < inputs.length) inputs[nextIndex].focus();
+                        else saveMasterItemManual();
                     }
                 });
             });
@@ -828,131 +1492,70 @@
 
         function clearMasterForm() {
             let tidInput = document.getElementById("m_tid");
-            tidInput.removeAttribute("readonly");
-            tidInput.value = "";
-            document.getElementById("m_lokasi").value = "";
-            document.getElementById("m_rpl").value = "";
-            document.getElementById("m_flm").value = "";
-            document.getElementById("m_rak").value = "";
-            document.getElementById("m_baris").value = "";
-            document.getElementById("m_kolom").value = "";
+            if (tidInput) {
+                tidInput.removeAttribute("readonly");
+                tidInput.value = "";
+            }
+            if (document.getElementById("m_lokasi")) document.getElementById("m_lokasi").value = "";
+            if (document.getElementById("m_rpl")) document.getElementById("m_rpl").value = "";
+            if (document.getElementById("m_flm")) document.getElementById("m_flm").value = "";
+            if (document.getElementById("m_rak")) document.getElementById("m_rak").value = "";
+            if (document.getElementById("m_baris")) document.getElementById("m_baris").value = "";
+            if (document.getElementById("m_kolom")) document.getElementById("m_kolom").value = "";
         }
 
         function saveMasterItemManual() {
-            let tid = document.getElementById("m_tid").value.trim();
+            let tid = document.getElementById("m_tid").value.trim().toUpperCase();
             if (!tid) {
                 alert("Nomor TID wajib diisi!");
-                document.getElementById("m_tid").focus();
                 return;
             }
             masterDatabase[tid] = {
-                lokasi: document.getElementById("m_lokasi").value.trim() || `ATM-${tid} (BEKASI)`,
-                rpl: document.getElementById("m_rpl").value.trim() || `RPL-${tid}-99`,
-                flm: document.getElementById("m_flm").value.trim() || "",
-                rak: document.getElementById("m_rak").value.trim() || "",
-                baris: document.getElementById("m_baris").value.trim() || "",
-                kolom: document.getElementById("m_kolom").value.trim() || ""
+                lokasi: document.getElementById("m_lokasi").value.trim().toUpperCase() || `ATM-${tid} (BEKASI)`,
+                rpl: document.getElementById("m_rpl").value.trim().toUpperCase() || `RPL-${tid}-99`,
+                flm: document.getElementById("m_flm").value.trim().toUpperCase() || "",
+                rak: document.getElementById("m_rak").value.trim().toUpperCase() || "",
+                baris: document.getElementById("m_baris").value.trim().toUpperCase() || "",
+                kolom: document.getElementById("m_kolom").value.trim().toUpperCase() || ""
             };
-
-            saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud
+            saveLocalStorageData();
             clearMasterForm();
-            renderMasterTable(); 
+            renderMasterTable();
             toggleMasterForm();
         }
 
         function handleMasterUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
                     let count = 0;
-
                     jsonRows.forEach(row => {
-                        let tid = String(row['TID'] || row['tid'] || '').trim();
+                        let tid = String(row['TID'] || row['tid'] || '').trim().toUpperCase();
                         if (!tid) return;
-
-                        let lokasi = String(row['LOKASI ATM'] || row['Lokasi ATM'] || row['lokasi'] || `ATM-${tid} (BEKASI)`).trim();
-                        let rpl = String(row['BARCODE RPL'] || row['Barcode RPL'] || row['rpl'] || `RPL-${tid}-99`).trim();
-                        let flm = String(row['BARCODE FLM'] || row['Barcode FLM'] || row['flm'] || '').trim();
-                        let rak = String(row['RAK'] || row['Rak'] || row['rak'] || '').trim();
-                        let baris = String(row['BARIS'] || row['Baris'] || row['baris'] || '').trim();
-                        let kolom = String(row['KOLOM'] || row['Kolom'] || row['kolom'] || '').trim();
-
                         masterDatabase[tid] = {
-                            lokasi: lokasi,
-                            rpl: rpl,
-                            flm: flm,
-                            rak: rak,
-                            baris: baris,
-                            kolom: kolom
+                            lokasi: String(row['LOKASI ATM'] || row['lokasi'] || `ATM-${tid} (BEKASI)`).trim().toUpperCase(),
+                            rpl: String(row['BARCODE RPL'] || row['rpl'] || `RPL-${tid}-99`).trim().toUpperCase(),
+                            flm: String(row['BARCODE FLM'] || row['flm'] || '').trim().toUpperCase(),
+                            rak: String(row['RAK'] || row['rak'] || '').trim().toUpperCase(),
+                            baris: String(row['BARIS'] || row['baris'] || '').trim().toUpperCase(),
+                            kolom: String(row['KOLOM'] || row['kolom'] || '').trim().toUpperCase()
                         };
                         count++;
                     });
-
-                    saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud
+                    saveLocalStorageData();
                     renderMasterTable();
-                    alert(`Berhasil mengimpor dan menyimpan ${count} data master dari file secara otomatis!`);
+                    alert(`Berhasil mengimpor dan menyimpan ${count} data master!`);
                 } catch (err) {
-                    console.error("Gagal membaca file Excel:", err);
-                    alert("Terjadi kesalahan saat membaca file. Pastikan format file Excel/CSV valid.");
+                    alert("Format file Excel/CSV tidak valid.");
                 }
             };
             reader.readAsArrayBuffer(file);
-        }
-
-        function renderMasterTable() {
-            let tbody = document.getElementById("masterTableBody");
-            let countBadge = document.getElementById("masterCountBadge");
-            let searchInput = document.getElementById("masterSearchInput");
-            let keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
-            
-            let keys = Object.keys(masterDatabase);
-            
-            if(countBadge) countBadge.innerText = keys.length;
-
-            if (keys.length === 0) {
-                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Belum ada data master. Silakan klik tombol "Tambah Data" di atas atau upload file.</td></tr>`;
-                return;
-            }
-
-            let filteredKeys = keys.filter(tid => {
-                let item = masterDatabase[tid];
-                return tid.toLowerCase().includes(keyword) || 
-                       item.lokasi.toLowerCase().includes(keyword) || 
-                       item.rpl.toLowerCase().includes(keyword) || 
-                       item.flm.toLowerCase().includes(keyword);
-            });
-
-            if (filteredKeys.length === 0) {
-                if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-slate-400 italic">Data tidak ditemukan dengan kata kunci "${keyword}".</td></tr>`;
-                return;
-            }
-
-            let html = "";
-            filteredKeys.forEach((tid, i) => {
-                let item = masterDatabase[tid];
-                html += `
-                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
-                        <td class="border border-slate-300 p-1 text-center">${i + 1}</td>
-                        <td class="border border-slate-300 p-1 text-center font-bold text-blue-900">${tid}</td>
-                        <td class="border border-slate-300 p-1 px-2">${item.lokasi}</td>
-                        <td class="border border-slate-300 p-1 px-2 font-mono">${item.rpl}</td>
-                        <td class="border border-slate-300 p-1 px-2 font-mono">${item.flm}</td>
-                        <td class="border border-slate-300 p-1 text-center">${item.rak}</td>
-                        <td class="border border-slate-300 p-1 text-center">${item.baris}</td>
-                        <td class="border border-slate-300 p-1 text-center">${item.kolom}</td>
-                    </tr>
-                `;
-            });
-            if(tbody) tbody.innerHTML = html;
         }
 
         function renderTeamMenuHtml() {
@@ -960,148 +1563,96 @@
             let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
 
             const groupThemes = {
-                "PAGI": {
-                    cardBg: "bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 border-blue-200 shadow-blue-100",
-                    titleColor: "text-blue-900 border-blue-200",
-                    btnBase: "bg-white hover:bg-blue-100 text-blue-900 border-blue-200 shadow-sm",
-                    btnFilled: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-400 shadow-md",
-                    badgeColor: "bg-blue-600 text-white"
-                },
-                "MALAM": {
-                    cardBg: "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-indigo-800 shadow-indigo-950/30",
-                    titleColor: "text-amber-300 border-indigo-800/80",
-                    btnBase: "bg-indigo-900/60 hover:bg-indigo-800 text-indigo-100 border-indigo-700/60",
-                    btnFilled: "bg-gradient-to-r from-indigo-700 to-blue-700 text-white border-blue-400 shadow-md",
-                    badgeColor: "bg-amber-400 text-slate-950"
-                },
-                "MIDLE": {
-                    cardBg: "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border-orange-200 shadow-orange-100",
-                    titleColor: "text-amber-900 border-orange-200",
-                    btnBase: "bg-white hover:bg-amber-100 text-amber-900 border-amber-200 shadow-sm",
-                    btnFilled: "bg-gradient-to-r from-amber-600 to-orange-600 text-white border-blue-400 shadow-md",
-                    badgeColor: "bg-orange-600 text-white"
-                },
-                "SIANG": {
-                    cardBg: "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 border-emerald-200 shadow-emerald-100",
-                    titleColor: "text-emerald-900 border-emerald-200",
-                    btnBase: "bg-white hover:bg-emerald-100 text-emerald-900 border-emerald-200 shadow-sm",
-                    btnFilled: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-blue-400 shadow-md",
-                    badgeColor: "bg-emerald-600 text-white"
-                }
+                "PAGI": { cardBg: "bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 border-blue-200", titleColor: "text-blue-900", btnBase: "bg-white text-blue-900", btnFilled: "bg-blue-600 text-white", badgeColor: "bg-blue-600 text-white" },
+                "MALAM": { cardBg: "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-indigo-800", titleColor: "text-amber-300", btnBase: "bg-indigo-900/60 text-indigo-100", btnFilled: "bg-indigo-700 text-white", badgeColor: "bg-amber-400 text-slate-950" },
+                "MIDLE": { cardBg: "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border-orange-200", titleColor: "text-amber-900", btnBase: "bg-white text-amber-900", btnFilled: "bg-amber-600 text-white", badgeColor: "bg-orange-600 text-white" },
+                "SIANG": { cardBg: "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 border-emerald-200", titleColor: "text-emerald-900", btnBase: "bg-white text-emerald-900", btnFilled: "bg-emerald-600 text-white", badgeColor: "bg-emerald-600 text-white" }
             };
 
             let html = `
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
                     <div>
                         <span class="font-extrabold text-slate-800 text-base">🌺 CETAK KUNCI RPL - PILIH TEAM</span>
-                        <p class="text-xs text-slate-500">Pilih team berdasarkan kelompok shift operasional di bawah ini</p>
+                        <p class="text-xs text-slate-500">Pilih team berdasarkan kelompok shift operasional</p>
                     </div>
-                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition flex items-center gap-1.5">🖨️ Pratinjau / Cetak Semua Team</button>` : ''}
+                    ${hasData ? `<button onclick="preparePreview(batchTeamsData)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow">🖨️ Pratinjau Semua Team</button>` : ''}
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pb-4">
             `;
 
             for (let [groupName, teams] of Object.entries(teamGroups)) {
                 let theme = groupThemes[groupName];
-                
                 html += `
-                    <div class="${theme.cardBg} border rounded-2xl p-4 shadow-xl flex flex-col gap-3 transition">
+                    <div class="${theme.cardBg} border rounded-2xl p-4 shadow-xl flex flex-col gap-3">
                         <div class="flex justify-between items-center pb-2 border-b ${theme.titleColor}">
-                            <span class="font-black text-sm tracking-wider uppercase flex items-center gap-2">
-                                🌙 ☀️ ⛅ ⚡ SHIFT ${groupName}
-                            </span>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">
-                                ${teams.length} Team
-                            </span>
+                            <span class="font-black text-sm tracking-wider uppercase">SHIFT ${groupName}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20">${teams.length} Team</span>
                         </div>
-                        
                         <div class="grid grid-cols-1 gap-2">
                 `;
-
                 teams.forEach(team => {
                     let isFilled = batchTeamsData[team] && batchTeamsData[team].length > 0;
                     let count = isFilled ? batchTeamsData[team].length : 0;
                     let btnStyle = isFilled ? theme.btnFilled : theme.btnBase;
-
                     html += `
-                        <button onclick="openTeamInput('${team}')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition transform active:scale-[0.98] flex justify-between items-center ${btnStyle}">
+                        <button onclick="openTeamInput('${team}')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex justify-between items-center ${btnStyle}">
                             <span>${team}</span>
-                            ${isFilled ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${theme.badgeColor} shadow-sm">${count} TID</span>` : `<span class="text-[10px] opacity-60 font-normal">Kosong</span>`}
+                            ${isFilled ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${theme.badgeColor}">${count} TID</span>` : `<span class="text-[10px] opacity-60">Kosong</span>`}
                         </button>
                     `;
                 });
-
-                html += `
-                        </div>
-                    </div>
-                `;
+                html += `</div></div>`;
             }
-
             html += `</div>`;
             content.innerHTML = html;
         }
 
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
-            
-            let previousTids = [];
-            let activeInputs = document.querySelectorAll(".tid-input");
-            if (activeInputs.length > 0) {
-                activeInputs.forEach(inp => previousTids.push(inp.value.trim()));
-            } else {
-                previousTids = batchTeamsData[teamName] || [];
-            }
-
-            let memberElem = document.getElementById("inputTeamMember");
-            let previousMemberName = memberElem ? memberElem.value : (batchTeamMembers[teamName] || "");
+            let previousTids = batchTeamsData[teamName] || [];
+            let previousMemberName = batchTeamMembers[teamName] || "";
 
             let html = `
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
                     <div class="flex items-center gap-2">
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
                         <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${teamName}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
-                        <button onclick="clearAllTids('${teamName}')" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua TID</button>
+                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
+                        <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua</button>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap gap-6 items-start">
                     <div class="flex flex-col gap-3">
-                        <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md">
+                        <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md select-none">
                             <table class="border-collapse text-sm w-full">
                                 <thead>
                                     <tr>
-                                        <th colspan="2" class="bg-transparent border-0 p-[11.5px] text-left select-none opacity-0 pointer-events-none">Spacer</th>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="2" class="bg-gradient-to-r from-amber-500 to-orange-500 border border-slate-400 p-1.5 text-left shadow-inner">
-                                            <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="TEAM" class="w-full bg-transparent text-slate-900 font-extrabold placeholder-slate-800 px-1 py-0.5 border-none outline-none text-sm uppercase text-center drop-shadow-sm" oninput="autoSaveDraft('${teamName}')">
+                                        <th colspan="2" class="bg-gradient-to-r from-amber-500 to-orange-500 border border-slate-400 p-1.5 text-left">
+                                            <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="NAMA PETUGAS" class="w-full bg-transparent text-slate-900 font-extrabold placeholder-slate-800 px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="handleTidInput('${teamName}')">
                                         </th>
                                     </tr>
-                                    <tr class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
-                                        <th class="border border-slate-400 p-1.5 w-10 text-center font-bold text-xs shadow-inner">NO</th>
-                                        <th class="border border-slate-400 p-1.5 px-2 font-bold text-center w-24 text-xs shadow-inner">TID</th>
+                                    <tr class="bg-emerald-600 text-white">
+                                        <th class="border border-slate-400 p-1.5 w-10 text-center text-xs">NO</th>
+                                        <th class="border border-slate-400 p-1.5 px-2 text-center w-24 text-xs">TID</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tidTableBody">
+                                <tbody>
             `;
-
             for (let i = 0; i < 16; i++) {
                 let val = previousTids[i] || "";
                 html += `
                     <tr>
-                        <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs bg-slate-100/60">${i + 1}</td>
-                        <td class="border border-slate-400 p-0.5 cell-container" data-index="${i}">
-                            <input type="text" maxlength="15" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent" value="${val}" data-index="${i}" oninput="handleTidInput('${teamName}')">
+                        <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs bg-slate-100">${i + 1}</td>
+                        <td class="border border-slate-400 p-0.5 cell-container cursor-pointer" data-index="${i}">
+                            <input type="text" maxlength="25" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent font-bold uppercase" value="${val}" data-index="${i}" oninput="handleTidInput('${teamName}')">
                         </td>
                     </tr>
                 `;
             }
-
             html += `
                                 </tbody>
                             </table>
@@ -1109,62 +1660,65 @@
                     </div>
 
                     <div class="flex-1 border border-slate-300 bg-white p-4 rounded-xl shadow-lg overflow-x-auto min-w-[500px]">
-                        <div class="text-xs font-extrabold text-slate-700 mb-3 flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PRATINJAU REAL-TIME (SINKRON MASTER DATA):
+                        <div class="text-xs font-extrabold text-slate-700 mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PRATINJAU REAL-TIME:
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span id="duplicateCounterBadge" class="hidden bg-sky-100 border border-sky-300 text-sky-800 text-[10px] px-2 py-0.5 rounded-full font-black">
+                                    🟦 <span id="duplicateCounterCount">0</span> TID Duplikat
+                                </span>
+                                <span id="warningCounterBadge" class="hidden bg-rose-100 border border-rose-300 text-rose-800 text-[10px] px-2 py-0.5 rounded-full font-black">
+                                    ⚠️ <span id="warningCounterCount">0</span> TID Tidak Terdaftar
+                                </span>
+                            </div>
                         </div>
-                        <table class="w-full border-collapse text-base shadow-sm rounded-lg overflow-hidden">
+                        <table class="w-full border-collapse text-base rounded-lg overflow-hidden">
                             <thead>
                                 <tr>
-                                    <th colspan="10" class="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-lg shadow-sm" id="previewTeamTitle">${teamName}${previousMemberName ? ' - ' + previousMemberName : ''}</th>
+                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-left font-extrabold text-lg">
+                                        <div class="flex items-center">
+                                            <span>${teamName}</span>
+                                            <span class="ml-16 text-amber-800 font-extrabold text-sm uppercase">
+                                                CUSTODY : <span id="previewMemberName">${previousMemberName || '-'}</span>
+                                            </span>
+                                        </div>
+                                    </th>
                                 </tr>
-                                <tr class="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 text-white font-bold shadow-inner text-base">
-                                    <th class="border border-slate-500 p-3 w-14 shadow-sm text-center">NO</th>
-                                    <th class="border border-slate-500 p-3 w-28 shadow-sm text-center">TID</th>
-                                    <th class="border border-slate-500 p-3 px-4 text-center whitespace-nowrap shadow-sm">LOKASI</th>
-                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate shadow-sm">BARCODE RPL</th>
-                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate shadow-sm">BARCODE FLM</th>
-                                    <th class="border border-slate-500 p-3 w-16 shadow-sm text-center">RAK</th>
-                                    <th class="border border-slate-500 p-3 w-16 shadow-sm text-center">BARIS</th>
-                                    <th class="border border-slate-500 p-3 w-16 shadow-sm text-center">KOLOM</th>
+                                <tr class="bg-slate-500 text-white font-bold text-base">
+                                    <th class="border border-slate-500 p-3 w-14 text-center">NO</th>
+                                    <th class="border border-slate-500 p-3 w-28 text-center">TID</th>
+                                    <th class="border border-slate-500 p-3 px-4 text-center">LOKASI</th>
+                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">RPL</th>
+                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">FLM</th>
+                                    <th class="border border-slate-500 p-3 w-16 text-center">RAK</th>
+                                    <th class="border border-slate-500 p-3 w-16 text-center">BARIS</th>
+                                    <th class="border border-slate-500 p-3 w-16 text-center">KOLOM</th>
                                 </tr>
                             </thead>
                             <tbody id="realtimePreviewBody">
             `;
-
             for (let i = 0; i < 16; i++) {
                 let tid = previousTids[i] || "";
-                let bg = i % 2 === 0 ? "bg-slate-50/80" : "bg-white";
-                let master = masterDatabase[tid] || {};
-                let lokasi = master.lokasi || (tid ? `ATM-${tid} (BEKASI)` : "");
-                let rpl = master.rpl || (tid ? `RPL-${tid}-99` : "");
-                let flm = master.flm || "";
-                let rak = master.rak || "";
-                let baris = master.baris || "";
-                let kolom = master.kolom || "";
+                let master = getMasterDataByTid(tid) || {};
 
                 html += `
-                    <tr class="${bg}" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
-                        <td class="border border-slate-300 p-3 text-center text-base">${i + 1}</td>
-                        <td class="border border-slate-300 p-3 text-center font-bold text-blue-900 text-base">${tid}</td>
-                        <td class="border border-slate-300 p-3 px-4 text-center whitespace-nowrap text-base">${lokasi}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${rpl}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${flm}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${rak}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${baris}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${kolom}</td>
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
+                        <td class="border border-slate-300 p-3 text-center">${i + 1}</td>
+                        <td class="border border-slate-300 p-3 text-center font-bold text-blue-900">${tid}</td>
+                        <td class="border border-slate-300 p-3 px-4 text-center">${master.lokasi || `ATM-${tid} (BEKASI)`}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.rpl || `RPL-${tid}-99`}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.flm || ''}</td>
+                        <td class="border border-slate-300 p-3 text-center">${master.rak || ''}</td>
+                        <td class="border border-slate-300 p-3 text-center">${master.baris || ''}</td>
+                        <td class="border border-slate-300 p-3 text-center">${master.kolom || ''}</td>
                     </tr>
                 `;
             }
-
-            html += `
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
+            html += `</tbody></table></div></div>`;
             content.innerHTML = html;
             setupExcelInteractions(teamName);
+            updateRealtimePreview(); 
         }
 
         function handleTidInput(teamName) {
@@ -1173,63 +1727,139 @@
         }
 
         function updateRealtimePreview() {
-            let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
-            let headerTextElem = document.querySelector(".flex.flex-wrap.justify-between.items-center.mb-4 span.text-xs.text-slate-700.font-bold");
-            let baseTeamName = "";
-            if (headerTextElem) {
-                baseTeamName = headerTextElem.innerText.replace("INPUT TID - ", "").trim();
-            }
-            
-            let titleElem = document.getElementById("previewTeamTitle");
-            if (titleElem && baseTeamName) {
-                titleElem.innerText = baseTeamName + (memberName ? ` - ${memberName}` : "");
+            let memberNameInput = document.getElementById("inputTeamMember");
+            let memberNameLabel = document.getElementById("previewMemberName");
+            if (memberNameInput && memberNameLabel) {
+                memberNameLabel.innerText = memberNameInput.value.trim().toUpperCase() || "-";
             }
 
             let inputs = document.querySelectorAll(".tid-input");
-            
+            let notFoundCount = 0;
+            let duplicateCount = 0;
+
+            let tidFrequency = {};
+            inputs.forEach(inp => {
+                let val = inp.value.trim().toUpperCase();
+                if (val !== "") {
+                    tidFrequency[val] = (tidFrequency[val] || 0) + 1;
+                }
+            });
+
             inputs.forEach((inp, i) => {
                 let tidRaw = inp.value.trim();
+                let tidUpper = tidRaw.toUpperCase();
+                let parentCell = inp.closest(".cell-container");
                 let row = document.getElementById(`preview-row-${i}`);
-                if (row) {
-                    if (tidRaw !== "") {
-                        let master = masterDatabase[tidRaw] || {};
-                        
+
+                if (tidRaw !== "") {
+                    let master = getMasterDataByTid(tidUpper);
+                    let isExist = !!master;
+                    let isDuplicate = tidFrequency[tidUpper] > 1;
+
+                    if (parentCell) {
+                        parentCell.classList.remove("tid-not-found", "tid-duplicate");
+                        parentCell.removeAttribute("title");
+                    }
+
+                    if (isDuplicate) {
+                        duplicateCount++;
+                        if (parentCell) {
+                            parentCell.classList.add("tid-duplicate");
+                            parentCell.setAttribute("title", "⚠️ TID Duplikat (Terinput lebih dari 1x)!");
+                        }
+                    } else if (!isExist) {
+                        notFoundCount++;
+                        if (parentCell) {
+                            parentCell.classList.add("tid-not-found");
+                            parentCell.setAttribute("title", "⚠️ TID tidak ditemukan di Master Data!");
+                        }
+                    }
+
+                    if (row) {
                         row.style.display = "";
-                        row.cells[1].innerText = tidRaw;
-                        row.cells[2].innerText = master.lokasi || `ATM-${tidRaw} (BEKASI)`;
-                        row.cells[3].innerText = master.rpl || `RPL-${tidRaw}-99`;
-                        row.cells[4].innerText = master.flm || "";
-                        row.cells[5].innerText = master.rak || "";
-                        row.cells[6].innerText = master.baris || "";
-                        row.cells[7].innerText = master.kolom || "";
-                    } else {
+                        row.cells[1].innerText = tidUpper;
+                        
+                        if (isDuplicate) {
+                            row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-sky-900 bg-sky-200";
+                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center text-sky-900 font-extrabold italic bg-sky-100";
+                            row.cells[2].innerText = `⚠️ DUPLIKAT (${(master && master.lokasi) ? master.lokasi : 'ATM ' + tidUpper})`;
+                            row.cells[3].innerText = (master && master.rpl) ? master.rpl : `RPL-${tidUpper}-99`;
+                            row.cells[4].innerText = (master && master.flm) ? master.flm : "";
+                            row.cells[5].innerText = (master && master.rak) ? master.rak : "";
+                            row.cells[6].innerText = (master && master.baris) ? master.baris : "";
+                            row.cells[7].innerText = (master && master.kolom) ? master.kolom : "";
+                        } else if (!isExist) {
+                            row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-red-700 bg-rose-100";
+                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center text-rose-700 font-extrabold italic bg-rose-50";
+                            row.cells[2].innerText = "⚠️ TID TIDAK TERDAFTAR";
+                            row.cells[3].innerText = "-";
+                            row.cells[4].innerText = "-";
+                            row.cells[5].innerText = "-";
+                            row.cells[6].innerText = "-";
+                            row.cells[7].innerText = "-";
+                        } else {
+                            row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-blue-900";
+                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center font-semibold text-slate-800";
+                            row.cells[2].innerText = master.lokasi || `ATM-${tidUpper} (BEKASI)`;
+                            row.cells[3].innerText = master.rpl || `RPL-${tidUpper}-99`;
+                            row.cells[4].innerText = master.flm || "";
+                            row.cells[5].innerText = master.rak || "";
+                            row.cells[6].innerText = master.baris || "";
+                            row.cells[7].innerText = master.kolom || "";
+                        }
+                    }
+                } else {
+                    if (parentCell) {
+                        parentCell.classList.remove("tid-not-found", "tid-duplicate");
+                        parentCell.removeAttribute("title");
+                    }
+                    if (row) {
                         row.style.display = "none";
                     }
                 }
             });
+
+            let warningBadge = document.getElementById("warningCounterBadge");
+            let warningCount = document.getElementById("warningCounterCount");
+            if (warningBadge && warningCount) {
+                if (notFoundCount > 0) {
+                    warningCount.innerText = notFoundCount;
+                    warningBadge.classList.remove("hidden");
+                } else {
+                    warningBadge.classList.add("hidden");
+                }
+            }
+
+            let dupBadge = document.getElementById("duplicateCounterBadge");
+            let dupCount = document.getElementById("duplicateCounterCount");
+            if (dupBadge && dupCount) {
+                if (duplicateCount > 0) {
+                    dupCount.innerText = duplicateCount;
+                    dupBadge.classList.remove("hidden");
+                } else {
+                    dupBadge.classList.add("hidden");
+                }
+            }
         }
 
         function clearAllTids(teamName) {
-            if (confirm("Apakah Anda yakin ingin menghapus semua TID yang terisi di tabel ini?")) {
-                const inputs = document.querySelectorAll(".tid-input");
-                inputs.forEach(inp => inp.value = "");
+            if (confirm("Hapus semua TID?")) {
+                document.querySelectorAll(".tid-input").forEach(inp => inp.value = "");
                 batchTeamsData[teamName] = [];
-                saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud
+                saveLocalStorageData();
                 updateRealtimePreview();
             }
         }
 
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
-            let inputs = document.querySelectorAll(".tid-input");
             let tids = [];
-            inputs.forEach(inp => {
-                if(inp.value.trim() !== "") tids.push(inp.value.trim());
+            document.querySelectorAll(".tid-input").forEach(inp => {
+                if(inp.value.trim() !== "") tids.push(inp.value.trim().toUpperCase());
             });
-
             batchTeamsData[teamName] = tids;
             if(memberName) batchTeamMembers[teamName] = memberName;
-            saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud setiap ada ketikan/input team RPL
+            saveLocalStorageData();
         }
 
         function saveAndReturnMenu(teamName) {
@@ -1241,7 +1871,7 @@
             autoSaveDraft(teamName);
             let tids = batchTeamsData[teamName] || [];
             if (tids.length === 0) {
-                alert("Harap masukkan minimal 1 TID!");
+                alert("Masukkan minimal 1 TID!");
                 return;
             }
             let singleData = {};
@@ -1250,84 +1880,120 @@
         }
 
         function setupExcelInteractions(teamName) {
+            const memberInput = document.getElementById("inputTeamMember");
             const inputs = document.querySelectorAll(".tid-input");
             const containers = document.querySelectorAll(".cell-container");
             let isMouseDown = false;
             let startIndex = null;
 
+            if (memberInput) {
+                memberInput.addEventListener("keydown", function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (inputs.length > 0) {
+                            inputs[0].focus();
+                            inputs[0].select();
+                        }
+                    }
+                });
+            }
+
+            function highlightRange(start, end) {
+                let min = Math.min(start, end);
+                let max = Math.max(start, end);
+                containers.forEach((c, i) => {
+                    if (i >= min && i <= max) {
+                        c.classList.add("tid-cell-selected");
+                    } else {
+                        c.classList.remove("tid-cell-selected");
+                    }
+                });
+            }
+
             containers.forEach((container, idx) => {
                 container.addEventListener("mousedown", function(e) {
-                    if (e.ctrlKey) {
-                        e.preventDefault();
-                        container.classList.toggle("tid-cell-selected");
-                        return;
-                    }
-
                     isMouseDown = true;
                     startIndex = idx;
-                    if (!e.shiftKey) { clearSelection(); }
-                    selectCell(idx);
+
+                    inputs.forEach(inp => inp.classList.add("pointer-events-none"));
+
+                    if (e.ctrlKey || e.metaKey) {
+                        container.classList.toggle("tid-cell-selected");
+                    } else {
+                        containers.forEach(c => c.classList.remove("tid-cell-selected"));
+                        container.classList.add("tid-cell-selected");
+                    }
                 });
 
-                container.addEventListener("mouseenter", function() {
-                    if (isMouseDown && startIndex !== null) {
-                        clearSelection();
-                        let min = Math.min(startIndex, idx);
-                        let max = Math.max(startIndex, idx);
-                        for (let i = min; i <= max; i++) { selectCell(i); }
+                container.addEventListener("mouseenter", function(e) {
+                    if (isMouseDown && startIndex !== null && !e.ctrlKey) {
+                        highlightRange(startIndex, idx);
                     }
                 });
             });
 
-            document.addEventListener("mouseup", function() { isMouseDown = false; });
+            document.addEventListener("mouseup", () => {
+                if (isMouseDown) {
+                    isMouseDown = false;
+                    inputs.forEach(inp => inp.classList.remove("pointer-events-none"));
+                }
+            });
 
-            function selectCell(index) { containers[index].classList.add("tid-cell-selected"); }
-            function clearSelection() { containers.forEach(c => c.classList.remove("tid-cell-selected")); }
-
-            inputs.forEach(input => {
-                input.addEventListener("keydown", function(e) {
-                    let currentIndex = parseInt(this.getAttribute("data-index"));
-
-                    if (e.ctrlKey && e.key.toLowerCase() === 'a') {
+            inputs.forEach((input) => {
+                input.addEventListener("mousedown", function(e) {
+                    if (e.ctrlKey || e.metaKey) {
                         e.preventDefault();
-                        containers.forEach(c => c.classList.add("tid-cell-selected"));
-                        return;
-                    }
-
-                    if (e.key === "Delete" || e.key === "Backspace") {
-                        let selectedContainers = document.querySelectorAll(".tid-cell-selected");
-                        if (selectedContainers.length > 0) {
-                            e.preventDefault();
-                            selectedContainers.forEach(cont => {
-                                let inp = cont.querySelector(".tid-input");
-                                if (inp) inp.value = "";
-                            });
-                            autoSaveDraft(teamName);
-                            updateRealtimePreview();
-                        }
-                    } else if (e.key === "Enter" || e.key === "ArrowDown") {
-                        e.preventDefault();
-                        let nextIndex = currentIndex + 1;
-                        if (nextIndex < inputs.length) { clearSelection(); selectCell(nextIndex); inputs[nextIndex].focus(); }
-                    } else if (e.key === "ArrowUp") {
-                        e.preventDefault();
-                        let prevIndex = currentIndex - 1;
-                        if (prevIndex >= 0) { clearSelection(); selectCell(prevIndex); inputs[prevIndex].focus(); }
                     }
                 });
 
                 input.addEventListener("paste", function(e) {
                     e.preventDefault();
-                    let clipboardData = e.clipboardData || window.clipboardData;
-                    let pastedData = clipboardData.getData("Text");
-                    let lines = pastedData.split(/\r?\n/).map(l => l.trim()).filter(l => l);
-                    let startIndex = parseInt(this.getAttribute("data-index"));
-                    lines.forEach((line, idx) => {
-                        let targetIdx = startIndex + idx;
-                        if (targetIdx < inputs.length) { inputs[targetIdx].value = line; }
-                    });
-                    autoSaveDraft(teamName);
-                    updateRealtimePreview();
+                    let clipboardData = (e.clipboardData || window.clipboardData).getData("text");
+                    if (!clipboardData) return;
+
+                    let lines = clipboardData.split(/\r\n|\n|\r/).map(item => item.trim()).filter(item => item !== "");
+
+                    if (lines.length > 0) {
+                        let currentIndex = parseInt(this.getAttribute("data-index"));
+                        lines.forEach((lineText, offset) => {
+                            let targetIndex = currentIndex + offset;
+                            if (targetIndex < inputs.length) {
+                                inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
+                            }
+                        });
+
+                        let nextFocusIndex = currentIndex + lines.length;
+                        if (nextFocusIndex < inputs.length) {
+                            inputs[nextFocusIndex].focus();
+                        } else {
+                            inputs[inputs.length - 1].focus();
+                        }
+
+                        autoSaveDraft(teamName);
+                        updateRealtimePreview();
+                    }
+                });
+
+                input.addEventListener("keydown", function(e) {
+                    let currentIndex = parseInt(this.getAttribute("data-index"));
+                    if (e.key === "Enter" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                        if (currentIndex + 1 < inputs.length) {
+                            inputs[currentIndex + 1].focus();
+                            inputs[currentIndex + 1].select();
+                        }
+                    } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        if (currentIndex - 1 >= 0) {
+                            inputs[currentIndex - 1].focus();
+                            inputs[currentIndex - 1].select();
+                        } else {
+                            if (memberInput) {
+                                memberInput.focus();
+                                memberInput.select();
+                            }
+                        }
+                    }
                 });
             });
         }
@@ -1336,112 +2002,115 @@
             previewPayload = [];
             for (let [tName, tids] of Object.entries(dataDict)) {
                 if (!tids || tids.length === 0) continue;
-                let memberName = batchTeamMembers[tName] ? ` - ${batchTeamMembers[tName]}` : "";
+                let memberName = batchTeamMembers[tName] || "-";
+                
+                let tidCounts = {};
+                tids.forEach(t => { if(t) { let u = String(t).toUpperCase(); tidCounts[u] = (tidCounts[u] || 0) + 1; } });
+
                 let teamRows = [];
-                tids.forEach((tid, i) => {
-                    let master = masterDatabase[tid] || {};
+                tids.forEach((tidRaw, i) => {
+                    let tid = String(tidRaw).toUpperCase();
+                    let master = getMasterDataByTid(tid) || {};
+                    let isNotFound = !getMasterDataByTid(tid);
+                    let isDuplicate = tidCounts[tid] > 1;
+
+                    let lokasiText = master.lokasi || (isNotFound ? "⚠️ TID TIDAK TERDAFTAR" : `ATM-${tid} (BEKASI)`);
+                    if (isDuplicate) lokasiText = `⚠️ DUPLIKAT (${lokasiText})`;
+
                     teamRows.push([
-                        i + 1,
-                        tid,
-                        master.lokasi || `ATM-${tid} (BEKASI)`,
-                        master.rpl || `RPL-${tid}-99`,
+                        i + 1, tid, lokasiText,
+                        master.rpl || (isNotFound ? "-" : `RPL-${tid}-99`),
                         master.flm || "",
                         master.rak || "",
                         master.baris || "",
-                        master.kolom || "",
-                        "",
-                        ""
+                        master.kolom || "", "", ""
                     ]);
                 });
-                previewPayload.push({ team_name: tName + memberName, data: teamRows });
+                previewPayload.push({ team_name: tName, member_name: memberName, data: teamRows });
             }
-
             currentSlideIndex = 0;
             renderSlideView();
         }
 
         function renderSlideView() {
             const content = document.getElementById("contentArea");
-            let totalPages = previewPayload.length;
-            if (totalPages === 0) return;
-
+            if (previewPayload.length === 0) return;
             let item = previewPayload[currentSlideIndex];
-
             let html = `
                 <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
-                    <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali ke Daftar Team</button>
-                    
+                    <button onclick="renderTeamMenuHtml()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
                     <div class="flex items-center gap-2">
-                        <button onclick="prevSlide()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>◀ Sebelumnya</button>
-                        <span class="text-xs font-bold text-slate-700">Slide ${currentSlideIndex + 1} dari ${totalPages}</span>
-                        <button onclick="nextSlide()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentSlideIndex === totalPages - 1 ? 'disabled' : ''}>Selanjutnya ▶</button>
+                        <button onclick="prevSlide()" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === 0 ? 'opacity-50' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>◀ Sebelumnya</button>
+                        <span class="text-xs font-bold text-slate-700">Slide ${currentSlideIndex + 1} dari ${previewPayload.length}</span>
+                        <button onclick="nextSlide()" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === previewPayload.length - 1 ? 'opacity-50' : ''}" ${currentSlideIndex === previewPayload.length - 1 ? 'disabled' : ''}>Selanjutnya ▶</button>
                     </div>
-
-                    <button onclick="window.print()" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK DOKUMEN</button>
+                    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK</button>
                 </div>
 
                 <div id="printArea" class="border border-slate-300 bg-white p-4 rounded-xl shadow-md">
-                    <table class="w-full border-collapse text-base rounded-lg overflow-hidden shadow-sm">
+                    <table class="w-full border-collapse text-base rounded-lg overflow-hidden">
                         <thead>
                             <tr>
-                                <th colspan="10" class="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-left font-extrabold text-lg shadow-sm">${item.team_name}</th>
+                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-left font-extrabold text-lg">
+                                    <div class="flex items-center">
+                                        <span>${item.team_name}</span>
+                                        <span class="ml-16 text-amber-800 font-extrabold text-sm uppercase">
+                                            CUSTODY : ${item.member_name}
+                                        </span>
+                                    </div>
+                                </th>
                             </tr>
-                            <tr class="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 text-white font-bold shadow-inner text-base">
-                                <th class="border border-slate-500 p-3 w-14 font-bold shadow-sm text-center">NO</th>
-                                <th class="border border-slate-500 p-3 w-28 font-bold shadow-sm text-center">TID</th>
-                                <th class="border border-slate-500 p-3 px-4 text-center whitespace-nowrap font-bold shadow-sm">LOKASI</th>
-                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate font-bold shadow-sm">BARCODE RPL</th>
-                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px] truncate font-bold shadow-sm">BARCODE FLM</th>
-                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">RAK</th>
-                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">BARIS</th>
-                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center">KOLOM</th>
-                                <th class="border border-slate-500 p-3 w-28 font-bold shadow-sm text-center">KETERANGAN</th>
-                                <th class="border border-slate-500 p-3 w-16 font-bold shadow-sm text-center"></th>
+                            <tr class="bg-slate-500 text-white font-bold text-base">
+                                <th class="border border-slate-500 p-3 w-14 text-center">NO</th>
+                                <th class="border border-slate-500 p-3 w-28 text-center">TID</th>
+                                <th class="border border-slate-500 p-3 px-4 text-center">LOKASI</th>
+                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">RPL</th>
+                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">FLM</th>
+                                <th class="border border-slate-500 p-3 w-16 text-center">RAK</th>
+                                <th class="border border-slate-500 p-3 w-16 text-center">BARIS</th>
+                                <th class="border border-slate-500 p-3 w-16 text-center">KOLOM</th>
+                                <th class="border border-slate-500 p-3 w-28 text-center">KET</th>
+                                <th class="border border-slate-500 p-3 w-16 text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
             `;
-
             item.data.forEach((row, rIdx) => {
-                let bg = rIdx % 2 === 0 ? "bg-slate-50/80" : "bg-white";
+                let isNotFound = row[2] === "⚠️ TID TIDAK TERDAFTAR";
+                let isDuplicate = row[2].includes("⚠️ DUPLIKAT");
+
+                let cellClass = "text-blue-900";
+                let lokasiClass = "";
+
+                if (isDuplicate) {
+                    cellClass = "text-sky-900 bg-sky-200 font-extrabold";
+                    lokasiClass = "text-sky-900 font-bold bg-sky-100";
+                } else if (isNotFound) {
+                    cellClass = "text-red-700 bg-rose-100 font-extrabold";
+                    lokasiClass = "text-red-700 font-extrabold italic bg-rose-50";
+                }
+
                 html += `
-                    <tr class="${bg}">
-                        <td class="border border-slate-300 p-3 text-center text-base">${row[0]}</td>
-                        <td class="border border-slate-300 p-3 text-center font-bold text-blue-900 text-base">${row[1]}</td>
-                        <td class="border border-slate-300 p-3 px-4 text-center whitespace-nowrap text-base">${row[2]}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${row[3]}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono truncate max-w-[130px] text-base">${row[4]}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${row[5]}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${row[6]}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${row[7]}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${row[8]}</td>
-                        <td class="border border-slate-300 p-3 text-center text-base">${row[9]}</td>
+                    <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
+                        <td class="border border-slate-300 p-3 text-center">${row[0]}</td>
+                        <td class="border border-slate-300 p-3 text-center font-bold ${cellClass}">${row[1]}</td>
+                        <td class="border border-slate-300 p-3 px-4 text-center ${lokasiClass}">${row[2]}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${row[3]}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${row[4]}</td>
+                        <td class="border border-slate-300 p-3 text-center">${row[5]}</td>
+                        <td class="border border-slate-300 p-3 text-center">${row[6]}</td>
+                        <td class="border border-slate-300 p-3 text-center">${row[7]}</td>
+                        <td class="border border-slate-300 p-3 text-center">${row[8]}</td>
+                        <td class="border border-slate-300 p-3 text-center">${row[9]}</td>
                     </tr>
                 `;
             });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
+            html += `</tbody></table></div>`;
             content.innerHTML = html;
         }
 
-        function prevSlide() {
-            if (currentSlideIndex > 0) {
-                currentSlideIndex--;
-                renderSlideView();
-            }
-        }
-
-        function nextSlide() {
-            if (currentSlideIndex < previewPayload.length - 1) {
-                currentSlideIndex++;
-                renderSlideView();
-            }
-        }
+        function prevSlide() { if (currentSlideIndex > 0) { currentSlideIndex--; renderSlideView(); } }
+        function nextSlide() { if (currentSlideIndex < previewPayload.length - 1) { currentSlideIndex++; renderSlideView(); } }
     </script>
 </body>
 </html>
