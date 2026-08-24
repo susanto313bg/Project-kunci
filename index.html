@@ -89,12 +89,12 @@
         }
         
         .padlock-shackle {
-            width: 52px;
-            height: 48px;
-            border: 8px solid #94a3b8;
+            width: 48px;
+            height: 42px;
+            border: 7px solid #94a3b8;
             border-bottom: none;
-            border-top-left-radius: 28px;
-            border-top-right-radius: 28px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
             background: transparent;
             box-shadow: inset 2px 2px 4px rgba(255,255,255,0.6), inset -2px -2px 4px rgba(0,0,0,0.8);
             margin: 0 auto -6px auto;
@@ -201,6 +201,10 @@
             
             <div class="space-y-4 text-left">
                 <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">User ID Akses Baru</label>
+                    <input type="text" id="modalNewUserId" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase" placeholder="Contoh: ADMIN04">
+                </div>
+                <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Password Akses Baru</label>
                     <input type="text" id="modalNewPwd" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Contoh: 888">
                 </div>
@@ -222,40 +226,54 @@
         </div>
     </div>
 
-    <!-- LAYAR LOGIN 3D GEMBOK LOCK THEME -->
+    <!-- LAYAR LOGIN 3D GEMBOK LOCK THEME DENGAN 2 TEXTBOX -->
     <div id="loginScreen" class="fixed inset-0 bg-[#070b14]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div id="loginCard" class="lock-3d-card p-8 w-[390px] text-center relative overflow-hidden">
+        <div id="loginCard" class="lock-3d-card p-7 w-[410px] text-center relative overflow-hidden">
             <div class="absolute -top-12 -left-12 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl pointer-events-none"></div>
             <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-orange-600/20 rounded-full blur-2xl pointer-events-none"></div>
 
-            <div class="relative mb-5 pt-2">
+            <div class="relative mb-3 pt-1">
                 <div class="padlock-shackle"></div>
-                <div class="padlock-body w-16 h-14 mx-auto rounded-xl flex items-center justify-center relative">
-                    <div class="w-3.5 h-3.5 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24] flex items-center justify-center">
-                        <div class="w-1.5 h-2 bg-slate-950 rounded-xs mt-1"></div>
+                <div class="padlock-body w-14 h-12 mx-auto rounded-xl flex items-center justify-center relative">
+                    <div class="w-3 h-3 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24] flex items-center justify-center">
+                        <div class="w-1.5 h-1.5 bg-slate-950 rounded-xs mt-0.5"></div>
                     </div>
                 </div>
             </div>
 
             <h2 class="text-xl font-black text-white tracking-wider uppercase drop-shadow-md">PT. Bringin Gigantara</h2>
-            <p class="text-[11px] font-bold text-amber-400 tracking-widest uppercase mb-6 drop-shadow">Integrated Cash Solutions</p>
+            <p class="text-[10px] font-bold text-amber-400 tracking-widest uppercase mb-4 drop-shadow">Integrated Cash Solutions</p>
             
-            <div class="text-left mb-4">
-                <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <span>🔐</span> Masukkan Password Akses:
-                </label>
-                <div id="inputGroup" class="input-inset-3d rounded-xl p-1.5 flex items-center transition">
-                    <input type="password" id="loginPass" class="w-full text-center text-xl font-bold text-white bg-transparent outline-none tracking-[0.3em] placeholder-slate-600 px-3 py-1.5" placeholder="••••" autofocus onkeypress="if(event.key === 'Enter') handleLogin()" oninput="clearLoginError()">
+            <div class="space-y-3 text-left mb-2">
+                <!-- Textbox 1: User ID / Username -->
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <span>👤</span> User ID / Username:
+                    </label>
+                    <div id="inputGroupUser" class="input-inset-3d rounded-xl p-1 flex items-center transition">
+                        <input type="text" id="loginUserId" class="w-full text-center text-sm font-bold text-amber-300 bg-transparent outline-none tracking-widest uppercase placeholder-slate-600 px-3 py-1.5" placeholder="Contoh: SUPERVISOR" autofocus onkeypress="if(event.key === 'Enter') focusPasswordInput()" oninput="clearLoginError()">
+                    </div>
                 </div>
-                <p id="loginErrorMsg" class="hidden text-xs font-extrabold text-red-500 text-center mt-2.5 tracking-wide animate-pulse">
-                    ⚠️ Password salah !!!
+
+                <!-- Textbox 2: Password -->
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <span>🔐</span> Password Akses:
+                    </label>
+                    <div id="inputGroupPass" class="input-inset-3d rounded-xl p-1 flex items-center transition">
+                        <input type="password" id="loginPass" class="w-full text-center text-lg font-bold text-white bg-transparent outline-none tracking-[0.25em] placeholder-slate-600 px-3 py-1.5" placeholder="••••" onkeypress="if(event.key === 'Enter') handleLogin()" oninput="clearLoginError()">
+                    </div>
+                </div>
+
+                <p id="loginErrorMsg" class="hidden text-xs font-extrabold text-red-500 text-center pt-1 tracking-wide animate-pulse">
+                    ⚠️ User ID atau Password Salah !!!
                 </p>
             </div>
             
-            <button onclick="handleLogin()" class="btn-3d-lock w-full text-slate-950 font-black text-sm tracking-wider uppercase py-3 rounded-xl transition transform active:scale-[0.98] flex items-center justify-center gap-2 mt-4">
+            <button onclick="handleLogin()" class="btn-3d-lock w-full text-slate-950 font-black text-xs tracking-wider uppercase py-2.5 rounded-xl transition transform active:scale-[0.98] flex items-center justify-center gap-2 mt-4">
                 <span>🔓</span> UNLOCK SYSTEM
             </button>
-            <p class="text-[10px] text-slate-500 font-semibold mt-5 uppercase tracking-widest">Secured Key Management BG Bekasi</p>
+            <p class="text-[9px] text-slate-500 font-semibold mt-4 uppercase tracking-widest">Secured Key Management BG Bekasi</p>
         </div>
     </div>
 
@@ -312,7 +330,7 @@
                             <span id="lblLocation" class="text-slate-900 text-xs font-extrabold">BG BEKASI</span>
                         </div>
                         <div class="neumorphic-inset-light p-2 rounded-lg flex flex-col justify-center text-left">
-                            <span class="text-[9px] text-slate-500 uppercase font-bold">NAMA / ID USER</span>
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">USER ID / NAMA</span>
                             <span id="lblUser" class="text-blue-900 text-[11px] font-extrabold truncate">---</span>
                         </div>
                     </div>
@@ -339,19 +357,33 @@
         let syncTimeout = null; 
 
         /* =========================================================================
-         * 🔑 CATATAN KREDENSIAL PASSWORD SUPERVISOR (KASTA HIGHEST SINGLE USER)
-         * =========================================================================
-         * PASSWORD SUPERVISOR UTAMA: "555"
+         * 🔑 DAFTAR USER DATABASE DEFAULT (BERBASIS USER ID & PASSWORD)
          * ========================================================================= */
+        const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
+
         let accessRules = {
-            "555": { role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-            "00":  { role: "ADMIN", name: "ADMIN IT PENGENDALI", destination: "dashboard" },
-            "123": { role: "ADMIN", name: "ADMIN OPERASIONAL 1", destination: "dashboard" },
-            "777": { role: "ADMIN", name: "ADMIN OPERASIONAL 2", destination: "dashboard" }
+            "SUPERVISOR": { password: "555", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
+            "ADMIN01":    { password: "00",  role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
+            "ADMIN02":    { password: "123", role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
+            "ADMIN03":    { password: "777", role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
         };
 
         let activeUserSessions = {};
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
+
+        function enforceSupervisorRole() {
+            if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
+                accessRules[DEFAULT_SUPERVISOR_ID] = {
+                    password: "555",
+                    role: "SUPERVISOR",
+                    name: "SUPERVISOR UTAMA OPERASIONAL",
+                    destination: "it_support_dashboard"
+                };
+            } else {
+                accessRules[DEFAULT_SUPERVISOR_ID].role = "SUPERVISOR";
+                accessRules[DEFAULT_SUPERVISOR_ID].destination = "it_support_dashboard";
+            }
+        }
 
         function getMasterDataByTid(tid) {
             if (!tid) return null;
@@ -375,26 +407,22 @@
 
                 const savedRules = localStorage.getItem("bgi_accessRules");
                 if (savedRules) {
-                    let parsedRules = JSON.parse(savedRules);
-                    accessRules = parsedRules;
+                    accessRules = JSON.parse(savedRules);
                 }
 
-                // PERBAIKAN: Kunci Mati Akun 555 sebagai SUPERVISOR
-                accessRules["555"] = {
-                    role: "SUPERVISOR",
-                    name: (accessRules["555"] && accessRules["555"].name) ? accessRules["555"].name : "SUPERVISOR UTAMA OPERASIONAL",
-                    destination: "it_support_dashboard"
-                };
+                enforceSupervisorRole();
 
                 const savedSessions = localStorage.getItem("bgi_activeSessions");
                 if (savedSessions) activeUserSessions = JSON.parse(savedSessions);
             } catch (e) {
                 console.error("Gagal memuat local storage:", e);
+                enforceSupervisorRole();
             }
         }
 
         function saveLocalStorageData() {
             try {
+                enforceSupervisorRole();
                 localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
@@ -450,17 +478,21 @@
                     if (result.masterDatabase && Object.keys(result.masterDatabase).length > 0) {
                         let remoteMasterStr = JSON.stringify(result.masterDatabase);
                         let localMasterStr = JSON.stringify(masterDatabase);
-                        let remoteTeamStr = JSON.stringify(result.batchTeamsData || {});
-                        let localTeamStr = JSON.stringify(batchTeamsData);
 
-                        if (remoteMasterStr !== localMasterStr || remoteTeamStr !== localTeamStr) {
+                        if (remoteMasterStr !== localMasterStr) {
                             masterDatabase = result.masterDatabase;
                             if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
                             if (result.batchTeamMembers) batchTeamMembers = result.batchTeamMembers;
 
+                            if (result.accessRules) {
+                                accessRules = result.accessRules;
+                            }
+                            enforceSupervisorRole();
+
                             localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                             localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                             localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+                            localStorage.setItem("bgi_accessRules", JSON.stringify(accessRules));
 
                             if (document.getElementById("masterTableBody")) {
                                 renderMasterTable();
@@ -537,6 +569,7 @@
                     if (parsed.batchTeamMembers) batchTeamMembers = parsed.batchTeamMembers;
                     if (parsed.accessRules) accessRules = parsed.accessRules;
 
+                    enforceSupervisorRole();
                     saveLocalStorageData();
                     alert("Data berhasil dipulihkan (Restore) dengan sukses!");
                     location.reload();
@@ -573,57 +606,40 @@
 
         function clearLoginError() {
             const errLabel = document.getElementById("loginErrorMsg");
-            const inputGroup = document.getElementById("inputGroup");
+            const inputGroupUser = document.getElementById("inputGroupUser");
+            const inputGroupPass = document.getElementById("inputGroupPass");
             if (errLabel) errLabel.classList.add("hidden");
-            if (inputGroup) inputGroup.classList.remove("input-error-border");
+            if (inputGroupUser) inputGroupUser.classList.remove("input-error-border");
+            if (inputGroupPass) inputGroupPass.classList.remove("input-error-border");
         }
 
-        // PERBAIKAN LOGIKA HANDLE LOGIN KHUSUS USER SUPERVISOR (555)
-        async function handleLogin() {
+        function focusPasswordInput() {
             const pwdInput = document.getElementById("loginPass");
-            const pwd = pwdInput.value.trim();
-            const errLabel = document.getElementById("loginErrorMsg");
-            const inputGroup = document.getElementById("inputGroup");
-            const card = document.getElementById("loginCard");
+            if (pwdInput) pwdInput.focus();
+        }
+
+        // PERBAIKAN LOGIKA HANDLE LOGIN (USER ID + PASSWORD VALIDATION)
+        async function handleLogin() {
+            const userInput = document.getElementById("loginUserId");
+            const pwdInput = document.getElementById("loginPass");
             
-            if (pwd === "555" || (accessRules[pwd] && accessRules[pwd].role === "SUPERVISOR")) {
-                clearLoginError();
-                currentUser = {
-                    id: pwd,
-                    name: "SUPERVISOR UTAMA OPERASIONAL",
-                    role: "SUPERVISOR",
-                    destination: "it_support_dashboard",
-                    location: "BG BEKASI",
-                    loginTime: new Date().toLocaleTimeString('id-ID')
-                };
+            const userId = userInput.value.trim().toUpperCase();
+            const pwd = pwdInput.value.trim();
 
-                activeUserSessions[currentUser.id] = {
-                    name: currentUser.name,
-                    role: currentUser.role,
-                    loginTime: currentUser.loginTime,
-                    status: "ONLINE"
-                };
-                saveLocalStorageData();
+            const errLabel = document.getElementById("loginErrorMsg");
+            const inputGroupUser = document.getElementById("inputGroupUser");
+            const inputGroupPass = document.getElementById("inputGroupPass");
+            const card = document.getElementById("loginCard");
 
-                document.getElementById("loginScreen").classList.add("hidden");
-                document.getElementById("mainApp").classList.remove("hidden");
-                
-                document.getElementById("sidebarRole").innerHTML = `SUPERVISOR<br>BG BEKASI`;
-                document.getElementById("lblLocation").innerText = currentUser.location;
-                document.getElementById("lblUser").innerText = `${currentUser.name}`;
-                
-                updateSidebarDateTime();
-                buildSidebarMenu();
-                renderItSupportDashboard();
-            } else if (accessRules[pwd]) {
+            if (accessRules[userId] && accessRules[userId].password === pwd) {
                 clearLoginError();
-                let config = accessRules[pwd];
+                let config = accessRules[userId];
                 
                 currentUser = {
-                    id: pwd,
+                    id: userId,
                     name: config.name,
-                    role: "ADMIN",
-                    destination: "dashboard",
+                    role: config.role,
+                    destination: config.destination || (config.role === "SUPERVISOR" ? "it_support_dashboard" : "dashboard"),
                     location: "BG BEKASI",
                     loginTime: new Date().toLocaleTimeString('id-ID')
                 };
@@ -639,16 +655,22 @@
                 document.getElementById("loginScreen").classList.add("hidden");
                 document.getElementById("mainApp").classList.remove("hidden");
                 
-                document.getElementById("sidebarRole").innerHTML = `ADMIN<br>BG BEKASI`;
+                document.getElementById("sidebarRole").innerHTML = `${currentUser.role}<br>BG BEKASI`;
                 document.getElementById("lblLocation").innerText = currentUser.location;
-                document.getElementById("lblUser").innerText = `${currentUser.name}`;
+                document.getElementById("lblUser").innerText = `${currentUser.id} - ${currentUser.name}`;
                 
                 updateSidebarDateTime();
                 buildSidebarMenu();
-                renderHomeDashboardHtml();
+                
+                if (currentUser.role === "SUPERVISOR") {
+                    renderItSupportDashboard();
+                } else {
+                    renderHomeDashboardHtml();
+                }
             } else {
                 if (errLabel) errLabel.classList.remove("hidden");
-                if (inputGroup) inputGroup.classList.add("input-error-border");
+                if (inputGroupUser) inputGroupUser.classList.add("input-error-border");
+                if (inputGroupPass) inputGroupPass.classList.add("input-error-border");
                 
                 if (card) {
                     card.classList.remove("animate-shake");
@@ -657,7 +679,7 @@
                 }
                 
                 pwdInput.value = "";
-                pwdInput.focus();
+                userInput.focus();
             }
         }
 
@@ -749,7 +771,7 @@
                                 PANEL SUPERVISOR UTAMA
                             </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
-                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola password akun Admin, serta memantau status sesi operasional BG Bekasi.
+                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional BG Bekasi.
                             </p>
                         </div>
                     </div>
@@ -783,8 +805,8 @@
                                 <span class="text-[10px] font-bold text-orange-800 bg-orange-200/60 px-2 py-0.5 rounded-full">${totalRoles} Akun</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-extrabold text-slate-900">Manajemen Admin & Password</h3>
-                                <p class="text-[11px] text-slate-600 mt-0.5">Tambah Admin tanpa batas, ubah password & opsi recovery Supervisor.</p>
+                                <h3 class="text-sm font-extrabold text-slate-900">Manajemen User ID & Password</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Tambah Admin tanpa batas, ubah User ID/password & opsi recovery Supervisor.</p>
                             </div>
                         </div>
 
@@ -808,22 +830,24 @@
             
             let rulesListHtml = "";
             let indexNo = 1;
-            for (let [pwd, data] of Object.entries(accessRules)) {
-                let isSupervisor = (pwd === "555" || data.role === "SUPERVISOR");
+            for (let [uId, data] of Object.entries(accessRules)) {
+                let isSupervisor = (uId === DEFAULT_SUPERVISOR_ID || data.role === "SUPERVISOR");
                 rulesListHtml += `
                     <tr class="border-b border-slate-200 ${isSupervisor ? 'bg-amber-50/60 font-bold' : ''}">
                         <td class="p-3 text-center text-slate-700">${indexNo++}</td>
-                        <td class="p-3 font-mono font-bold text-purple-900">${pwd}</td>
+                        <td class="p-3 font-mono font-bold text-blue-900">${uId}</td>
+                        <td class="p-3 font-mono font-bold text-purple-900">${data.password}</td>
                         <td class="p-3">
                             ${isSupervisor ? `<span class="bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full border border-amber-600 shadow-sm">👑 SUPERVISOR (KASTA TINGGI)</span>` : `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-200">ADMIN</span>`}
                         </td>
                         <td class="p-3 text-slate-800 font-semibold">${data.name}</td>
                         <td class="p-3 text-center space-x-1">
-                            <button onclick="editPasswordPrompt('${pwd}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">Ubah Password</button>
-                            <button onclick="editNamePrompt('${pwd}')" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">Edit Nama</button>
+                            <button onclick="editUserIdPrompt('${uId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Edit User ID</button>
+                            <button onclick="editPasswordPrompt('${uId}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Ubah Password</button>
+                            <button onclick="editNamePrompt('${uId}')" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Edit Nama</button>
                             ${isSupervisor 
-                                ? `<button onclick="openSupervisorOptionsModal()" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex-inline items-center gap-1">⚙️ OPSI RECOVERY</button>` 
-                                : `<button onclick="deleteUserRole('${pwd}')" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">Hapus Admin</button>`
+                                ? `<button onclick="openSupervisorOptionsModal()" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition flex-inline items-center gap-1">⚙️ OPSI RECOVERY</button>` 
+                                : `<button onclick="deleteUserRole('${uId}')" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Hapus Admin</button>`
                             }
                         </td>
                     </tr>
@@ -833,8 +857,8 @@
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
                     <div>
-                        <span class="font-extrabold text-slate-800 text-base">🔑 MANAJEMEN USER ADMIN</span>
-                        <p class="text-xs text-slate-500">Tambah user Admin tanpa batas dan kelola kredensial password sistem BG Bekasi</p>
+                        <span class="font-extrabold text-slate-800 text-base">🔑 MANAJEMEN USER ADMIN & CREDENTIALS</span>
+                        <p class="text-xs text-slate-500">Kelola User ID, password, dan kredensial pengguna sistem BG Bekasi</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="openAddUserModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow cursor-pointer transition flex items-center gap-1">➕ Tambah Admin Baru</button>
@@ -843,11 +867,12 @@
                 </div>
 
                 <div class="bg-white border border-slate-300 rounded-xl shadow-md p-6 max-w-5xl">
-                    <h3 class="text-xs font-extrabold text-slate-700 uppercase mb-4 tracking-wider">Daftar Kredensial Pengguna Terdaftar</h3>
+                    <h3 class="text-xs font-extrabold text-slate-700 uppercase mb-4 tracking-wider">Daftar Kredensial User ID Pengguna Terdaftar</h3>
                     <table class="w-full border-collapse text-xs">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 text-left">
-                                <th class="p-3 border-b text-center w-12">NO</th>
+                                <th class="p-3 border-b text-center w-10">NO</th>
+                                <th class="p-3 border-b">USER ID</th>
                                 <th class="p-3 border-b">PASSWORD</th>
                                 <th class="p-3 border-b">ROLE / KASTA</th>
                                 <th class="p-3 border-b">KETERANGAN NAMA PETUGAS</th>
@@ -873,10 +898,10 @@
         function resetDefaultUsers() {
             if (confirm("Apakah Anda yakin ingin mengembalikan daftar user ke default awal sistem? Ini akan memulihkan akun Supervisor & Admin bawaan jika terjadi eror/salah hapus.")) {
                 accessRules = {
-                    "555": { role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-                    "00":  { role: "ADMIN", name: "ADMIN IT PENGENDALI", destination: "dashboard" },
-                    "123": { role: "ADMIN", name: "ADMIN OPERASIONAL 1", destination: "dashboard" },
-                    "777": { role: "ADMIN", name: "ADMIN OPERASIONAL 2", destination: "dashboard" }
+                    "SUPERVISOR": { password: "555", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
+                    "ADMIN01":    { password: "00",  role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
+                    "ADMIN02":    { password: "123", role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
+                    "ADMIN03":    { password: "777", role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
                 };
                 saveLocalStorageData();
                 closeSupervisorOptionsModal();
@@ -886,10 +911,11 @@
         }
 
         function openAddUserModal() {
+            document.getElementById("modalNewUserId").value = "";
             document.getElementById("modalNewPwd").value = "";
             document.getElementById("modalNewName").value = "";
             document.getElementById("modalAddUser").classList.remove("hidden");
-            document.getElementById("modalNewPwd").focus();
+            document.getElementById("modalNewUserId").focus();
         }
 
         function closeAddUserModal() {
@@ -897,15 +923,20 @@
         }
 
         function submitNewUserModal() {
+            let newUserId = document.getElementById("modalNewUserId").value.trim().toUpperCase();
             let newPwd = document.getElementById("modalNewPwd").value.trim();
             let userName = document.getElementById("modalNewName").value.trim();
 
-            if (!newPwd) {
-                alert("Password wajib diisi!");
+            if (!newUserId) {
+                alert("User ID wajib diisi!");
                 return;
             }
-            if (accessRules[newPwd]) {
-                alert("Password tersebut sudah digunakan oleh user lain!");
+            if (accessRules[newUserId]) {
+                alert("User ID tersebut sudah terdaftar! Gunakan User ID lain.");
+                return;
+            }
+            if (!newPwd) {
+                alert("Password wajib diisi!");
                 return;
             }
             if (!userName) {
@@ -913,7 +944,8 @@
                 return;
             }
 
-            accessRules[newPwd] = {
+            accessRules[newUserId] = {
+                password: newPwd,
                 role: "ADMIN",
                 name: userName.toUpperCase(),
                 destination: "dashboard"
@@ -925,45 +957,57 @@
             renderPasswordManagementHtml();
         }
 
-        function editPasswordPrompt(oldPwd) {
-            let config = accessRules[oldPwd];
-            let newPassword = prompt(`Masukkan password baru untuk [${config.name}]:`, oldPwd);
-            if (!newPassword) return;
-            newPassword = newPassword.trim();
+        function editUserIdPrompt(oldUserId) {
+            let config = accessRules[oldUserId];
+            let newUserId = prompt(`Masukkan User ID baru untuk [${config.name}]:`, oldUserId);
+            if (!newUserId) return;
+            newUserId = newUserId.trim().toUpperCase();
 
-            if (newPassword !== oldPwd && accessRules[newPassword]) {
-                alert("Password tersebut sudah digunakan oleh user lain!");
+            if (newUserId !== oldUserId && accessRules[newUserId]) {
+                alert("User ID tersebut sudah digunakan oleh user lain!");
                 return;
             }
 
-            accessRules[newPassword] = config;
-            if (newPassword !== oldPwd) delete accessRules[oldPwd];
+            accessRules[newUserId] = config;
+            if (newUserId !== oldUserId) delete accessRules[oldUserId];
 
             saveLocalStorageData();
-            alert(`Password untuk ${config.name} berhasil diperbarui!`);
+            alert(`User ID berhasil diperbarui menjadi: ${newUserId}`);
             renderPasswordManagementHtml();
         }
 
-        function editNamePrompt(pwd) {
-            let config = accessRules[pwd];
+        function editPasswordPrompt(uId) {
+            let config = accessRules[uId];
+            let newPassword = prompt(`Masukkan password baru untuk User ID [${uId}]:`, config.password);
+            if (!newPassword) return;
+            newPassword = newPassword.trim();
+
+            accessRules[uId].password = newPassword;
+            saveLocalStorageData();
+            alert(`Password untuk User ID [${uId}] berhasil diperbarui!`);
+            renderPasswordManagementHtml();
+        }
+
+        function editNamePrompt(uId) {
+            let config = accessRules[uId];
             let newName = prompt(`Masukkan Keterangan Nama baru untuk akun ini:`, config.name);
             if (!newName) return;
             newName = newName.trim().toUpperCase();
 
-            accessRules[pwd].name = newName;
+            accessRules[uId].name = newName;
             saveLocalStorageData();
-            alert(`Nama pengguna untuk password [${pwd}] berhasil diperbarui menjadi: ${newName}`);
+            alert(`Nama pengguna untuk User ID [${uId}] berhasil diperbarui menjadi: ${newName}`);
             renderPasswordManagementHtml();
         }
 
-        function deleteUserRole(pwd) {
-            if (pwd === "555" || (accessRules[pwd] && accessRules[pwd].role === "SUPERVISOR")) {
+        function deleteUserRole(uId) {
+            if (uId === DEFAULT_SUPERVISOR_ID || (accessRules[uId] && accessRules[uId].role === "SUPERVISOR")) {
                 alert("Akun Supervisor Utama tidak boleh dihapus!");
                 return;
             }
 
-            if (confirm(`Apakah Anda yakin ingin menghapus user Admin [${accessRules[pwd].name}] secara permanen?`)) {
-                delete accessRules[pwd];
+            if (confirm(`Apakah Anda yakin ingin menghapus user Admin [${accessRules[uId].name}] (${uId}) secara permanen?`)) {
+                delete accessRules[uId];
                 saveLocalStorageData();
                 alert("✅ User Admin berhasil dihapus dari sistem!");
                 renderPasswordManagementHtml();
@@ -983,7 +1027,7 @@
                     rowsHtml += `
                         <tr class="border-b border-slate-200">
                             <td class="p-3 text-center font-bold">${idx + 1}</td>
-                            <td class="p-3 font-bold text-blue-900">${sess.name}</td>
+                            <td class="p-3 font-bold text-blue-900">${id} - ${sess.name}</td>
                             <td class="p-3 font-bold ${sess.role === 'SUPERVISOR' ? 'text-amber-700' : 'text-blue-800'}">${sess.role}</td>
                             <td class="p-3 text-center font-mono text-emerald-700 font-bold">🟢 ONLINE (Sejak ${sess.loginTime})</td>
                         </tr>
@@ -1005,7 +1049,7 @@
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 text-left">
                                 <th class="p-3 border-b text-center w-12">NO</th>
-                                <th class="p-3 border-b">NAMA USER</th>
+                                <th class="p-3 border-b">USER ID / NAMA USER</th>
                                 <th class="p-3 border-b">ROLE / HAK AKSES</th>
                                 <th class="p-3 border-b text-center">STATUS SESI</th>
                             </tr>
@@ -1067,7 +1111,7 @@
                 <div class="bg-white border border-slate-300 rounded-xl shadow-md p-6 max-w-xl space-y-4">
                     <div>
                         <h4 class="text-xs font-extrabold text-slate-700 uppercase mb-1">Unduh Cadangan Sistem (.json)</h4>
-                        <p class="text-xs text-slate-500 mb-3">Simpan seluruh konfigurasi master data, data team shift, dan password akses ke file lokal.</p>
+                        <p class="text-xs text-slate-500 mb-3">Simpan seluruh konfigurasi master data, data team shift, dan User ID/password ke file lokal.</p>
                         <button onclick="downloadSystemBackup()" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2 rounded shadow">📥 Download Backup File</button>
                     </div>
                 </div>
