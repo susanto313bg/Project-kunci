@@ -371,6 +371,7 @@
         let activeUserSessions = {};
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
 
+        // PERBAIKAN: KHUSUS HANYA 1 USER ID "SUPERVISOR" YANG BERHAK DIBERIKAN ROLE SUPERVISOR
         function enforceSupervisorRole() {
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
                 accessRules[DEFAULT_SUPERVISOR_ID] = {
@@ -382,6 +383,14 @@
             } else {
                 accessRules[DEFAULT_SUPERVISOR_ID].role = "SUPERVISOR";
                 accessRules[DEFAULT_SUPERVISOR_ID].destination = "it_support_dashboard";
+            }
+
+            // DEDEGRAKASIKAN SEMUA AKUN LAIN JIKA TERLANJUR MENJADI SUPERVISOR
+            for (let uId in accessRules) {
+                if (uId !== DEFAULT_SUPERVISOR_ID && accessRules[uId].role === "SUPERVISOR") {
+                    accessRules[uId].role = "ADMIN";
+                    accessRules[uId].destination = "dashboard";
+                }
             }
         }
 
@@ -618,7 +627,6 @@
             if (pwdInput) pwdInput.focus();
         }
 
-        // PERBAIKAN LOGIKA HANDLE LOGIN (USER ID + PASSWORD VALIDATION)
         async function handleLogin() {
             const userInput = document.getElementById("loginUserId");
             const pwdInput = document.getElementById("loginPass");
@@ -825,20 +833,21 @@
             `;
         }
 
+        // PERBAIKAN: KHUSUS HANYA 1 USER ID "SUPERVISOR" YANG MENJADI SUPERVISOR TUNGGAL
         function renderPasswordManagementHtml() {
             const content = document.getElementById("contentArea");
             
             let rulesListHtml = "";
             let indexNo = 1;
             for (let [uId, data] of Object.entries(accessRules)) {
-                let isSupervisor = (uId === DEFAULT_SUPERVISOR_ID || data.role === "SUPERVISOR");
+                let isSupervisor = (uId === DEFAULT_SUPERVISOR_ID);
                 rulesListHtml += `
                     <tr class="border-b border-slate-200 ${isSupervisor ? 'bg-amber-50/60 font-bold' : ''}">
                         <td class="p-3 text-center text-slate-700">${indexNo++}</td>
                         <td class="p-3 font-mono font-bold text-blue-900">${uId}</td>
-                        <td class="p-3 font-mono font-bold text-purple-900">${data.password}</td>
+                        <td class="p-3 font-mono font-bold text-purple-900">${data.password || '-'}</td>
                         <td class="p-3">
-                            ${isSupervisor ? `<span class="bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full border border-amber-600 shadow-sm">👑 SUPERVISOR (KASTA TINGGI)</span>` : `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-200">ADMIN</span>`}
+                            ${isSupervisor ? `<span class="bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-full border border-amber-600 shadow-sm">👑 SUPERVISOR</span>` : `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-200">ADMIN</span>`}
                         </td>
                         <td class="p-3 text-slate-800 font-semibold">${data.name}</td>
                         <td class="p-3 text-center space-x-1">
@@ -847,7 +856,7 @@
                             <button onclick="editNamePrompt('${uId}')" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Edit Nama</button>
                             ${isSupervisor 
                                 ? `<button onclick="openSupervisorOptionsModal()" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition flex-inline items-center gap-1">⚙️ OPSI RECOVERY</button>` 
-                                : `<button onclick="deleteUserRole('${uId}')" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Hapus Admin</button>`
+                                : `<button onclick="deleteUserRole('${uId}')" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Hapus User</button>`
                             }
                         </td>
                     </tr>
@@ -958,6 +967,11 @@
         }
 
         function editUserIdPrompt(oldUserId) {
+            if (oldUserId === DEFAULT_SUPERVISOR_ID) {
+                alert("User ID Supervisor Utama tidak boleh diubah untuk menjaga integritas sistem!");
+                return;
+            }
+
             let config = accessRules[oldUserId];
             let newUserId = prompt(`Masukkan User ID baru untuk [${config.name}]:`, oldUserId);
             if (!newUserId) return;
@@ -1001,7 +1015,7 @@
         }
 
         function deleteUserRole(uId) {
-            if (uId === DEFAULT_SUPERVISOR_ID || (accessRules[uId] && accessRules[uId].role === "SUPERVISOR")) {
+            if (uId === DEFAULT_SUPERVISOR_ID) {
                 alert("Akun Supervisor Utama tidak boleh dihapus!");
                 return;
             }
@@ -1009,7 +1023,7 @@
             if (confirm(`Apakah Anda yakin ingin menghapus user Admin [${accessRules[uId].name}] (${uId}) secara permanen?`)) {
                 delete accessRules[uId];
                 saveLocalStorageData();
-                alert("✅ User Admin berhasil dihapus dari sistem!");
+                alert("✅ User Admin/Duplikat berhasil dihapus dari sistem!");
                 renderPasswordManagementHtml();
             }
         }
