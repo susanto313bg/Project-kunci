@@ -10,6 +10,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 5mm;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 10px !important;
+            }
             body * {
                 visibility: hidden;
             }
@@ -20,19 +29,36 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
-                padding: 0;
-                margin: 0;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
             .no-print { 
                 display: none !important; 
             }
-            .page-break { 
-                page-break-after: always; 
-                break-after: page; 
+            /* Optimasi Ukuran Tabel Saat Dicetak Agar Muat 1 Lembar Presisi */
+            #printArea table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+            }
+            #printArea th, #printArea td {
+                padding: 2px 3px !important;
+                font-size: 10px !important;
+                line-height: 1.1 !important;
+                height: 22px !important;
+            }
+            #printArea th {
+                padding: 4px 3px !important;
+                font-size: 10.5px !important;
             }
         }
+
         /* Efek sel aktif / terblok ala Excel */
         .tid-cell-selected {
             background-color: #FEF08A !important;
@@ -43,7 +69,7 @@
 
         /* Styling Peringatan TID Tidak Terdaftar (Merah Soft) */
         .tid-not-found {
-            background-color: #FFE4E6 !important; /* Soft Red / Rose */
+            background-color: #FFE4E6 !important;
             border: 2px solid #F43F5E !important;
             color: #9F1239 !important;
             font-weight: bold;
@@ -51,13 +77,13 @@
 
         /* Styling Peringatan TID Duplikat (Biru Soft / Sky) */
         .tid-duplicate {
-            background-color: #BAE6FD !important; /* Light Sky Blue */
+            background-color: #BAE6FD !important;
             border: 2px solid #0284C7 !important;
             color: #0369A1 !important;
             font-weight: bold;
         }
 
-        /* Animasi Teks Berjalan dari Kiri ke Kanan sampai Ujung */
+        /* Animasi Teks Berjalan */
         @keyframes marqueeRight {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
@@ -68,7 +94,7 @@
             animation: marqueeRight 12s linear infinite;
         }
 
-        /* 3D Neumorphism Style untuk Kotak Profil Sidebar dengan Textbox Terang */
+        /* 3D Neumorphism Style untuk Profil Sidebar */
         .neumorphic-profile {
             background: #1e222d;
             border-radius: 16px;
@@ -133,7 +159,6 @@
             box-shadow: 0 2px 0 #9a3412, 0 4px 8px rgba(249, 115, 22, 0.3);
         }
 
-        /* Animasi Shake saat Password Salah */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-10px); }
@@ -245,7 +270,6 @@
             <p class="text-[10px] font-bold text-amber-400 tracking-widest uppercase mb-4 drop-shadow">Integrated Cash Solutions</p>
             
             <div class="space-y-3 text-left mb-2">
-                <!-- Textbox 1: User ID / Username (Optimasasi Anti Auto-Capitalize & Autocorrect HP) -->
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <span>👤</span> User ID / Username:
@@ -255,7 +279,6 @@
                     </div>
                 </div>
 
-                <!-- Textbox 2: Password (Optimasasi Anti Autocorrect HP) -->
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <span>🔐</span> Password Akses:
@@ -371,7 +394,6 @@
         let activeUserSessions = {};
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
 
-        // PERBAIKAN: HANYA USER ID "SUPERVISOR" TUNGGAL YANG BOLEH MENJADI SUPERVISOR
         function enforceSupervisorRole() {
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
                 accessRules[DEFAULT_SUPERVISOR_ID] = {
@@ -385,7 +407,6 @@
                 accessRules[DEFAULT_SUPERVISOR_ID].destination = "it_support_dashboard";
             }
 
-            // DEDEGRADASIKAN SEMUA AKUN LAIN JIKA TERLANJUR MENJADI SUPERVISOR
             for (let uId in accessRules) {
                 if (uId !== DEFAULT_SUPERVISOR_ID && accessRules[uId].role === "SUPERVISOR") {
                     accessRules[uId].role = "ADMIN";
@@ -627,12 +648,10 @@
             if (pwdInput) pwdInput.focus();
         }
 
-        // PERBAIKAN UTAMA: LOGIKA HANDLE LOGIN SANGAT FLEKSIBEL & RAMAH KEYBOARD HP
         async function handleLogin() {
             const userInput = document.getElementById("loginUserId");
             const pwdInput = document.getElementById("loginPass");
             
-            // Bersihkan spasi berlebih & trailed space khas keyboard HP
             const userId = userInput.value.replace(/\s+/g, '').toUpperCase();
             const pwd = pwdInput.value.trim();
 
@@ -641,7 +660,6 @@
             const inputGroupPass = document.getElementById("inputGroupPass");
             const card = document.getElementById("loginCard");
 
-            // Pencocokan fleksibel berbasis string & case-insensitive
             let foundUserId = Object.keys(accessRules).find(id => id.trim().toUpperCase() === userId);
 
             if (foundUserId && String(accessRules[foundUserId].password).trim() === pwd) {
@@ -1704,7 +1722,7 @@
                                 </thead>
                                 <tbody>
             `;
-            for (let i = 0; i < 16; i++) {
+            for (let i = 0; i < 18; i++) {
                 let val = previousTids[i] || "";
                 html += `
                     <tr>
@@ -1760,7 +1778,7 @@
                             </thead>
                             <tbody id="realtimePreviewBody">
             `;
-            for (let i = 0; i < 16; i++) {
+            for (let i = 0; i < 18; i++) {
                 let tid = previousTids[i] || "";
                 let master = getMasterDataByTid(tid) || {};
 
@@ -2094,6 +2112,7 @@
             renderSlideView();
         }
 
+        // PERBAIKAN: FORMULA HASIL CETAK 1 LEMBAR DENGAN PROPORSI TABEL PRESISI
         function renderSlideView() {
             const content = document.getElementById("contentArea");
             if (previewPayload.length === 0) return;
@@ -2109,30 +2128,30 @@
                     <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK</button>
                 </div>
 
-                <div id="printArea" class="border border-slate-300 bg-white p-4 rounded-xl shadow-md">
-                    <table class="w-full border-collapse text-base rounded-lg overflow-hidden">
+                <div id="printArea" class="border border-slate-300 bg-white p-3 rounded-xl shadow-md">
+                    <table class="w-full border-collapse text-xs rounded-lg overflow-hidden">
                         <thead>
                             <tr>
-                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-left font-extrabold text-lg">
-                                    <div class="flex items-center">
-                                        <span>${item.team_name}</span>
-                                        <span class="ml-16 text-amber-800 font-extrabold text-sm uppercase">
+                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-2 text-left font-extrabold text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-black">${item.team_name}</span>
+                                        <span class="text-amber-800 font-extrabold uppercase">
                                             CUSTODY : ${item.member_name}
                                         </span>
                                     </div>
                                 </th>
                             </tr>
-                            <tr class="bg-slate-500 text-white font-bold text-base">
-                                <th class="border border-slate-500 p-3 w-14 text-center">NO</th>
-                                <th class="border border-slate-500 p-3 w-28 text-center">TID</th>
-                                <th class="border border-slate-500 p-3 px-4 text-center">LOKASI</th>
-                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">RPL</th>
-                                <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">FLM</th>
-                                <th class="border border-slate-500 p-3 w-16 text-center">RAK</th>
-                                <th class="border border-slate-500 p-3 w-16 text-center">BARIS</th>
-                                <th class="border border-slate-500 p-3 w-16 text-center">KOLOM</th>
-                                <th class="border border-slate-500 p-3 w-28 text-center">KET</th>
-                                <th class="border border-slate-500 p-3 w-16 text-center"></th>
+                            <tr class="bg-slate-600 text-white font-bold text-xs">
+                                <th class="border border-slate-500 p-1.5 w-[32px] text-center">NO</th>
+                                <th class="border border-slate-500 p-1.5 w-[85px] text-center">TID</th>
+                                <th class="border border-slate-500 p-1.5 px-2 text-center">LOKASI</th>
+                                <th class="border border-slate-500 p-1.5 px-1 text-center w-[110px]">RPL</th>
+                                <th class="border border-slate-500 p-1.5 px-1 text-center w-[110px]">FLM</th>
+                                <th class="border border-slate-500 p-1.5 w-[42px] text-center">RAK</th>
+                                <th class="border border-slate-500 p-1.5 w-[42px] text-center">BARIS</th>
+                                <th class="border border-slate-500 p-1.5 w-[42px] text-center">KOLOM</th>
+                                <th class="border border-slate-500 p-1.5 w-[80px] text-center">KET</th>
+                                <th class="border border-slate-500 p-1.5 w-[30px] text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2154,16 +2173,16 @@
 
                 html += `
                     <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
-                        <td class="border border-slate-300 p-3 text-center">${row[0]}</td>
-                        <td class="border border-slate-300 p-3 text-center font-bold ${cellClass}">${row[1]}</td>
-                        <td class="border border-slate-300 p-3 px-4 text-center ${lokasiClass}">${row[2]}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${row[3]}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${row[4]}</td>
-                        <td class="border border-slate-300 p-3 text-center">${row[5]}</td>
-                        <td class="border border-slate-300 p-3 text-center">${row[6]}</td>
-                        <td class="border border-slate-300 p-3 text-center">${row[7]}</td>
-                        <td class="border border-slate-300 p-3 text-center">${row[8]}</td>
-                        <td class="border border-slate-300 p-3 text-center">${row[9]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-semibold">${row[0]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-bold ${cellClass}">${row[1]}</td>
+                        <td class="border border-slate-300 p-1 px-2 text-left truncate ${lokasiClass}">${row[2]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-mono text-[11px]">${row[3]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-mono text-[11px]">${row[4]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-bold">${row[5]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-bold">${row[6]}</td>
+                        <td class="border border-slate-300 p-1 text-center font-bold">${row[7]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[8]}</td>
+                        <td class="border border-slate-300 p-1 text-center">${row[9]}</td>
                     </tr>
                 `;
             });
