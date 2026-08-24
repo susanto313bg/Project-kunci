@@ -98,15 +98,17 @@
 
         <!-- Sub-bar Version dengan Tombol Sinkron Google Sheets -->
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
-            <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
+            <div class="flex items-center gap-3">
+                <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
+                <!-- Indikator Status Real-time Sync -->
+                <span id="syncStatusIndicator" class="text-[10px] bg-emerald-700 text-white px-2 py-0.5 rounded-full font-normal flex items-center gap-1 shadow-inner">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Real-Time Sync Active
+                </span>
+            </div>
             <div class="flex items-center gap-2">
-                <!-- Tombol Upload ke Google Sheets (PC A) -->
-                <button onclick="uploadToGoogleSheets()" id="btnUploadSheet" class="bg-amber-700 hover:bg-amber-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
-                    ☁️ Upload ke Google Sheets
-                </button>
-                <!-- Tombol Sinkron Google Sheets (PC B) -->
+                <!-- Tombol Sinkron Manual -->
                 <button onclick="syncFromGoogleSheets()" id="btnSyncSheet" class="bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
-                    ☁️ Sinkron Google Sheets
+                    ☁️ Sinkron Manual
                 </button>
                 <button onclick="downloadMasterdataExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
                     📊 Download Masterdata (Excel)
@@ -226,8 +228,9 @@
         let currentSlideIndex = 0;
         let masterDatabase = {}; 
         let currentAppPassword = "123"; // Password default sistem
+        let syncTimeout = null; // Pengendali background auto-sync
 
-        // URL Google Apps Script Web App yang sudah terpasang
+        // URL Google Apps Script Web App pusat
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
 
         function loadLocalStorageData() {
@@ -248,26 +251,32 @@
             }
         }
 
+        // Fungsi penyimpanan lokal yang otomatis mentrigger Background Auto-Sync real-time ke Google Sheets
         function saveLocalStorageData() {
             try {
                 localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
                 localStorage.setItem("bgi_appPassword", currentAppPassword);
+
+                // Auto-sync ke cloud secara background tanpa mengganggu user (Debounced 1.5 detik)
+                if (syncTimeout) clearTimeout(syncTimeout);
+                syncTimeout = setTimeout(() => {
+                    backgroundAutoSyncToCloud();
+                }, 1500);
+
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
         }
 
-        // Fungsi Upload data ke Google Sheets pusat (PC A)
-        async function uploadToGoogleSheets() {
-            if (!GOOGLE_SHEETS_API_URL) {
-                alert("URL Google Sheets API belum dikonfigurasi di dalam skrip!");
-                return;
+        // Fungsi background auto-sync ke server pusat
+        async function backgroundAutoSyncToCloud() {
+            if (!GOOGLE_SHEETS_API_URL) return;
+            const indicator = document.getElementById("syncStatusIndicator");
+            if(indicator) {
+                indicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping"></span> Syncing...`;
             }
-            const btn = document.getElementById("btnUploadSheet");
-            btn.innerText = "Mengunggah...";
-            btn.disabled = true;
 
             try {
                 let payload = {
@@ -277,22 +286,23 @@
                     batchTeamMembers: batchTeamMembers
                 };
 
-                let response = await fetch(GOOGLE_SHEETS_API_URL, {
+                await fetch(GOOGLE_SHEETS_API_URL, {
                     method: "POST",
                     body: JSON.stringify(payload)
                 });
-                let result = await response.json();
-                alert(result.message || "Data berhasil diunggah ke Google Sheets pusat!");
+
+                if(indicator) {
+                    indicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Real-Time Sync Active`;
+                }
             } catch (e) {
-                console.error("Gagal mengunggah:", e);
-                alert("Gagal mengunggah data ke Google Sheets.");
-            } finally {
-                btn.innerText = "☁️ Upload ke Google Sheets";
-                btn.disabled = false;
+                console.error("Auto-sync background gagal:", e);
+                if(indicator) {
+                    indicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Sync Offline`;
+                }
             }
         }
 
-        // Fungsi Sinkron/Tarik data dari Google Sheets pusat (PC B)
+        // Fungsi Sinkron Manual dari Google Sheets (untuk ditarik kapanpun dibutuhkan)
         async function syncFromGoogleSheets() {
             if (!GOOGLE_SHEETS_API_URL) {
                 alert("URL Google Sheets API belum dikonfigurasi di dalam skrip!");
@@ -311,9 +321,20 @@
                     if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
                     if (result.batchTeamMembers) batchTeamMembers = result.batchTeamMembers;
 
-                    saveLocalStorageData();
+                    localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
+                    localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
+                    localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+
                     alert("Data berhasil disinkronkan dari Google Sheets pusat!");
-                    location.reload();
+                    
+                    // Refresh tampilan halaman yang sedang aktif
+                    if (document.getElementById("masterTableBody")) {
+                        renderMasterTable();
+                    } else if (document.getElementById("previewTeamTitle") || document.querySelector(".grid.grid-cols-1.md\\:grid-cols-2")) {
+                        renderTeamMenuHtml();
+                    } else {
+                        location.reload();
+                    }
                 } else {
                     alert("Format data sinkron tidak valid.");
                 }
@@ -321,9 +342,50 @@
                 console.error("Gagal sinkronisasi:", e);
                 alert("Gagal mengambil data dari Google Sheets.");
             } finally {
-                btn.innerText = "☁️ Sinkron Google Sheets";
+                btn.innerText = "☁️ Sinkron Manual";
                 btn.disabled = false;
             }
+        }
+
+        // Polling berkala (otomatis mengecek update dari PC lain setiap 15 detik)
+        function initRealtimePolling() {
+            setInterval(async () => {
+                if (!GOOGLE_SHEETS_API_URL) return;
+                try {
+                    let response = await fetch(GOOGLE_SHEETS_API_URL + "?action=sync");
+                    let result = await response.json();
+
+                    if (result.masterDatabase && Object.keys(result.masterDatabase).length > 0) {
+                        let remoteMasterStr = JSON.stringify(result.masterDatabase);
+                        let localMasterStr = JSON.stringify(masterDatabase);
+                        
+                        let remoteTeamStr = JSON.stringify(result.batchTeamsData || {});
+                        let localTeamStr = JSON.stringify(batchTeamsData);
+
+                        // Update jika ada perubahan data dari server/PC lain
+                        if (remoteMasterStr !== localMasterStr || remoteTeamStr !== localTeamStr) {
+                            masterDatabase = result.masterDatabase;
+                            if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
+                            if (result.batchTeamMembers) batchTeamMembers = result.batchTeamMembers;
+
+                            localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
+                            localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
+                            localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+
+                            // Refresh tabel master jika sedang dibuka
+                            if (document.getElementById("masterTableBody")) {
+                                renderMasterTable();
+                            }
+                            // Refresh realtime preview team jika sedang mengisi team RPL
+                            if (typeof updateRealtimePreview === "function" && document.getElementById("realtimePreviewBody")) {
+                                updateRealtimePreview();
+                            }
+                        }
+                    }
+                } catch (err) {
+                    // Silent catch untuk polling background
+                }
+            }, 15000); // Cek setiap 15 detik
         }
 
         // Fungsi Download Masterdata ke File Excel (.xlsx) secara Instan
@@ -386,6 +448,7 @@
         }
 
         loadLocalStorageData();
+        initRealtimePolling(); // Aktifkan sinkronisasi real-time otomatis
 
         const teamGroups = {
             "PAGI": [
@@ -576,7 +639,7 @@
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>💡 <strong>Tips:</strong> Gunakan tombol <strong>Upload ke Google Sheets</strong> dan <strong>Sinkron Google Sheets</strong> di atas untuk sinkronisasi data antar PC secara mudah.</span>
+                        <span>💡 <strong>Info:</strong> Fitur Real-Time Sync aktif secara otomatis. Perubahan data master maupun pengisian team RPL akan langsung disinkronkan ke server pusat.</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
@@ -836,7 +899,7 @@
                 kolom: document.getElementById("m_kolom").value.trim() || ""
             };
 
-            saveLocalStorageData();
+            saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud
             clearMasterForm();
             renderMasterTable(); 
             toggleMasterForm();
@@ -879,7 +942,7 @@
                         count++;
                     });
 
-                    saveLocalStorageData();
+                    saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud
                     renderMasterTable();
                     alert(`Berhasil mengimpor dan menyimpan ${count} data master dari file secara otomatis!`);
                 } catch (err) {
@@ -1196,7 +1259,7 @@
                 const inputs = document.querySelectorAll(".tid-input");
                 inputs.forEach(inp => inp.value = "");
                 batchTeamsData[teamName] = [];
-                saveLocalStorageData();
+                saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud
                 updateRealtimePreview();
             }
         }
@@ -1211,7 +1274,7 @@
 
             batchTeamsData[teamName] = tids;
             if(memberName) batchTeamMembers[teamName] = memberName;
-            saveLocalStorageData();
+            saveLocalStorageData(); // Otomatis mentrigger sinkronisasi real-time ke cloud setiap ada ketikan/input team RPL
         }
 
         function saveAndReturnMenu(teamName) {
@@ -1408,7 +1471,7 @@
                 </div>
             `;
 
-    content.innerHTML = html;
+            content.innerHTML = html;
         }
 
         function prevSlide() {
