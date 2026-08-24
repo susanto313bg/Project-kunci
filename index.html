@@ -96,19 +96,19 @@
             </div>
         </header>
 
-        <!-- Sub-bar Version dengan Tombol Sinkron Google Sheets -->
+        <!-- Sub-bar Version dengan Status Otomatis / Realtime -->
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <span>NEWCRO_PHP_V7 (WEB VERSION)</span>
                 <!-- Indikator Status Real-time Sync -->
-                <span id="syncStatusIndicator" class="text-[10px] bg-emerald-700 text-white px-2 py-0.5 rounded-full font-normal flex items-center gap-1 shadow-inner">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Real-Time Sync Active
+                <span id="syncStatusIndicator" class="text-[10px] bg-emerald-700 text-white px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span> Real-Time Auto-Sync Active
                 </span>
             </div>
             <div class="flex items-center gap-2">
-                <!-- Tombol Sinkron Manual -->
-                <button onclick="syncFromGoogleSheets()" id="btnSyncSheet" class="bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
-                    ☁️ Sinkron Manual
+                <!-- Tombol Status Otomatis / Realtime (Pengganti Sinkron Manual) -->
+                <button id="btnSyncSheet" class="bg-indigo-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow flex items-center gap-1 cursor-default">
+                    ⚡ Live Cloud Connected
                 </button>
                 <button onclick="downloadMasterdataExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1">
                     📊 Download Masterdata (Excel)
@@ -275,7 +275,7 @@
             if (!GOOGLE_SHEETS_API_URL) return;
             const indicator = document.getElementById("syncStatusIndicator");
             if(indicator) {
-                indicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping"></span> Syncing...`;
+                indicator.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-300 animate-ping"></span> Syncing to Cloud...`;
             }
 
             try {
@@ -292,62 +292,17 @@
                 });
 
                 if(indicator) {
-                    indicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Real-Time Sync Active`;
+                    indicator.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span> Real-Time Auto-Sync Active`;
                 }
             } catch (e) {
                 console.error("Auto-sync background gagal:", e);
                 if(indicator) {
-                    indicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Sync Offline`;
+                    indicator.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-400"></span> Sync Offline`;
                 }
             }
         }
 
-        // Fungsi Sinkron Manual dari Google Sheets (untuk ditarik kapanpun dibutuhkan)
-        async function syncFromGoogleSheets() {
-            if (!GOOGLE_SHEETS_API_URL) {
-                alert("URL Google Sheets API belum dikonfigurasi di dalam skrip!");
-                return;
-            }
-            const btn = document.getElementById("btnSyncSheet");
-            btn.innerText = "Menyinkronkan...";
-            btn.disabled = true;
-
-            try {
-                let response = await fetch(GOOGLE_SHEETS_API_URL + "?action=sync");
-                let result = await response.json();
-
-                if (result.masterDatabase) {
-                    masterDatabase = result.masterDatabase;
-                    if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
-                    if (result.batchTeamMembers) batchTeamMembers = result.batchTeamMembers;
-
-                    localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
-                    localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
-                    localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
-
-                    alert("Data berhasil disinkronkan dari Google Sheets pusat!");
-                    
-                    // Refresh tampilan halaman yang sedang aktif
-                    if (document.getElementById("masterTableBody")) {
-                        renderMasterTable();
-                    } else if (document.getElementById("previewTeamTitle") || document.querySelector(".grid.grid-cols-1.md\\:grid-cols-2")) {
-                        renderTeamMenuHtml();
-                    } else {
-                        location.reload();
-                    }
-                } else {
-                    alert("Format data sinkron tidak valid.");
-                }
-            } catch (e) {
-                console.error("Gagal sinkronisasi:", e);
-                alert("Gagal mengambil data dari Google Sheets.");
-            } finally {
-                btn.innerText = "☁️ Sinkron Manual";
-                btn.disabled = false;
-            }
-        }
-
-        // Polling berkala (otomatis mengecek update dari PC lain setiap 15 detik)
+        // Polling berkala otomatis (mengecek update dari database Google Sheets setiap 15 detik)
         function initRealtimePolling() {
             setInterval(async () => {
                 if (!GOOGLE_SHEETS_API_URL) return;
@@ -362,7 +317,7 @@
                         let remoteTeamStr = JSON.stringify(result.batchTeamsData || {});
                         let localTeamStr = JSON.stringify(batchTeamsData);
 
-                        // Update jika ada perubahan data dari server/PC lain
+                        // Update otomatis jika ada perubahan data dari server/PC lain
                         if (remoteMasterStr !== localMasterStr || remoteTeamStr !== localTeamStr) {
                             masterDatabase = result.masterDatabase;
                             if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
@@ -448,7 +403,7 @@
         }
 
         loadLocalStorageData();
-        initRealtimePolling(); // Aktifkan sinkronisasi real-time otomatis
+        initRealtimePolling(); // Aktifkan sinkronisasi real-time otomatis di background
 
         const teamGroups = {
             "PAGI": [
@@ -639,7 +594,7 @@
                     </div>
 
                     <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs text-slate-600 flex items-center justify-between">
-                        <span>💡 <strong>Info:</strong> Fitur Real-Time Sync aktif secara otomatis. Perubahan data master maupun pengisian team RPL akan langsung disinkronkan ke server pusat.</span>
+                        <span>💡 <strong>Info:</strong> Fitur Real-Time Auto-Sync aktif secara otomatis. Seluruh perubahan data master maupun pengisian team RPL langsung disinkronkan ke server pusat tanpa perlu tombol manual.</span>
                         <span class="font-mono text-slate-500">BG BEKASI SYSTEM V7</span>
                     </div>
                 </div>
