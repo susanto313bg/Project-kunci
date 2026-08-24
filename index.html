@@ -227,8 +227,8 @@
         let masterDatabase = {}; 
         let currentAppPassword = "123"; // Password default sistem
 
-        // URL Google Apps Script Web App (Kosongkan atau isi dengan URL deployment GAS Anda)
-        const GOOGLE_SHEETS_API_URL = "";
+        // URL Google Apps Script Web App yang sudah terpasang
+        const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
 
         function loadLocalStorageData() {
             try {
@@ -1408,7 +1408,7 @@
                 </div>
             `;
 
-            content.innerHTML = html;
+    content.innerHTML = html;
         }
 
         function prevSlide() {
