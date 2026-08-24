@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PT. Bringin Gigantara - Management Kunci</title>
+    
+    <!-- PWA Manifest & Ikon Khusus Aplikasi Desktop/Mobile -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3064/3064155.png">
+    <meta name="theme-color" content="#1E3A8A">
+
     <!-- Tailwind CSS untuk styling modern -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- SheetJS untuk membaca dan mengekspor file Excel (.xlsx, .xls) dengan akurat -->
@@ -385,10 +391,10 @@
         const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
 
         let accessRules = {
-            "SUPERVISOR": { password: "555", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-            "ADMIN01":    { password: "00",  role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
-            "ADMIN02":    { password: "123", role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
-            "ADMIN03":    { password: "777", role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
+            "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
+            "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
+            "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
+            "ADMIN03":    { password: "777",  role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
         };
 
         let activeUserSessions = {};
@@ -397,7 +403,7 @@
         function enforceSupervisorRole() {
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
                 accessRules[DEFAULT_SUPERVISOR_ID] = {
-                    password: "555",
+                    password: "9930",
                     role: "SUPERVISOR",
                     name: "SUPERVISOR UTAMA OPERASIONAL",
                     destination: "it_support_dashboard"
@@ -462,7 +468,7 @@
                 if (syncTimeout) clearTimeout(syncTimeout);
                 syncTimeout = setTimeout(() => {
                     backgroundAutoSyncToCloud();
-                }, 1500);
+                }, 500);
             } catch (e) {
                 console.error("Gagal menyimpan local storage:", e);
             }
@@ -480,7 +486,8 @@
                     action: "upload",
                     masterDatabase: masterDatabase,
                     batchTeamsData: batchTeamsData,
-                    batchTeamMembers: batchTeamMembers
+                    batchTeamMembers: batchTeamMembers,
+                    accessRules: accessRules
                 };
 
                 await fetch(GOOGLE_SHEETS_API_URL, {
@@ -505,32 +512,55 @@
                     let response = await fetch(GOOGLE_SHEETS_API_URL + "?action=sync");
                     let result = await response.json();
 
+                    let isUpdated = false;
+
                     if (result.masterDatabase && Object.keys(result.masterDatabase).length > 0) {
-                        let remoteMasterStr = JSON.stringify(result.masterDatabase);
-                        let localMasterStr = JSON.stringify(masterDatabase);
-
-                        if (remoteMasterStr !== localMasterStr) {
+                        if (JSON.stringify(result.masterDatabase) !== JSON.stringify(masterDatabase)) {
                             masterDatabase = result.masterDatabase;
-                            if (result.batchTeamsData) batchTeamsData = result.batchTeamsData;
-                            if (result.batchTeamMembers) batchTeamMembers = result.batchTeamMembers;
+                            isUpdated = true;
+                        }
+                    }
 
-                            if (result.accessRules) {
-                                accessRules = result.accessRules;
-                            }
+                    if (result.accessRules && Object.keys(result.accessRules).length > 0) {
+                        if (JSON.stringify(result.accessRules) !== JSON.stringify(accessRules)) {
+                            accessRules = result.accessRules;
                             enforceSupervisorRole();
+                            isUpdated = true;
+                        }
+                    }
 
-                            localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
-                            localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
-                            localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
-                            localStorage.setItem("bgi_accessRules", JSON.stringify(accessRules));
+                    if (result.batchTeamsData) {
+                        if (JSON.stringify(result.batchTeamsData) !== JSON.stringify(batchTeamsData)) {
+                            batchTeamsData = result.batchTeamsData;
+                            isUpdated = true;
+                        }
+                    }
 
-                            if (document.getElementById("masterTableBody")) {
-                                renderMasterTable();
+                    if (result.batchTeamMembers) {
+                        if (JSON.stringify(result.batchTeamMembers) !== JSON.stringify(batchTeamMembers)) {
+                            batchTeamMembers = result.batchTeamMembers;
+                            isUpdated = true;
+                        }
+                    }
+
+                    if (isUpdated) {
+                        localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
+                        localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
+                        localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+                        localStorage.setItem("bgi_accessRules", JSON.stringify(accessRules));
+
+                        if (document.getElementById("masterTableBody")) {
+                            renderMasterTable();
+                        }
+                        if (document.getElementById("contentArea") && currentUser && currentUser.role === "SUPERVISOR") {
+                            let titleLabel = document.querySelector("#contentArea span");
+                            if (titleLabel && titleLabel.innerText.includes("MANAJEMEN USER ADMIN")) {
+                                renderPasswordManagementHtml();
                             }
                         }
                     }
                 } catch (err) {}
-            }, 15000);
+            }, 5000);
         }
 
         function updateSidebarDateTime() {
@@ -929,10 +959,10 @@
         function resetDefaultUsers() {
             if (confirm("Apakah Anda yakin ingin mengembalikan daftar user ke default awal sistem? Ini akan memulihkan akun Supervisor & Admin bawaan jika terjadi eror/salah hapus.")) {
                 accessRules = {
-                    "SUPERVISOR": { password: "555", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-                    "ADMIN01":    { password: "00",  role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
-                    "ADMIN02":    { password: "123", role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
-                    "ADMIN03":    { password: "777", role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
+                    "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
+                    "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
+                    "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
+                    "ADMIN03":    { password: "777",  role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
                 };
                 saveLocalStorageData();
                 closeSupervisorOptionsModal();
@@ -1126,7 +1156,7 @@
                         <h4 class="text-xs font-extrabold text-slate-700 uppercase mb-3">Koneksi Cloud Google Sheets</h4>
                         <ul class="space-y-2 text-xs text-slate-600 font-medium">
                             <li class="flex justify-between border-b pb-1"><span>Status API Endpoint:</span> <strong class="text-emerald-700">Terhubung</strong></li>
-                            <li class="flex justify-between border-b pb-1"><span>Auto-Sync Interval:</span> <strong class="text-slate-900">Setiap 15 Detik</strong></li>
+                            <li class="flex justify-between border-b pb-1"><span>Auto-Sync Interval:</span> <strong class="text-slate-900">Setiap 5 Detik</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -2112,7 +2142,6 @@
             renderSlideView();
         }
 
-        // PERBAIKAN: FORMULA HASIL CETAK 1 LEMBAR DENGAN PROPORSI TABEL PRESISI
         function renderSlideView() {
             const content = document.getElementById("contentArea");
             if (previewPayload.length === 0) return;
@@ -2192,6 +2221,15 @@
 
         function prevSlide() { if (currentSlideIndex > 0) { currentSlideIndex--; renderSlideView(); } }
         function nextSlide() { if (currentSlideIndex < previewPayload.length - 1) { currentSlideIndex++; renderSlideView(); } }
+
+        // PENDAFTARAN SERVICE WORKER UNTUK APLIKASI DESKTOP / MOBILE (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA Service Worker Aktif'))
+                    .catch(err => console.log('PWA SW Register Gagal:', err));
+            });
+        }
     </script>
 </body>
 </html>
