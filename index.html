@@ -202,11 +202,11 @@
             <div class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">User ID Akses Baru</label>
-                    <input type="text" id="modalNewUserId" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase" placeholder="Contoh: ADMIN04">
+                    <input type="text" id="modalNewUserId" autocapitalize="off" autocorrect="off" spellcheck="false" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase" placeholder="Contoh: ADMIN04">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Password Akses Baru</label>
-                    <input type="text" id="modalNewPwd" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Contoh: 888">
+                    <input type="text" id="modalNewPwd" autocapitalize="off" autocorrect="off" spellcheck="false" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Contoh: 888">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Role User</label>
@@ -226,7 +226,7 @@
         </div>
     </div>
 
-    <!-- LAYAR LOGIN 3D GEMBOK LOCK THEME DENGAN 2 TEXTBOX -->
+    <!-- LAYAR LOGIN 3D GEMBOK LOCK THEME DENGAN DUKUNGAN RAMAH KEYBOARD HP -->
     <div id="loginScreen" class="fixed inset-0 bg-[#070b14]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
         <div id="loginCard" class="lock-3d-card p-7 w-[410px] text-center relative overflow-hidden">
             <div class="absolute -top-12 -left-12 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl pointer-events-none"></div>
@@ -245,23 +245,23 @@
             <p class="text-[10px] font-bold text-amber-400 tracking-widest uppercase mb-4 drop-shadow">Integrated Cash Solutions</p>
             
             <div class="space-y-3 text-left mb-2">
-                <!-- Textbox 1: User ID / Username -->
+                <!-- Textbox 1: User ID / Username (Optimasasi Anti Auto-Capitalize & Autocorrect HP) -->
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <span>👤</span> User ID / Username:
                     </label>
                     <div id="inputGroupUser" class="input-inset-3d rounded-xl p-1 flex items-center transition">
-                        <input type="text" id="loginUserId" class="w-full text-center text-sm font-bold text-amber-300 bg-transparent outline-none tracking-widest uppercase placeholder-slate-600 px-3 py-1.5" placeholder="Contoh: SUPERVISOR" autofocus onkeypress="if(event.key === 'Enter') focusPasswordInput()" oninput="clearLoginError()">
+                        <input type="text" id="loginUserId" autocapitalize="off" autocorrect="off" spellcheck="false" class="w-full text-center text-sm font-bold text-amber-300 bg-transparent outline-none tracking-widest uppercase placeholder-slate-600 px-3 py-1.5" placeholder="SUPERVISOR" autofocus onkeypress="if(event.key === 'Enter') focusPasswordInput()" oninput="clearLoginError()">
                     </div>
                 </div>
 
-                <!-- Textbox 2: Password -->
+                <!-- Textbox 2: Password (Optimasasi Anti Autocorrect HP) -->
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <span>🔐</span> Password Akses:
                     </label>
                     <div id="inputGroupPass" class="input-inset-3d rounded-xl p-1 flex items-center transition">
-                        <input type="password" id="loginPass" class="w-full text-center text-lg font-bold text-white bg-transparent outline-none tracking-[0.25em] placeholder-slate-600 px-3 py-1.5" placeholder="••••" onkeypress="if(event.key === 'Enter') handleLogin()" oninput="clearLoginError()">
+                        <input type="password" id="loginPass" autocapitalize="off" autocorrect="off" spellcheck="false" class="w-full text-center text-lg font-bold text-white bg-transparent outline-none tracking-[0.25em] placeholder-slate-600 px-3 py-1.5" placeholder="••••" onkeypress="if(event.key === 'Enter') handleLogin()" oninput="clearLoginError()">
                     </div>
                 </div>
 
@@ -371,7 +371,7 @@
         let activeUserSessions = {};
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
 
-        // PERBAIKAN: KHUSUS HANYA 1 USER ID "SUPERVISOR" YANG BERHAK DIBERIKAN ROLE SUPERVISOR
+        // PERBAIKAN: HANYA USER ID "SUPERVISOR" TUNGGAL YANG BOLEH MENJADI SUPERVISOR
         function enforceSupervisorRole() {
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
                 accessRules[DEFAULT_SUPERVISOR_ID] = {
@@ -385,7 +385,7 @@
                 accessRules[DEFAULT_SUPERVISOR_ID].destination = "it_support_dashboard";
             }
 
-            // DEDEGRAKASIKAN SEMUA AKUN LAIN JIKA TERLANJUR MENJADI SUPERVISOR
+            // DEDEGRADASIKAN SEMUA AKUN LAIN JIKA TERLANJUR MENJADI SUPERVISOR
             for (let uId in accessRules) {
                 if (uId !== DEFAULT_SUPERVISOR_ID && accessRules[uId].role === "SUPERVISOR") {
                     accessRules[uId].role = "ADMIN";
@@ -627,11 +627,13 @@
             if (pwdInput) pwdInput.focus();
         }
 
+        // PERBAIKAN UTAMA: LOGIKA HANDLE LOGIN SANGAT FLEKSIBEL & RAMAH KEYBOARD HP
         async function handleLogin() {
             const userInput = document.getElementById("loginUserId");
             const pwdInput = document.getElementById("loginPass");
             
-            const userId = userInput.value.trim().toUpperCase();
+            // Bersihkan spasi berlebih & trailed space khas keyboard HP
+            const userId = userInput.value.replace(/\s+/g, '').toUpperCase();
             const pwd = pwdInput.value.trim();
 
             const errLabel = document.getElementById("loginErrorMsg");
@@ -639,12 +641,15 @@
             const inputGroupPass = document.getElementById("inputGroupPass");
             const card = document.getElementById("loginCard");
 
-            if (accessRules[userId] && accessRules[userId].password === pwd) {
+            // Pencocokan fleksibel berbasis string & case-insensitive
+            let foundUserId = Object.keys(accessRules).find(id => id.trim().toUpperCase() === userId);
+
+            if (foundUserId && String(accessRules[foundUserId].password).trim() === pwd) {
                 clearLoginError();
-                let config = accessRules[userId];
+                let config = accessRules[foundUserId];
                 
                 currentUser = {
-                    id: userId,
+                    id: foundUserId,
                     name: config.name,
                     role: config.role,
                     destination: config.destination || (config.role === "SUPERVISOR" ? "it_support_dashboard" : "dashboard"),
@@ -833,7 +838,6 @@
             `;
         }
 
-        // PERBAIKAN: KHUSUS HANYA 1 USER ID "SUPERVISOR" YANG MENJADI SUPERVISOR TUNGGAL
         function renderPasswordManagementHtml() {
             const content = document.getElementById("contentArea");
             
