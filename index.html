@@ -1292,7 +1292,7 @@
                     <span class="font-extrabold text-slate-800 text-base">📊 MASTER DATA KUNCI & LOKASI ATM</span>
                     <div class="flex gap-2">
                         <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
-                            📁 Upload File Master (Excel/CSV)
+                            🔄 Replace Master Data (Excel/CSV)
                             <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
                         </label>
                     </div>
@@ -1664,6 +1664,14 @@
         function handleMasterUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+
+            // KONFIRMASI PENGGANTIAN/REPLACE SELURUH DATA
+            let isConfirmed = confirm("⚠️ PERHATIAN: Fitur ini akan MENGGANTI SELURUH DATA MASTER (Replace All). Data master lama akan dihapus dan digantikan dengan isi file baru ini. Apakah Anda yakin ingin melanjutkan?");
+            if (!isConfirmed) {
+                event.target.value = ""; // Reset input file jika batal
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -1671,11 +1679,15 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                    let newMasterDatabase = {};
                     let count = 0;
+
                     jsonRows.forEach(row => {
                         let tid = String(row['TID'] || row['tid'] || '').trim().toUpperCase();
                         if (!tid) return;
-                        masterDatabase[tid] = {
+
+                        newMasterDatabase[tid] = {
                             lokasi: String(row['LOKASI ATM'] || row['lokasi'] || `ATM-${tid}`).trim().toUpperCase(),
                             rpl: String(row['BARCODE RPL'] || row['rpl'] || `RPL-${tid}-99`).trim().toUpperCase(),
                             flm: String(row['BARCODE FLM'] || row['flm'] || '').trim().toUpperCase(),
@@ -1685,11 +1697,17 @@
                         };
                         count++;
                     });
+
+                    // GANTI SELURUH MEMORI MASTER DENGAN DATA BARU (REPLACE ALL)
+                    masterDatabase = newMasterDatabase;
+
                     saveLocalStorageData();
                     renderMasterTable();
-                    alert(`Berhasil mengimpor dan menyimpan ${count} data master!`);
+                    alert(`✅ Berhasil mengganti seluruh data master! ${count} data baru tersimpan.`);
                 } catch (err) {
                     alert("Format file Excel/CSV tidak valid.");
+                } finally {
+                    event.target.value = ""; // Clear file input agar bisa di-upload ulang jika diperlukan
                 }
             };
             reader.readAsArrayBuffer(file);
