@@ -23,17 +23,19 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 5mm;
+                margin: 8mm 6mm;
             }
             body {
                 background: white !important;
                 color: black !important;
-                font-size: 10px !important;
+                font-size: 11px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             body * {
                 visibility: hidden;
             }
-            #printArea, #printArea * {
+            #printArea, #printArea *, .print-page-break, .print-page-break * {
                 visibility: visible;
             }
             #printArea {
@@ -46,8 +48,13 @@
                 background: white !important;
                 box-shadow: none !important;
                 border: none !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+            }
+            .print-page-break {
+                page-break-after: always !important;
+                break-after: page !important;
+                display: block !important;
+                height: 100vh !important;
+                box-sizing: border-box !important;
             }
             .no-print { 
                 display: none !important; 
@@ -58,20 +65,23 @@
                 table-layout: auto !important;
             }
             #printArea th, #printArea td {
-                padding: 2px 3px !important;
-                font-size: 10px !important;
-                line-height: 1.1 !important;
-                height: 22px !important;
-                white-space: nowrap !important;
+                padding: 4px 5px !important;
+                font-size: 11.5px !important;
+                line-height: 1.25 !important;
+                height: 32px !important;
+                vertical-align: middle !important;
             }
             #printArea th {
-                padding: 4px 3px !important;
-                font-size: 10.5px !important;
+                padding: 6px 5px !important;
+                font-size: 12px !important;
+                background-color: #475569 !important;
+                color: white !important;
             }
             .col-lokasi {
                 width: auto !important;
                 white-space: normal !important;
                 word-break: break-word !important;
+                max-width: 280px !important;
             }
         }
 
@@ -1307,7 +1317,6 @@
                             <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span>✏️</span> <span>Ubah Data</span>
                             </button>
-                            <!-- TOMBOL HAPUS DATA -->
                             <button onclick="handleDeleteDataClick()" id="btnDeleteData" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span>🗑️</span> <span>Hapus Data</span>
                             </button>
@@ -1665,10 +1674,9 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            // KONFIRMASI PENGGANTIAN/REPLACE SELURUH DATA
             let isConfirmed = confirm("⚠️ PERHATIAN: Fitur ini akan MENGGANTI SELURUH DATA MASTER (Replace All). Data master lama akan dihapus dan digantikan dengan isi file baru ini. Apakah Anda yakin ingin melanjutkan?");
             if (!isConfirmed) {
-                event.target.value = ""; // Reset input file jika batal
+                event.target.value = "";
                 return;
             }
 
@@ -1698,16 +1706,14 @@
                         count++;
                     });
 
-                    // GANTI SELURUH MEMORI MASTER DENGAN DATA BARU (REPLACE ALL)
                     masterDatabase = newMasterDatabase;
-
                     saveLocalStorageData();
                     renderMasterTable();
                     alert(`✅ Berhasil mengganti seluruh data master! ${count} data baru tersimpan.`);
                 } catch (err) {
                     alert("Format file Excel/CSV tidak valid.");
                 } finally {
-                    event.target.value = ""; // Clear file input agar bisa di-upload ulang jika diperlukan
+                    event.target.value = "";
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -2156,121 +2162,247 @@
             });
         }
 
+        // PREVIEW DAN CETAK SLIDE DIOPTIMALKAN UNTUK 18 BARIS & CETAK LEBAR A4 PAS
         function preparePreview(dataDict) {
             previewPayload = [];
             for (let [tName, tids] of Object.entries(dataDict)) {
                 if (!tids || tids.length === 0) continue;
                 let memberName = batchTeamMembers[tName] || "-";
-                
                 let limitedTids = tids.slice(0, 18);
 
                 let tidCounts = {};
-                limitedTids.forEach(t => { if(t) { let u = String(t).toUpperCase(); tidCounts[u] = (tidCounts[u] || 0) + 1; } });
+                limitedTids.forEach(t => { 
+                    if(t) { 
+                        let u = String(t).toUpperCase(); 
+                        tidCounts[u] = (tidCounts[u] || 0) + 1; 
+                    } 
+                });
 
                 let teamRows = [];
                 limitedTids.forEach((tidRaw, i) => {
                     let tid = String(tidRaw).toUpperCase();
                     let master = getMasterDataByTid(tid) || {};
-                    let isNotFound = !getMasterDataByTid(tid);
+                    let isNotFound = !master.lokasi;
                     let isDuplicate = tidCounts[tid] > 1;
 
                     let lokasiText = master.lokasi || (isNotFound ? "⚠️ TID TIDAK TERDAFTAR" : `ATM-${tid}`);
                     if (isDuplicate) lokasiText = `⚠️ DUPLIKAT (${lokasiText})`;
 
-                    teamRows.push([
-                        i + 1, tid, lokasiText,
-                        master.rpl || (isNotFound ? "-" : `RPL-${tid}-99`),
-                        master.flm || "",
-                        master.rak || "",
-                        master.baris || "",
-                        master.kolom || "", "", ""
-                    ]);
+                    teamRows.push({
+                        no: i + 1,
+                        tid: tid,
+                        lokasi: lokasiText,
+                        rpl: master.rpl || (isNotFound ? "-" : `RPL-${tid}-99`),
+                        flm: master.flm || "",
+                        rak: master.rak || "",
+                        baris: master.baris || "",
+                        kolom: master.kolom || "",
+                        isNotFound: isNotFound,
+                        isDuplicate: isDuplicate
+                    });
                 });
                 previewPayload.push({ team_name: tName, member_name: memberName, data: teamRows });
             }
+            
             currentSlideIndex = 0;
+            setupSlideKeyboardListener();
             renderSlideView();
+        }
+
+        function setupSlideKeyboardListener() {
+            document.onkeydown = function(e) {
+                if (!previewPayload || previewPayload.length === 0) return;
+                if (e.key === "ArrowLeft") {
+                    prevSlide();
+                } else if (e.key === "ArrowRight") {
+                    nextSlide();
+                }
+            };
         }
 
         function renderSlideView() {
             const content = document.getElementById("contentArea");
-            if (previewPayload.length === 0) return;
+            if (!previewPayload || previewPayload.length === 0) return;
             let item = previewPayload[currentSlideIndex];
+            
+            let rowsHtml = "";
+            item.data.forEach((row, rIdx) => {
+                let cellClass = "text-blue-900";
+                let lokasiClass = "col-lokasi";
+
+                if (row.isDuplicate) {
+                    cellClass = "text-sky-900 bg-sky-200 font-extrabold";
+                    lokasiClass = "text-sky-900 font-bold bg-sky-100 col-lokasi";
+                } else if (row.isNotFound) {
+                    cellClass = "text-red-700 bg-rose-100 font-extrabold";
+                    lokasiClass = "text-red-700 font-extrabold italic bg-rose-50 col-lokasi";
+                }
+
+                rowsHtml += `
+                    <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50">
+                        <td class="border border-slate-300 p-2.5 text-center font-bold text-slate-700 text-xs">${row.no}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-black text-sm ${cellClass}">${row.tid}</td>
+                        <td class="border border-slate-300 p-2.5 px-3 text-left font-bold text-slate-800 text-xs ${lokasiClass}">${row.lokasi}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.rpl}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.flm}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-extrabold text-sm text-slate-900">${row.rak}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-extrabold text-sm text-slate-900">${row.baris}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-extrabold text-sm text-slate-900">${row.kolom}</td>
+                        <td class="border border-slate-300 p-2.5 text-center"></td>
+                        <td class="border border-slate-300 p-2.5 text-center"></td>
+                    </tr>
+                `;
+            });
+
             let html = `
                 <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
-                    <button onclick="renderTeamMenuHtml()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
-                    <div class="flex items-center gap-2">
-                        <button onclick="prevSlide()" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === 0 ? 'opacity-50' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>◀ Sebelumnya</button>
-                        <span class="text-xs font-bold text-slate-700">Slide ${currentSlideIndex + 1} dari ${previewPayload.length}</span>
-                        <button onclick="nextSlide()" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded shadow ${currentSlideIndex === previewPayload.length - 1 ? 'opacity-50' : ''}" ${currentSlideIndex === previewPayload.length - 1 ? 'disabled' : ''}>Selanjutnya ▶</button>
+                    <button onclick="exitPreviewMode()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow transition flex items-center gap-1">
+                        ⬅ Kembali
+                    </button>
+                    
+                    <div class="flex items-center gap-3">
+                        <button onclick="prevSlide()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1 ${currentSlideIndex === 0 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>
+                            ◀ Sebelumnya
+                        </button>
+                        <span class="text-xs font-extrabold text-slate-800 bg-white px-3 py-1 rounded-md border border-slate-300 shadow-inner">
+                            Slide <span class="text-blue-700">${currentSlideIndex + 1}</span> dari ${previewPayload.length}
+                        </span>
+                        <button onclick="nextSlide()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1 ${currentSlideIndex === previewPayload.length - 1 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentSlideIndex === previewPayload.length - 1 ? 'disabled' : ''}>
+                            Selanjutnya ▶
+                        </button>
                     </div>
-                    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK</button>
+
+                    <div class="flex items-center gap-2">
+                        ${previewPayload.length > 1 ? `
+                            <button onclick="printAllSlides()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
+                                📑 Cetak Semua (${previewPayload.length})
+                            </button>
+                        ` : ''}
+                        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow transition flex items-center gap-1">
+                            🖨️ CETAK SLIDE INI
+                        </button>
+                    </div>
                 </div>
 
-                <div id="printArea" class="border border-slate-300 bg-white p-3 rounded-xl shadow-md">
-                    <table class="w-full border-collapse text-xs rounded-lg overflow-hidden">
+                <div id="printArea" class="border border-slate-400 bg-white p-4 rounded-xl shadow-md transition-all">
+                    <table class="w-full border-collapse text-xs rounded-lg overflow-hidden border border-slate-400">
                         <thead>
                             <tr>
-                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-2 text-left font-extrabold text-sm">
+                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-base">
                                     <div class="flex items-center justify-between">
-                                        <span class="font-black">${item.team_name}</span>
-                                        <span class="text-amber-800 font-extrabold uppercase">
+                                        <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
+                                        <span class="text-amber-900 font-extrabold uppercase text-sm tracking-wide">
                                             CUSTODY : ${item.member_name}
                                         </span>
                                     </div>
                                 </th>
                             </tr>
-                            <tr class="bg-slate-600 text-white font-bold text-xs">
-                                <th class="border border-slate-500 p-1.5 w-[32px] text-center">NO</th>
-                                <th class="border border-slate-500 p-1.5 w-[85px] text-center">TID</th>
-                                <th class="border border-slate-500 p-1.5 px-2 text-center col-lokasi">LOKASI</th>
-                                <th class="border border-slate-500 p-1.5 px-1 text-center w-[110px]">RPL</th>
-                                <th class="border border-slate-500 p-1.5 px-1 text-center w-[110px]">FLM</th>
-                                <th class="border border-slate-500 p-1.5 w-[42px] text-center">RAK</th>
-                                <th class="border border-slate-500 p-1.5 w-[42px] text-center">BARIS</th>
-                                <th class="border border-slate-500 p-1.5 w-[42px] text-center">KOLOM</th>
-                                <th class="border border-slate-500 p-1.5 w-[80px] text-center">KET</th>
-                                <th class="border border-slate-500 p-1.5 w-[30px] text-center"></th>
+                            <tr class="bg-slate-700 text-white font-bold text-xs">
+                                <th class="border border-slate-500 p-2.5 w-[36px] text-center">NO</th>
+                                <th class="border border-slate-500 p-2.5 w-[90px] text-center">TID</th>
+                                <th class="border border-slate-500 p-2.5 px-3 text-center col-lokasi">LOKASI</th>
+                                <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">RPL</th>
+                                <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">FLM</th>
+                                <th class="border border-slate-500 p-2.5 w-[48px] text-center">RAK</th>
+                                <th class="border border-slate-500 p-2.5 w-[48px] text-center">BARIS</th>
+                                <th class="border border-slate-500 p-2.5 w-[48px] text-center">KOLOM</th>
+                                <th class="border border-slate-500 p-2.5 w-[90px] text-center">KET</th>
+                                <th class="border border-slate-500 p-2.5 w-[36px] text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
             `;
-            item.data.forEach((row, rIdx) => {
-                let isNotFound = row[2] === "⚠️ TID TIDAK TERDAFTAR";
-                let isDuplicate = row[2].includes("⚠️ DUPLIKAT");
-
-                let cellClass = "text-blue-900";
-                let lokasiClass = "col-lokasi";
-
-                if (isDuplicate) {
-                    cellClass = "text-sky-900 bg-sky-200 font-extrabold";
-                    lokasiClass = "text-sky-900 font-bold bg-sky-100 col-lokasi";
-                } else if (isNotFound) {
-                    cellClass = "text-red-700 bg-rose-100 font-extrabold";
-                    lokasiClass = "text-red-700 font-extrabold italic bg-rose-50 col-lokasi";
-                }
-
-                html += `
-                    <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
-                        <td class="border border-slate-300 p-1 text-center font-semibold">${row[0]}</td>
-                        <td class="border border-slate-300 p-1 text-center font-bold ${cellClass}">${row[1]}</td>
-                        <td class="border border-slate-300 p-1 px-2 text-left ${lokasiClass}">${row[2]}</td>
-                        <td class="border border-slate-300 p-1 text-center font-mono text-[11px]">${row[3]}</td>
-                        <td class="border border-slate-300 p-1 text-center font-mono text-[11px]">${row[4]}</td>
-                        <td class="border border-slate-300 p-1 text-center font-bold">${row[5]}</td>
-                        <td class="border border-slate-300 p-1 text-center font-bold">${row[6]}</td>
-                        <td class="border border-slate-300 p-1 text-center font-bold">${row[7]}</td>
-                        <td class="border border-slate-300 p-1 text-center">${row[8]}</td>
-                        <td class="border border-slate-300 p-1 text-center">${row[9]}</td>
-                    </tr>
-                `;
-            });
-            html += `</tbody></table></div>`;
             content.innerHTML = html;
         }
 
-        function prevSlide() { if (currentSlideIndex > 0) { currentSlideIndex--; renderSlideView(); } }
-        function nextSlide() { if (currentSlideIndex < previewPayload.length - 1) { currentSlideIndex++; renderSlideView(); } }
+        function prevSlide() { 
+            if (currentSlideIndex > 0) { 
+                currentSlideIndex--; 
+                renderSlideView(); 
+            } 
+        }
+
+        function nextSlide() { 
+            if (currentSlideIndex < previewPayload.length - 1) { 
+                currentSlideIndex++; 
+                renderSlideView(); 
+            } 
+        }
+
+        function exitPreviewMode() {
+            document.onkeydown = null;
+            renderTeamMenuHtml();
+        }
+
+        function printAllSlides() {
+            const content = document.getElementById("contentArea");
+            let fullHtml = `<div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                <button onclick="renderSlideView()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali Ke Slide View</button>
+                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SEMUA</button>
+            </div><div id="printArea">`;
+
+            previewPayload.forEach((item, pIdx) => {
+                let rowsHtml = "";
+                item.data.forEach((row, rIdx) => {
+                    let cellClass = row.isDuplicate ? "text-sky-900 bg-sky-200 font-extrabold" : (row.isNotFound ? "text-red-700 bg-rose-100 font-extrabold" : "text-blue-900");
+                    let lokasiClass = row.isDuplicate ? "text-sky-900 font-bold bg-sky-100 col-lokasi" : (row.isNotFound ? "text-red-700 font-extrabold italic bg-rose-50 col-lokasi" : "col-lokasi");
+
+                    rowsHtml += `
+                        <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
+                            <td class="border border-slate-300 p-2.5 text-center font-semibold">${row.no}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-bold ${cellClass}">${row.tid}</td>
+                            <td class="border border-slate-300 p-2.5 px-3 text-left ${lokasiClass}">${row.lokasi}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.rpl}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.flm}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-bold">${row.rak}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-bold">${row.baris}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-bold">${row.kolom}</td>
+                            <td class="border border-slate-300 p-2.5 text-center"></td>
+                            <td class="border border-slate-300 p-2.5 text-center"></td>
+                        </tr>
+                    `;
+                });
+
+                fullHtml += `
+                    <div class="${pIdx < previewPayload.length - 1 ? 'print-page-break' : ''} border border-slate-400 bg-white p-3 rounded-xl shadow-md">
+                        <table class="w-full border-collapse text-xs rounded-lg overflow-hidden border border-slate-400">
+                            <thead>
+                                <tr>
+                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-base">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
+                                            <span class="text-amber-900 font-extrabold uppercase text-sm tracking-wide">
+                                                CUSTODY : ${item.member_name}
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                                <tr class="bg-slate-700 text-white font-bold text-xs">
+                                    <th class="border border-slate-500 p-2.5 w-[36px] text-center">NO</th>
+                                    <th class="border border-slate-500 p-2.5 w-[90px] text-center">TID</th>
+                                    <th class="border border-slate-500 p-2.5 px-3 text-center col-lokasi">LOKASI</th>
+                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">RPL</th>
+                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">FLM</th>
+                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">RAK</th>
+                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">BARIS</th>
+                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">KOLOM</th>
+                                    <th class="border border-slate-500 p-2.5 w-[90px] text-center">KET</th>
+                                    <th class="border border-slate-500 p-2.5 w-[36px] text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            });
+
+            fullHtml += `</div>`;
+            content.innerHTML = fullHtml;
+        }
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
