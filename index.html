@@ -213,22 +213,6 @@
         .animate-shake {
             animation: shake 0.4s ease-in-out;
         }
-
-        /* Styling Judul Menarik BG BEKASI SIAP MELESAT */
-        .melesat-text {
-            background: linear-gradient(135deg, #FFF 0%, #FDE047 50%, #F97316 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0px 4px 10px rgba(249, 115, 22, 0.4));
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
-        }
-        .rocket-badge {
-            animation: pulseGlow 2.5s infinite ease-in-out;
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#020617] font-sans antialiased min-h-screen flex flex-col">
@@ -376,7 +360,6 @@
             </div>
         </header>
 
-        <!-- Sub-header dengan tombol Refresh dipindahkan ke pojok paling kanan -->
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <span id="appVersionLabel">NEWCRO_PHP_V7 (WEB VERSION)</span>
@@ -385,6 +368,9 @@
                 </span>
             </div>
             <div class="flex items-center gap-2">
+                <button onclick="refreshCurrentDashboard()" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1 active:scale-95">
+                    🔄 Refresh Dashboard
+                </button>
                 <button id="btnSyncSheet" class="bg-indigo-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow flex items-center gap-1 cursor-default">
                     ⚡ Live Cloud Connected
                 </button>
@@ -395,10 +381,6 @@
                     📂 Restore Data (.json)
                     <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
                 </label>
-                <!-- Posisi Tombol Refresh di pojok paling kanan -->
-                <button onclick="refreshCurrentDashboard()" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1 active:scale-95 ml-2">
-                    🔄 Refresh Dashboard
-                </button>
             </div>
         </div>
 
@@ -451,7 +433,7 @@
 
         const DEFAULT_ACCESS_RULES = {
             "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-            "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
+            "ADMIN":    { password: "1",   role: "ADMIN",      name: "TRI SULFA SUSANTO",        destination: "dashboard" },
             "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
             "ADMIN03":    { password: "777",  role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
         };
@@ -894,7 +876,6 @@
             menuContainer.innerHTML = html;
         }
 
-        /* Dashboard Supervisor dengan Judul "BG BEKASI SIAP MELESAT" & Tombol Refresh di Pojok Kanan */
         function renderItSupportDashboard() {
             const content = document.getElementById("contentArea");
             let onlineCount = Object.keys(activeUserSessions).length;
@@ -905,20 +886,19 @@
                     <div class="relative bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-2xl p-8 text-white shadow-2xl border border-purple-800/50 overflow-hidden flex flex-col justify-between">
                         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
                         
-                        <!-- Tombol Refresh Data posisi pojok kanan atas -->
+                        <!-- Tombol Refresh Data dipindahkan ke pojok kanan atas -->
                         <button onclick="refreshCurrentDashboard()" class="absolute top-4 right-4 z-20 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3.5 py-2 rounded-lg shadow-lg transition transform active:scale-95 flex items-center gap-1.5 border border-amber-300">
                             🔄 REFRESH DATA
                         </button>
 
                         <div class="z-10 space-y-3 max-w-2xl text-left">
                             <div>
-                                <span class="rocket-badge inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/30 border border-amber-400/50 text-amber-300 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase">
-                                    🚀 PANEL SUPERVISOR UTAMA
+                                <span class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/40 text-purple-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                                    👑 KASTA TINGGI SUPERVISOR
                                 </span>
                             </div>
-                            <!-- Desain Tulisan Menarik BG BEKASI SIAP MELESAT -->
-                            <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white drop-shadow-md">
-                                <span class="melesat-text">BG BEKASI SIAP MELESAT 🚀⚡</span>
+                            <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
+                                BG BEKASI SIAP MELESAT
                             </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
                                 Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional cabang BG BEKASI.
@@ -1380,11 +1360,9 @@
             `;
         }
 
-        /* Render Master Data dengan Pembatasan Hak Akses: Tambah, Edit, Hapus, Replace HANYA untuk Supervisor */
         function renderMasterDataHtml() {
             const content = document.getElementById("contentArea");
             let keys = Object.keys(masterDatabase);
-            let isSupervisor = currentUser && currentUser.role === "SUPERVISOR";
 
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
@@ -1393,18 +1371,15 @@
                         <button onclick="renderMasterDataHtml()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1 active:scale-95">
                             🔄 Refresh Master
                         </button>
-                        ${isSupervisor ? `
                         <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
                             🔄 Replace Master Data (Excel/CSV)
                             <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
                         </label>
-                        ` : ''}
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-5">
                     <div class="flex flex-col gap-3">
-                        ${isSupervisor ? `
                         <div class="flex gap-2 items-center">
                             <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span id="btnFormIcon" class="text-sm font-extrabold">+</span> <span id="btnFormText">Tambah Data</span>
@@ -1416,11 +1391,6 @@
                                 <span>🗑️</span> <span>Hapus Data</span>
                             </button>
                         </div>
-                        ` : `
-                        <div class="bg-blue-50 border border-blue-200 text-blue-900 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
-                            <span>ℹ️</span> Akses Admin hanya untuk melihat/pengguna data. Fitur Tambah, Ubah, Hapus, & Replace khusus Supervisor.
-                        </div>
-                        `}
 
                         <div id="masterFormContainer" class="hidden bg-slate-50 border border-slate-300 p-4 rounded-xl shadow-inner max-w-lg">
                             <h3 class="text-xs font-extrabold text-slate-700 mb-3 uppercase tracking-wider">➕ TAMBAH / UPDATE DATA MASTER TID</h3>
@@ -1529,7 +1499,7 @@
             `;
             renderMasterTable();
             setupSearchBoxKeyNavigation();
-            if (isSupervisor) setupMasterInputNavigation();
+            setupMasterInputNavigation();
         }
 
         function setupSearchBoxKeyNavigation() {
@@ -1660,31 +1630,23 @@
         }
 
         function toggleMasterForm() {
-            if (currentUser && currentUser.role !== "SUPERVISOR") {
-                alert("Fitur ini hanya dapat diakses oleh SUPERVISOR!");
-                return;
-            }
             const formContainer = document.getElementById("masterFormContainer");
             const btnText = document.getElementById("btnFormText");
             const btnIcon = document.getElementById("btnFormIcon");
             if (formContainer.classList.contains("hidden")) {
                 formContainer.classList.remove("hidden");
-                if (btnText) btnText.innerText = "Tutup Form";
-                if (btnIcon) btnIcon.innerText = "✕";
+                btnText.innerText = "Tutup Form";
+                btnIcon.innerText = "✕";
                 document.getElementById("m_tid").focus();
             } else {
                 formContainer.classList.add("hidden");
-                if (btnText) btnText.innerText = "Tambah Data";
-                if (btnIcon) btnIcon.innerText = "+";
+                btnText.innerText = "Tambah Data";
+                btnIcon.innerText = "+";
                 clearMasterForm();
             }
         }
 
         function handleEditDataClick() {
-            if (currentUser && currentUser.role !== "SUPERVISOR") {
-                alert("Aksi Ubah Data hanya dapat diakses oleh SUPERVISOR!");
-                return;
-            }
             let tidTarget = prompt("Masukkan nomor TID yang ingin diubah datanya:");
             if (!tidTarget) return;
             tidTarget = tidTarget.trim().toUpperCase();
@@ -1710,10 +1672,6 @@
         }
 
         function handleDeleteDataClick() {
-            if (currentUser && currentUser.role !== "SUPERVISOR") {
-                alert("Aksi Hapus Data hanya dapat diakses oleh SUPERVISOR!");
-                return;
-            }
             let tidTarget = prompt("Masukkan nomor TID yang ingin dihapus datanya:");
             if (!tidTarget) return;
             tidTarget = tidTarget.trim().toUpperCase();
@@ -1763,10 +1721,6 @@
         }
 
         function saveMasterItemManual() {
-            if (currentUser && currentUser.role !== "SUPERVISOR") {
-                alert("Fitur ini hanya dapat diakses oleh SUPERVISOR!");
-                return;
-            }
             let tid = document.getElementById("m_tid").value.trim().toUpperCase();
             if (!tid) {
                 alert("Nomor TID wajib diisi!");
@@ -1787,11 +1741,6 @@
         }
 
         function handleMasterUpload(event) {
-            if (currentUser && currentUser.role !== "SUPERVISOR") {
-                alert("Aksi Replace Master Data hanya dapat dilakukan oleh SUPERVISOR!");
-                event.target.value = "";
-                return;
-            }
             const file = event.target.files[0];
             if (!file) return;
 
@@ -1833,7 +1782,7 @@
                     alert(`✅ Berhasil mengganti seluruh data master! ${count} data baru tersimpan.`);
                 } catch (err) {
                     alert("Format file Excel/CSV tidak valid.");
-                } fontally {
+                } finally {
                     event.target.value = "";
                 }
             };
