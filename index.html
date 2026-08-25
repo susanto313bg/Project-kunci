@@ -191,33 +191,6 @@
 </head>
 <body class="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#020617] font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- MODAL POPUP SELEKSI HALAMAN CETAK -->
-    <div id="modalSelectPrint" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 relative">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
-                <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                    <span>☑️</span> PILIH HALAMAN SLIDE YANG INGIN DICETAK
-                </h3>
-                <button onclick="closeSelectPrintModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
-            </div>
-            
-            <div class="space-y-3 mb-5 max-h-72 overflow-y-auto pr-1" id="selectPrintCheckboxContainer">
-                <!-- Checkbox team dimuat via JS -->
-            </div>
-
-            <div class="flex items-center justify-between pt-3 border-t border-slate-200">
-                <div class="flex gap-2">
-                    <button onclick="toggleSelectAllPrint(true)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg transition">Pilih Semua</button>
-                    <button onclick="toggleSelectAllPrint(false)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg transition">Batal Pilih</button>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="closeSelectPrintModal()" class="bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Batal</button>
-                    <button onclick="executeSelectedPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">🖨️ Cetak Terseleksi</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL POPUP OPSI PERBAIKAN & RECOVERY SUPERVISOR -->
     <div id="modalSupervisorOptions" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 relative">
@@ -2189,7 +2162,7 @@
             });
         }
 
-        // PREVIEW, SLIDE SWITCHER, DAN MODAL CETAK TERSELEKSI
+        // PREVIEW DAN SLIDE SWITCHER
         function preparePreview(dataDict) {
             previewPayload = [];
             for (let [tName, tids] of Object.entries(dataDict)) {
@@ -2239,8 +2212,6 @@
         function setupSlideKeyboardListener() {
             document.onkeydown = function(e) {
                 if (!previewPayload || previewPayload.length === 0) return;
-                let modalSelect = document.getElementById("modalSelectPrint");
-                if (modalSelect && !modalSelect.classList.contains("hidden")) return;
 
                 if (e.key === "ArrowLeft") {
                     prevSlide();
@@ -2304,9 +2275,6 @@
 
                     <div class="flex items-center gap-2">
                         ${previewPayload.length > 1 ? `
-                            <button onclick="openSelectPrintModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
-                                ☑️ Cetak Terseleksi
-                            </button>
                             <button onclick="printAllSlides()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
                                 📑 Cetak Semua (${previewPayload.length})
                             </button>
@@ -2369,117 +2337,6 @@
         function exitPreviewMode() {
             document.onkeydown = null;
             renderTeamMenuHtml();
-        }
-
-        // FUNGSI MODAL POPUP SELEKSI CETAK HALAMAN (CHECKBOX)
-        function openSelectPrintModal() {
-            let container = document.getElementById("selectPrintCheckboxContainer");
-            if (!container || !previewPayload) return;
-
-            let html = "";
-            previewPayload.forEach((item, idx) => {
-                html += `
-                    <label class="flex items-center justify-between p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-xl cursor-pointer transition select-none">
-                        <div class="flex items-center gap-3">
-                            <input type="checkbox" class="print-select-checkbox w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" value="${idx}" checked>
-                            <div>
-                                <span class="font-extrabold text-xs text-slate-800">${item.team_name}</span>
-                                <span class="text-[10px] text-slate-500 block">Custody: ${item.member_name} (${item.data.length} TID)</span>
-                            </div>
-                        </div>
-                        <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono font-bold">Slide ${idx + 1}</span>
-                    </label>
-                `;
-            });
-
-            container.innerHTML = html;
-            document.getElementById("modalSelectPrint").classList.remove("hidden");
-        }
-
-        function closeSelectPrintModal() {
-            document.getElementById("modalSelectPrint").classList.add("hidden");
-        }
-
-        function toggleSelectAllPrint(isSelected) {
-            let checkboxes = document.querySelectorAll(".print-select-checkbox");
-            checkboxes.forEach(cb => cb.checked = isSelected);
-        }
-
-        function executeSelectedPrint() {
-            let checkboxes = document.querySelectorAll(".print-select-checkbox:checked");
-            if (checkboxes.length === 0) {
-                alert("Pilih minimal 1 slide team yang ingin dicetak!");
-                return;
-            }
-
-            let selectedIndices = Array.from(checkboxes).map(cb => parseInt(cb.value));
-            closeSelectPrintModal();
-
-            const content = document.getElementById("contentArea");
-            let fullHtml = `<div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
-                <button onclick="renderSlideView()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali Ke Slide View</button>
-                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SELEKSI (${selectedIndices.length})</button>
-            </div><div id="printArea">`;
-
-            selectedIndices.forEach((pIdx, idx) => {
-                let item = previewPayload[pIdx];
-                let rowsHtml = "";
-                item.data.forEach((row, rIdx) => {
-                    let cellClass = row.isDuplicate ? "text-sky-900 bg-sky-200 font-extrabold" : (row.isNotFound ? "text-red-700 bg-rose-100 font-extrabold" : "text-blue-900");
-                    let lokasiClass = row.isDuplicate ? "text-sky-900 font-bold bg-sky-100 col-lokasi" : (row.isNotFound ? "text-red-700 font-extrabold italic bg-rose-50 col-lokasi" : "col-lokasi");
-
-                    rowsHtml += `
-                        <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
-                            <td class="border border-slate-300 p-2.5 text-center font-semibold">${row.no}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-bold ${cellClass}">${row.tid}</td>
-                            <td class="border border-slate-300 p-2.5 px-3 text-left ${lokasiClass}">${row.lokasi}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.rpl}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.flm}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-bold">${row.rak}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-bold">${row.baris}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-bold">${row.kolom}</td>
-                            <td class="border border-slate-300 p-2.5 text-center"></td>
-                            <td class="border border-slate-300 p-2.5 text-center"></td>
-                        </tr>
-                    `;
-                });
-
-                fullHtml += `
-                    <div class="${idx < selectedIndices.length - 1 ? 'print-page-break' : ''} border border-slate-400 bg-white p-3 rounded-xl shadow-md">
-                        <table class="w-full border-collapse text-xs rounded-lg overflow-hidden border border-slate-400">
-                            <thead>
-                                <tr>
-                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-base">
-                                        <div class="flex items-center justify-between">
-                                            <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
-                                            <span class="text-amber-900 font-extrabold uppercase text-sm tracking-wide">
-                                                CUSTODY : ${item.member_name}
-                                            </span>
-                                        </div>
-                                    </th>
-                                </tr>
-                                <tr class="bg-slate-700 text-white font-bold text-xs">
-                                    <th class="border border-slate-500 p-2.5 w-[36px] text-center">NO</th>
-                                    <th class="border border-slate-500 p-2.5 w-[90px] text-center">TID</th>
-                                    <th class="border border-slate-500 p-2.5 px-3 text-center col-lokasi">LOKASI</th>
-                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">RPL</th>
-                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">FLM</th>
-                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">RAK</th>
-                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">BARIS</th>
-                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">KOLOM</th>
-                                    <th class="border border-slate-500 p-2.5 w-[90px] text-center">KET</th>
-                                    <th class="border border-slate-500 p-2.5 w-[36px] text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody>${rowsHtml}</tbody>
-                        </table>
-                    </div>
-                `;
-            });
-
-            fullHtml += `</div>`;
-            content.innerHTML = fullHtml;
-            window.print();
         }
 
         function printAllSlides() {
