@@ -20,7 +20,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 10mm 8mm 10mm 8mm; /* Margin Atas, Bawah, Samping dinamis */
+                margin: 10mm 8mm 10mm 8mm;
             }
             body {
                 background: white !important;
@@ -52,17 +52,16 @@
                 display: none !important; 
             }
             
-            /* TABEL OPTIMAL UNTUK MAKSIMAL 18 BARIS A4 */
             .print-table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important; /* Dinamis mengikuti lebar teks lokasi */
+                table-layout: auto !important; /* Dinamis mengikuti isi text lokasi */
             }
             .print-table th, .print-table td {
                 padding: 6px 8px !important;
                 font-size: 11pt !important;
                 line-height: 1.2 !important;
-                height: 34px !important; /* Tinggi baris diperlebar agar terlihat besar */
+                height: 34px !important; /* Baris dipertinggi */
                 border: 1px solid #333 !important;
             }
             .print-table th {
@@ -77,6 +76,7 @@
             }
         }
 
+        /* HIGHLIGHT SELEKSI KOTAK EXCEL */
         .tid-cell-selected {
             background-color: #FEF08A !important;
             outline: 2px solid #2563EB !important;
@@ -183,14 +183,14 @@
 </head>
 <body class="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#020617] font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- MODAL SLIDE PRATINJAU HALAMAN SEBELUM PRINT -->
+    <!-- MODAL SLIDE PRATINJAU CETAK HALAMAN -->
     <div id="modalPrintPreview" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md flex flex-col z-50 hidden no-print">
         <div class="bg-slate-800 text-white px-6 py-3 flex justify-between items-center border-b border-slate-700 shadow-lg">
             <div class="flex items-center gap-3">
                 <span class="text-lg">🖨️</span>
                 <div>
                     <h3 class="text-sm font-black tracking-wide text-amber-400 uppercase">PRATINJAU SLIDE HALAMAN CETAK A4</h3>
-                    <p class="text-[11px] text-slate-300">1 Team RPL per 1 Halaman A4 (Maksimal 18 Baris, Ukuran Besar & Margin Pas)</p>
+                    <p class="text-[11px] text-slate-300">1 Team RPL per 1 Halaman A4 (Maksimal 18 Baris, Font & Margin Disesuaikan)</p>
                 </div>
             </div>
             
@@ -211,13 +211,12 @@
         <div class="flex-1 overflow-y-auto p-6 flex justify-center bg-slate-950/50">
             <div class="bg-white text-slate-900 shadow-2xl rounded-sm p-6 w-[210mm] min-h-[297mm] flex flex-col justify-between border border-slate-300 relative transition-all duration-200">
                 <div id="previewSlideContent" class="w-full">
-                    <!-- Konten Slide Render di Sini -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- WADAH CETAK UTAMA TERSEMBUNYI (PANGGUNG WINDOW.PRINT) -->
+    <!-- AREA CETAK RENDER UTAMA TERSEMBUNYI -->
     <div id="printContainer" class="hidden"></div>
 
     <!-- LAYAR LOGIN -->
@@ -487,7 +486,7 @@
             content.innerHTML = html;
         }
 
-        /* === FORM INPUT TIM & PRATINJAU REAL-TIME === */
+        /* === FORM INPUT TIM & SELEKSI INTERAKTIF === */
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
             let previousTids = batchTeamsData[teamName] || [];
@@ -502,13 +501,11 @@
                     <div class="flex items-center gap-2">
                         <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Pratinjau Cetak</button>
                         <button onclick="saveAndReturnMenu('${teamName}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
-                        <!-- KEMBALIKAN TOMBOL MERAH DELETE DATA -->
                         <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow transition">🗑️ Hapus Semua</button>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-6 items-start">
-                    <!-- SISI KIRI: INPUT TABLE MAKSIMAL 18 BARIS -->
+                <div class="flex flex-wrap gap-6 items-start select-none">
                     <div class="flex flex-col gap-3">
                         <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md">
                             <table class="border-collapse text-sm w-full">
@@ -531,7 +528,7 @@
                 html += `
                     <tr>
                         <td class="border border-slate-400 p-1 text-center font-bold text-slate-700 text-xs bg-slate-100">${i + 1}</td>
-                        <td class="border border-slate-400 p-0.5 cell-container" data-index="${i}">
+                        <td class="border border-slate-400 p-0.5 cell-container cursor-pointer" data-index="${i}">
                             <input type="text" maxlength="25" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent font-bold uppercase" value="${val}" data-index="${i}" oninput="handleTidInput('${teamName}')">
                         </td>
                     </tr>
@@ -544,7 +541,6 @@
                         </div>
                     </div>
 
-                    <!-- SISI KANAN: KEMBALIKAN BARIS DENGAN REAL-TIME DATA LOOKUP -->
                     <div class="flex-1 border border-slate-300 bg-white p-4 rounded-xl shadow-lg overflow-x-auto min-w-[500px]">
                         <div class="text-xs font-extrabold text-slate-700 mb-3 flex items-center justify-between">
                             <span class="flex items-center gap-1.5">
@@ -597,8 +593,126 @@
 
             html += `</tbody></table></div></div>`;
             content.innerHTML = html;
-            setupInputEvents(teamName);
+            setupExcelInteractions(teamName);
             updateRealtimePreview();
+        }
+
+        /* === FITUR KEYBOARD NAVIGASI & SELEKSI MOUSE EXCEL FULL === */
+        function setupExcelInteractions(teamName) {
+            const memberInput = document.getElementById("inputTeamMember");
+            const inputs = document.querySelectorAll(".tid-input");
+            const containers = document.querySelectorAll(".cell-container");
+            let isMouseDown = false;
+            let startIndex = null;
+
+            if (memberInput) {
+                memberInput.addEventListener("keydown", function(e) {
+                    if (e.key === "Enter" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                        if (inputs.length > 0) {
+                            inputs[0].focus();
+                            inputs[0].select();
+                        }
+                    }
+                });
+            }
+
+            function highlightRange(start, end) {
+                let min = Math.min(start, end);
+                let max = Math.max(start, end);
+                containers.forEach((c, i) => {
+                    if (i >= min && i <= max) {
+                        c.classList.add("tid-cell-selected");
+                    } else {
+                        c.classList.remove("tid-cell-selected");
+                    }
+                });
+            }
+
+            // Seleksi Mouse Blok Kotak
+            containers.forEach((container, idx) => {
+                container.addEventListener("mousedown", function(e) {
+                    isMouseDown = true;
+                    startIndex = idx;
+
+                    inputs.forEach(inp => inp.classList.add("pointer-events-none"));
+
+                    if (e.ctrlKey || e.metaKey) {
+                        container.classList.toggle("tid-cell-selected");
+                    } else {
+                        containers.forEach(c => c.classList.remove("tid-cell-selected"));
+                        container.classList.add("tid-cell-selected");
+                    }
+                });
+
+                container.addEventListener("mouseenter", function(e) {
+                    if (isMouseDown && startIndex !== null && !e.ctrlKey) {
+                        highlightRange(startIndex, idx);
+                    }
+                });
+            });
+
+            document.addEventListener("mouseup", () => {
+                if (isMouseDown) {
+                    isMouseDown = false;
+                    inputs.forEach(inp => inp.classList.remove("pointer-events-none"));
+                }
+            });
+
+            // Navigasi Keyboard Panah Atas/Bawah, Enter, Tab & Copy Paste
+            inputs.forEach((input) => {
+                input.addEventListener("paste", function(e) {
+                    e.preventDefault();
+                    let clipboardData = (e.clipboardData || window.clipboardData).getData("text");
+                    if (!clipboardData) return;
+
+                    let lines = clipboardData.split(/\r\n|\n|\r/).map(item => item.trim()).filter(item => item !== "");
+
+                    if (lines.length > 0) {
+                        let currentIndex = parseInt(this.getAttribute("data-index"));
+                        lines.forEach((lineText, offset) => {
+                            let targetIndex = currentIndex + offset;
+                            if (targetIndex < inputs.length) {
+                                inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
+                            }
+                        });
+
+                        let nextFocusIndex = currentIndex + lines.length;
+                        if (nextFocusIndex < inputs.length) {
+                            inputs[nextFocusIndex].focus();
+                            inputs[nextFocusIndex].select();
+                        } else {
+                            inputs[inputs.length - 1].focus();
+                        }
+
+                        autoSaveDraft(teamName);
+                        updateRealtimePreview();
+                    }
+                });
+
+                input.addEventListener("keydown", function(e) {
+                    let currentIndex = parseInt(this.getAttribute("data-index"));
+
+                    if (e.key === "Enter" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                        if (currentIndex + 1 < inputs.length) {
+                            inputs[currentIndex + 1].focus();
+                            inputs[currentIndex + 1].select();
+                        }
+                    } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        if (currentIndex - 1 >= 0) {
+                            inputs[currentIndex - 1].focus();
+                            inputs[currentIndex - 1].select();
+                        } else {
+                            if (memberInput) {
+                                memberInput.focus();
+                                memberInput.select();
+                            }
+                        }
+                    }
+                });
+            });
         }
 
         function handleTidInput(teamName) {
@@ -606,7 +720,6 @@
             updateRealtimePreview();
         }
 
-        /* FITUR UPDATE BARIS SAAT TID COCOK DENGAN MASTERDATA */
         function updateRealtimePreview() {
             let memberNameInput = document.getElementById("inputTeamMember");
             let memberNameLabel = document.getElementById("previewMemberName");
@@ -625,7 +738,7 @@
                     let isExist = !!master;
 
                     if (row) {
-                        row.style.display = ""; // Munculkan baris
+                        row.style.display = "";
                         row.cells[1].innerText = tidUpper;
                         
                         if (!isExist) {
@@ -650,13 +763,12 @@
                     }
                 } else {
                     if (row) {
-                        row.style.display = "none"; // Sembunyikan jika kosong
+                        row.style.display = "none";
                     }
                 }
             });
         }
 
-        /* FITUR TOMBOL MERAH DELETE DATA ALL */
         function clearAllTids(teamName) {
             if (confirm(`Apakah Anda yakin ingin menghapus seluruh data TID pada ${teamName}?`)) {
                 document.querySelectorAll(".tid-input").forEach(inp => inp.value = "");
@@ -689,40 +801,7 @@
             preparePreview(singleData);
         }
 
-        function setupInputEvents(teamName) {
-            const inputs = document.querySelectorAll(".tid-input");
-            inputs.forEach(input => {
-                input.addEventListener("paste", function(e) {
-                    e.preventDefault();
-                    let clipboardData = (e.clipboardData || window.clipboardData).getData("text");
-                    if (!clipboardData) return;
-                    let lines = clipboardData.split(/\r\n|\n|\r/).map(item => item.trim()).filter(item => item !== "");
-                    let currentIndex = parseInt(this.getAttribute("data-index"));
-
-                    lines.forEach((lineText, offset) => {
-                        let targetIndex = currentIndex + offset;
-                        if (targetIndex < inputs.length) {
-                            inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
-                        }
-                    });
-                    autoSaveDraft(teamName);
-                    updateRealtimePreview();
-                });
-
-                input.addEventListener("keydown", function(e) {
-                    let currentIndex = parseInt(this.getAttribute("data-index"));
-                    if (e.key === "Enter" || e.key === "ArrowDown") {
-                        e.preventDefault();
-                        if (currentIndex + 1 < inputs.length) inputs[currentIndex + 1].focus();
-                    } else if (e.key === "ArrowUp") {
-                        e.preventDefault();
-                        if (currentIndex - 1 >= 0) inputs[currentIndex - 1].focus();
-                    }
-                });
-            });
-        }
-
-        /* === PREVIEW SLIDE DAN CETAK (1 TEAM = 1 HALAMAN A4) === */
+        /* === MODAL CETAK & PREVIEW ALL SLIDES === */
         function preparePreview(dataDict) {
             previewPayload = [];
             for (let [tName, tids] of Object.entries(dataDict)) {
