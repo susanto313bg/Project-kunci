@@ -20,7 +20,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 10mm 8mm 10mm 8mm; /* Margin Atas, Bawah, Sampang disesuaikan */
+                margin: 10mm 8mm 10mm 8mm; /* Margin Atas, Bawah, Samping dinamis */
             }
             body {
                 background: white !important;
@@ -52,17 +52,17 @@
                 display: none !important; 
             }
             
-            /* TABEL OPTIMAL UNTUK 18 BARIS A4 */
+            /* TABEL OPTIMAL UNTUK MAKSIMAL 18 BARIS A4 */
             .print-table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important; /* Dinamis mengikuti isi text */
+                table-layout: auto !important; /* Dinamis mengikuti lebar teks lokasi */
             }
             .print-table th, .print-table td {
-                padding: 6px 8px !important; /* Baris diperlebar */
+                padding: 6px 8px !important;
                 font-size: 11pt !important;
                 line-height: 1.2 !important;
-                height: 34px !important; /* Ditinggikan agar terlihat besar */
+                height: 34px !important; /* Tinggi baris diperlebar agar terlihat besar */
                 border: 1px solid #333 !important;
             }
             .print-table th {
@@ -71,7 +71,6 @@
                 background-color: #f1f5f9 !important;
                 -webkit-print-color-adjust: exact;
             }
-            /* Kolom lokasi dinamis */
             .col-lokasi {
                 width: auto !important;
                 white-space: nowrap !important;
@@ -184,14 +183,14 @@
 </head>
 <body class="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#020617] font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- MODAL POPUP SLIDE PREVIEW SEMUA HALAMAN (SEBELUM PRINT) -->
+    <!-- MODAL SLIDE PRATINJAU HALAMAN SEBELUM PRINT -->
     <div id="modalPrintPreview" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md flex flex-col z-50 hidden no-print">
         <div class="bg-slate-800 text-white px-6 py-3 flex justify-between items-center border-b border-slate-700 shadow-lg">
             <div class="flex items-center gap-3">
                 <span class="text-lg">🖨️</span>
                 <div>
                     <h3 class="text-sm font-black tracking-wide text-amber-400 uppercase">PRATINJAU SLIDE HALAMAN CETAK A4</h3>
-                    <p class="text-[11px] text-slate-300">1 Team RPL diposisikan pas untuk 1 Halaman Kertas A4 (Maks. 18 Baris)</p>
+                    <p class="text-[11px] text-slate-300">1 Team RPL per 1 Halaman A4 (Maksimal 18 Baris, Ukuran Besar & Margin Pas)</p>
                 </div>
             </div>
             
@@ -210,96 +209,16 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 flex justify-center bg-slate-950/50">
-            <!-- Wraper Kertas A4 Simulasi -->
             <div class="bg-white text-slate-900 shadow-2xl rounded-sm p-6 w-[210mm] min-h-[297mm] flex flex-col justify-between border border-slate-300 relative transition-all duration-200">
                 <div id="previewSlideContent" class="w-full">
-                    <!-- Konten slide halaman interaktif dirender di sini -->
+                    <!-- Konten Slide Render di Sini -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- AREA CETAK RENDER UTAMA TERSEMBUNYI (Khusus Sinyal Print Browser) -->
+    <!-- WADAH CETAK UTAMA TERSEMBUNYI (PANGGUNG WINDOW.PRINT) -->
     <div id="printContainer" class="hidden"></div>
-
-    <!-- MODAL POPUP OPSI PERBAIKAN SUPERVISOR -->
-    <div id="modalSupervisorOptions" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4 no-print">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 relative">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
-                <h3 class="text-base font-extrabold text-amber-900 flex items-center gap-2">
-                    <span>⚙️</span> OPSI BACKUP & PERBAIKAN SISTEM
-                </h3>
-                <button onclick="closeSupervisorOptionsModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
-            </div>
-            
-            <div class="space-y-4 text-left">
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900">
-                    <p class="font-extrabold mb-1">💡 Mencegah & Memperbaiki Sistem Error:</p>
-                    <p class="text-[11px] text-slate-600 leading-relaxed">
-                        Gunakan fitur di bawah ini untuk mengamankan data atau mengembalikan user/sistem yang tidak sengaja terhapus/rusak.
-                    </p>
-                </div>
-
-                <div class="space-y-2">
-                    <button onclick="downloadSystemBackup()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold text-xs p-3 rounded-xl shadow flex items-center justify-between">
-                        <span>📥 1. Unduh Cadangan Darurat (.json)</span>
-                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">Simpan Data</span>
-                    </button>
-                    
-                    <label class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold text-xs p-3 rounded-xl shadow flex items-center justify-between cursor-pointer">
-                        <span>📂 2. Pulihkan System Dari File Backup (.json)</span>
-                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">Restore File</span>
-                        <input type="file" accept=".json" class="hidden" onchange="restoreSystemBackup(event)">
-                    </label>
-
-                    <button onclick="resetDefaultUsers()" class="w-full bg-gradient-to-r from-amber-600 to-orange-700 text-white font-bold text-xs p-3 rounded-xl shadow flex items-center justify-between">
-                        <span>🔄 3. Reset Ke User Default Sistem</span>
-                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded">Perbaiki User</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex gap-2 justify-end mt-6 pt-3 border-t border-slate-100">
-                <button onclick="closeSupervisorOptionsModal()" class="bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg">Tutup Modal</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL POPUP TAMBAH USER BARU -->
-    <div id="modalAddUser" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4 no-print">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 relative animate-shake">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
-                <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                    <span>➕</span> Tambah User Admin Baru
-                </h3>
-                <button onclick="closeAddUserModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
-            </div>
-            
-            <div class="space-y-4 text-left">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">User ID Akses Baru</label>
-                    <input type="text" id="modalNewUserId" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-slate-900 uppercase" placeholder="Contoh: ADMIN04">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Password Akses Baru</label>
-                    <input type="text" id="modalNewPwd" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-slate-900" placeholder="Contoh: 888">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Role User</label>
-                    <input type="text" value="ADMIN" readonly class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-slate-200 font-extrabold text-blue-900 cursor-not-allowed">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan / Nama Petugas</label>
-                    <input type="text" id="modalNewName" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-slate-900 uppercase" placeholder="Contoh: USER ADMIN CPC 2">
-                </div>
-            </div>
-
-            <div class="flex gap-2 justify-end mt-6 pt-3 border-t border-slate-100">
-                <button onclick="closeAddUserModal()" class="bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2 rounded-lg">Batal</button>
-                <button onclick="submitNewUserModal()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow">Simpan Admin Baru</button>
-            </div>
-        </div>
-    </div>
 
     <!-- LAYAR LOGIN -->
     <div id="loginScreen" class="fixed inset-0 bg-[#070b14]/90 backdrop-blur-md flex items-center justify-center z-50 p-4 no-print">
@@ -405,17 +324,15 @@
         let previewPayload = [];
         let currentSlideIndex = 0;
         let masterDatabase = {}; 
-        let syncTimeout = null; 
 
         const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
         const DEFAULT_ACCESS_RULES = {
-            "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-            "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
-            "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" }
+            "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL" },
+            "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI" },
+            "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1" }
         };
 
         let accessRules = JSON.parse(JSON.stringify(DEFAULT_ACCESS_RULES));
-        let activeUserSessions = {};
 
         function enforceSupervisorRole() {
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
@@ -484,13 +401,8 @@
             "SIANG": ["TEAM RPL SIANG 1", "TEAM RPL SIANG 2"]
         };
 
-        function clearLoginError() {
-            document.getElementById("loginErrorMsg").classList.add("hidden");
-        }
-
-        function focusPasswordInput() {
-            document.getElementById("loginPass").focus();
-        }
+        function clearLoginError() { document.getElementById("loginErrorMsg").classList.add("hidden"); }
+        function focusPasswordInput() { document.getElementById("loginPass").focus(); }
 
         async function handleLogin() {
             const userId = document.getElementById("loginUserId").value.trim().toUpperCase();
@@ -535,195 +447,6 @@
             `;
         }
 
-        /* === FITUR CEK PREVIEW & CETAK SEMUA SLIDE HALAMAN === */
-        function preparePreview(dataDict) {
-            previewPayload = [];
-            for (let [tName, tids] of Object.entries(dataDict)) {
-                if (!tids || tids.length === 0) continue;
-                let memberName = batchTeamMembers[tName] || "-";
-                
-                let tidCounts = {};
-                tids.forEach(t => { if(t) { let u = String(t).toUpperCase(); tidCounts[u] = (tidCounts[u] || 0) + 1; } });
-
-                let teamRows = [];
-                // Maksimal 18 Baris Per Halaman A4
-                for (let i = 0; i < 18; i++) {
-                    let tidRaw = tids[i] || "";
-                    if (!tidRaw) {
-                        teamRows.push([i + 1, "", "", "", "", "", "", "", "", ""]);
-                        continue;
-                    }
-
-                    let tid = String(tidRaw).toUpperCase();
-                    let master = getMasterDataByTid(tid) || {};
-                    let isNotFound = !getMasterDataByTid(tid);
-                    let isDuplicate = tidCounts[tid] > 1;
-
-                    let lokasiText = master.lokasi || (isNotFound ? "⚠️ TID TIDAK TERDAFTAR" : `ATM-${tid}`);
-                    if (isDuplicate) lokasiText = `⚠️ DUPLIKAT (${lokasiText})`;
-
-                    teamRows.push([
-                        i + 1, tid, lokasiText,
-                        master.rpl || (isNotFound ? "-" : `RPL-${tid}-99`),
-                        master.flm || "",
-                        master.rak || "",
-                        master.baris || "",
-                        master.kolom || "", "", ""
-                    ]);
-                }
-                previewPayload.push({ team_name: tName, member_name: memberName, data: teamRows });
-            }
-
-            if (previewPayload.length === 0) {
-                alert("Belum ada data TID yang diinput pada team.");
-                return;
-            }
-
-            currentSlideIndex = 0;
-            openPrintPreviewModal();
-        }
-
-        function openPrintPreviewModal() {
-            document.getElementById("modalPrintPreview").classList.remove("hidden");
-            renderPreviewSlideContent();
-        }
-
-        function closePrintPreviewModal() {
-            document.getElementById("modalPrintPreview").classList.add("hidden");
-        }
-
-        function renderPreviewSlideContent() {
-            if (previewPayload.length === 0) return;
-
-            let item = previewPayload[currentSlideIndex];
-            document.getElementById("slideIndicatorLabel").innerText = `Slide ${currentSlideIndex + 1} / ${previewPayload.length}`;
-            document.getElementById("btnPrevSlide").disabled = (currentSlideIndex === 0);
-            document.getElementById("btnNextSlide").disabled = (currentSlideIndex === previewPayload.length - 1);
-
-            let tableRowsHtml = "";
-            item.data.forEach((row) => {
-                let isEmpty = !row[1];
-                tableRowsHtml += `
-                    <tr style="height: 36px;">
-                        <td class="text-center font-bold text-slate-600 border border-slate-300 p-2">${row[0]}</td>
-                        <td class="text-center font-black text-blue-900 border border-slate-300 p-2">${row[1]}</td>
-                        <!-- Kolom Lokasi Dinamis Mengikuti Text -->
-                        <td class="col-lokasi font-bold text-slate-800 border border-slate-300 p-2">${row[2]}</td>
-                        <td class="text-center font-mono border border-slate-300 p-2">${row[3]}</td>
-                        <td class="text-center font-mono border border-slate-300 p-2">${row[4]}</td>
-                        <td class="text-center font-bold border border-slate-300 p-2">${row[5]}</td>
-                        <td class="text-center font-bold border border-slate-300 p-2">${row[6]}</td>
-                        <td class="text-center font-bold border border-slate-300 p-2">${row[7]}</td>
-                        <td class="border border-slate-300 p-2"></td>
-                    </tr>
-                `;
-            });
-
-            let slideHtml = `
-                <div class="border-2 border-slate-800 p-2 rounded mb-2 bg-slate-100 flex justify-between items-center">
-                    <span class="text-base font-black text-slate-900 uppercase">${item.team_name}</span>
-                    <span class="text-sm font-extrabold text-amber-800 uppercase">CUSTODY : ${item.member_name}</span>
-                </div>
-                <table class="w-full border-collapse text-xs print-table">
-                    <thead>
-                        <tr class="bg-slate-200 text-slate-900 font-black">
-                            <th class="w-8 text-center">NO</th>
-                            <th class="w-24 text-center">TID</th>
-                            <th class="col-lokasi text-center">LOKASI</th>
-                            <th class="w-28 text-center">RPL</th>
-                            <th class="w-28 text-center">FLM</th>
-                            <th class="w-12 text-center">RAK</th>
-                            <th class="w-12 text-center">BARIS</th>
-                            <th class="w-12 text-center">KOLOM</th>
-                            <th class="w-20 text-center">KET</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRowsHtml}
-                    </tbody>
-                </table>
-            `;
-
-            document.getElementById("previewSlideContent").innerHTML = slideHtml;
-        }
-
-        function prevPreviewSlide() {
-            if (currentSlideIndex > 0) {
-                currentSlideIndex--;
-                renderPreviewSlideContent();
-            }
-        }
-
-        function nextPreviewSlide() {
-            if (currentSlideIndex < previewPayload.length - 1) {
-                currentSlideIndex++;
-                renderPreviewSlideContent();
-            }
-        }
-
-        /* PERINTAH PRINT UNTUK MENCETAK SEMUA SLIDE TEAM (1 TEAM = 1 HALAMAN A4) */
-        function executeFullPrint() {
-            let fullPrintHtml = "";
-
-            previewPayload.forEach((item, index) => {
-                let tableRowsHtml = "";
-                item.data.forEach((row) => {
-                    tableRowsHtml += `
-                        <tr style="height: 36px;">
-                            <td style="text-align:center; font-weight:bold;">${row[0]}</td>
-                            <td style="text-align:center; font-weight:bold;">${row[1]}</td>
-                            <td class="col-lokasi" style="font-weight:bold;">${row[2]}</td>
-                            <td style="text-align:center; font-family:monospace;">${row[3]}</td>
-                            <td style="text-align:center; font-family:monospace;">${row[4]}</td>
-                            <td style="text-align:center; font-weight:bold;">${row[5]}</td>
-                            <td style="text-align:center; font-weight:bold;">${row[6]}</td>
-                            <td style="text-align:center; font-weight:bold;">${row[7]}</td>
-                            <td></td>
-                        </tr>
-                    `;
-                });
-
-                let isLast = (index === previewPayload.length - 1);
-                fullPrintHtml += `
-                    <div class="${isLast ? '' : 'page-break'}" style="width:100%; box-sizing:border-box;">
-                        <div style="border:2px solid #000; padding:8px; margin-bottom:8px; display:flex; justify-between: space-between; align-items:center;">
-                            <span style="font-size:14pt; font-weight:900; text-transform:uppercase;">${item.team_name}</span>
-                            <span style="font-size:11pt; font-weight:800; text-transform:uppercase;">CUSTODY : ${item.member_name}</span>
-                        </div>
-                        <table class="print-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:35px; text-align:center;">NO</th>
-                                    <th style="width:100px; text-align:center;">TID</th>
-                                    <th class="col-lokasi" style="text-align:center;">LOKASI</th>
-                                    <th style="width:120px; text-align:center;">RPL</th>
-                                    <th style="width:120px; text-align:center;">FLM</th>
-                                    <th style="width:45px; text-align:center;">RAK</th>
-                                    <th style="width:45px; text-align:center;">BARIS</th>
-                                    <th style="width:45px; text-align:center;">KOLOM</th>
-                                    <th style="width:80px; text-align:center;">KET</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRowsHtml}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            });
-
-            const printContainer = document.getElementById("printContainer");
-            printContainer.innerHTML = fullPrintHtml;
-            printContainer.classList.remove("hidden");
-
-            window.print();
-
-            setTimeout(() => {
-                printContainer.classList.add("hidden");
-                printContainer.innerHTML = "";
-            }, 1000);
-        }
-
         function renderTeamMenuHtml() {
             const content = document.getElementById("contentArea");
             let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
@@ -764,6 +487,7 @@
             content.innerHTML = html;
         }
 
+        /* === FORM INPUT TIM & PRATINJAU REAL-TIME === */
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
             let previousTids = batchTeamsData[teamName] || [];
@@ -772,16 +496,19 @@
             let html = `
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg border border-slate-200">
                     <div class="flex items-center gap-2">
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-600 text-white text-xs font-bold px-3 py-1.5 rounded">⬅ Kembali</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
                         <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${teamName}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded">🖨️ Pratinjau Cetak</button>
-                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded">💾 Simpan</button>
+                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Pratinjau Cetak</button>
+                        <button onclick="saveAndReturnMenu('${teamName}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
+                        <!-- KEMBALIKAN TOMBOL MERAH DELETE DATA -->
+                        <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow transition">🗑️ Hapus Semua</button>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap gap-6 items-start">
+                    <!-- SISI KIRI: INPUT TABLE MAKSIMAL 18 BARIS -->
                     <div class="flex flex-col gap-3">
                         <div class="border border-slate-400 rounded-lg overflow-hidden bg-white shadow-md">
                             <table class="border-collapse text-sm w-full">
@@ -798,7 +525,7 @@
                                 </thead>
                                 <tbody>
             `;
-            // Dibatasi Maksimal 18 Baris Untuk Kertas A4
+
             for (let i = 0; i < 18; i++) {
                 let val = previousTids[i] || "";
                 html += `
@@ -810,13 +537,133 @@
                     </tr>
                 `;
             }
-            html += `</tbody></table></div></div></div>`;
+
+            html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SISI KANAN: KEMBALIKAN BARIS DENGAN REAL-TIME DATA LOOKUP -->
+                    <div class="flex-1 border border-slate-300 bg-white p-4 rounded-xl shadow-lg overflow-x-auto min-w-[500px]">
+                        <div class="text-xs font-extrabold text-slate-700 mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PRATINJAU REAL-TIME DATA:
+                            </span>
+                        </div>
+                        <table class="w-full border-collapse text-sm rounded-lg overflow-hidden">
+                            <thead>
+                                <tr>
+                                    <th colspan="8" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-base">
+                                        <div class="flex items-center justify-between">
+                                            <span>${teamName}</span>
+                                            <span class="text-amber-800 font-extrabold text-xs uppercase">
+                                                CUSTODY : <span id="previewMemberName">${previousMemberName || '-'}</span>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                                <tr class="bg-slate-600 text-white font-bold text-xs">
+                                    <th class="border border-slate-500 p-2.5 w-12 text-center">NO</th>
+                                    <th class="border border-slate-500 p-2.5 w-24 text-center">TID</th>
+                                    <th class="border border-slate-500 p-2.5 px-3 text-center">LOKASI</th>
+                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">RPL</th>
+                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">FLM</th>
+                                    <th class="border border-slate-500 p-2.5 w-14 text-center">RAK</th>
+                                    <th class="border border-slate-500 p-2.5 w-14 text-center">BARIS</th>
+                                    <th class="border border-slate-500 p-2.5 w-14 text-center">KOLOM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="realtimePreviewBody">
+            `;
+
+            for (let i = 0; i < 18; i++) {
+                let tid = previousTids[i] || "";
+                let master = getMasterDataByTid(tid) || {};
+
+                html += `
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
+                        <td class="border border-slate-300 p-2.5 text-center font-bold text-slate-600">${i + 1}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-black text-blue-900">${tid}</td>
+                        <td class="border border-slate-300 p-2.5 px-3 text-left font-bold text-slate-800">${master.lokasi || `ATM-${tid}`}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${master.rpl || `RPL-${tid}-99`}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${master.flm || ''}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-bold">${master.rak || ''}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-bold">${master.baris || ''}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-bold">${master.kolom || ''}</td>
+                    </tr>
+                `;
+            }
+
+            html += `</tbody></table></div></div>`;
             content.innerHTML = html;
             setupInputEvents(teamName);
+            updateRealtimePreview();
         }
 
         function handleTidInput(teamName) {
             autoSaveDraft(teamName);
+            updateRealtimePreview();
+        }
+
+        /* FITUR UPDATE BARIS SAAT TID COCOK DENGAN MASTERDATA */
+        function updateRealtimePreview() {
+            let memberNameInput = document.getElementById("inputTeamMember");
+            let memberNameLabel = document.getElementById("previewMemberName");
+            if (memberNameInput && memberNameLabel) {
+                memberNameLabel.innerText = memberNameInput.value.trim().toUpperCase() || "-";
+            }
+
+            let inputs = document.querySelectorAll(".tid-input");
+            inputs.forEach((inp, i) => {
+                let tidRaw = inp.value.trim();
+                let tidUpper = tidRaw.toUpperCase();
+                let row = document.getElementById(`preview-row-${i}`);
+
+                if (tidRaw !== "") {
+                    let master = getMasterDataByTid(tidUpper);
+                    let isExist = !!master;
+
+                    if (row) {
+                        row.style.display = ""; // Munculkan baris
+                        row.cells[1].innerText = tidUpper;
+                        
+                        if (!isExist) {
+                            row.cells[1].className = "border border-slate-300 p-2.5 text-center font-black text-red-700 bg-rose-100";
+                            row.cells[2].className = "border border-slate-300 p-2.5 px-3 text-left text-rose-700 font-extrabold italic bg-rose-50";
+                            row.cells[2].innerText = "⚠️ TID TIDAK TERDAFTAR";
+                            row.cells[3].innerText = "-";
+                            row.cells[4].innerText = "-";
+                            row.cells[5].innerText = "-";
+                            row.cells[6].innerText = "-";
+                            row.cells[7].innerText = "-";
+                        } else {
+                            row.cells[1].className = "border border-slate-300 p-2.5 text-center font-black text-blue-900";
+                            row.cells[2].className = "border border-slate-300 p-2.5 px-3 text-left font-bold text-slate-800";
+                            row.cells[2].innerText = master.lokasi || `ATM-${tidUpper}`;
+                            row.cells[3].innerText = master.rpl || `RPL-${tidUpper}-99`;
+                            row.cells[4].innerText = master.flm || "";
+                            row.cells[5].innerText = master.rak || "";
+                            row.cells[6].innerText = master.baris || "";
+                            row.cells[7].innerText = master.kolom || "";
+                        }
+                    }
+                } else {
+                    if (row) {
+                        row.style.display = "none"; // Sembunyikan jika kosong
+                    }
+                }
+            });
+        }
+
+        /* FITUR TOMBOL MERAH DELETE DATA ALL */
+        function clearAllTids(teamName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus seluruh data TID pada ${teamName}?`)) {
+                document.querySelectorAll(".tid-input").forEach(inp => inp.value = "");
+                batchTeamsData[teamName] = [];
+                saveLocalStorageData();
+                updateRealtimePreview();
+            }
         }
 
         function autoSaveDraft(teamName) {
@@ -859,13 +706,184 @@
                         }
                     });
                     autoSaveDraft(teamName);
+                    updateRealtimePreview();
+                });
+
+                input.addEventListener("keydown", function(e) {
+                    let currentIndex = parseInt(this.getAttribute("data-index"));
+                    if (e.key === "Enter" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                        if (currentIndex + 1 < inputs.length) inputs[currentIndex + 1].focus();
+                    } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        if (currentIndex - 1 >= 0) inputs[currentIndex - 1].focus();
+                    }
                 });
             });
         }
 
+        /* === PREVIEW SLIDE DAN CETAK (1 TEAM = 1 HALAMAN A4) === */
+        function preparePreview(dataDict) {
+            previewPayload = [];
+            for (let [tName, tids] of Object.entries(dataDict)) {
+                if (!tids || tids.length === 0) continue;
+                let memberName = batchTeamMembers[tName] || "-";
+
+                let teamRows = [];
+                for (let i = 0; i < 18; i++) {
+                    let tidRaw = tids[i] || "";
+                    if (!tidRaw) {
+                        teamRows.push([i + 1, "", "", "", "", "", "", "", "", ""]);
+                        continue;
+                    }
+
+                    let tid = String(tidRaw).toUpperCase();
+                    let master = getMasterDataByTid(tid) || {};
+                    let isNotFound = !getMasterDataByTid(tid);
+
+                    teamRows.push([
+                        i + 1, tid,
+                        master.lokasi || (isNotFound ? "⚠️ TID TIDAK TERDAFTAR" : `ATM-${tid}`),
+                        master.rpl || (isNotFound ? "-" : `RPL-${tid}-99`),
+                        master.flm || "",
+                        master.rak || "",
+                        master.baris || "",
+                        master.kolom || "", "", ""
+                    ]);
+                }
+                previewPayload.push({ team_name: tName, member_name: memberName, data: teamRows });
+            }
+
+            if (previewPayload.length === 0) {
+                alert("Belum ada data TID yang terinput.");
+                return;
+            }
+
+            currentSlideIndex = 0;
+            openPrintPreviewModal();
+        }
+
+        function openPrintPreviewModal() {
+            document.getElementById("modalPrintPreview").classList.remove("hidden");
+            renderPreviewSlideContent();
+        }
+
+        function closePrintPreviewModal() {
+            document.getElementById("modalPrintPreview").classList.add("hidden");
+        }
+
+        function renderPreviewSlideContent() {
+            if (previewPayload.length === 0) return;
+
+            let item = previewPayload[currentSlideIndex];
+            document.getElementById("slideIndicatorLabel").innerText = `Slide ${currentSlideIndex + 1} / ${previewPayload.length}`;
+            document.getElementById("btnPrevSlide").disabled = (currentSlideIndex === 0);
+            document.getElementById("btnNextSlide").disabled = (currentSlideIndex === previewPayload.length - 1);
+
+            let tableRowsHtml = "";
+            item.data.forEach((row) => {
+                tableRowsHtml += `
+                    <tr style="height: 36px;">
+                        <td class="text-center font-bold text-slate-600 border border-slate-300 p-2">${row[0]}</td>
+                        <td class="text-center font-black text-blue-900 border border-slate-300 p-2">${row[1]}</td>
+                        <td class="col-lokasi font-bold text-slate-800 border border-slate-300 p-2">${row[2]}</td>
+                        <td class="text-center font-mono border border-slate-300 p-2">${row[3]}</td>
+                        <td class="text-center font-mono border border-slate-300 p-2">${row[4]}</td>
+                        <td class="text-center font-bold border border-slate-300 p-2">${row[5]}</td>
+                        <td class="text-center font-bold border border-slate-300 p-2">${row[6]}</td>
+                        <td class="text-center font-bold border border-slate-300 p-2">${row[7]}</td>
+                        <td class="border border-slate-300 p-2"></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById("previewSlideContent").innerHTML = `
+                <div class="border-2 border-slate-800 p-2 rounded mb-2 bg-slate-100 flex justify-between items-center">
+                    <span class="text-base font-black text-slate-900 uppercase">${item.team_name}</span>
+                    <span class="text-sm font-extrabold text-amber-800 uppercase">CUSTODY : ${item.member_name}</span>
+                </div>
+                <table class="w-full border-collapse text-xs print-table">
+                    <thead>
+                        <tr class="bg-slate-200 text-slate-900 font-black">
+                            <th class="w-8 text-center">NO</th>
+                            <th class="w-24 text-center">TID</th>
+                            <th class="col-lokasi text-center">LOKASI</th>
+                            <th class="w-28 text-center">RPL</th>
+                            <th class="w-28 text-center">FLM</th>
+                            <th class="w-12 text-center">RAK</th>
+                            <th class="w-12 text-center">BARIS</th>
+                            <th class="w-12 text-center">KOLOM</th>
+                            <th class="w-20 text-center">KET</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tableRowsHtml}</tbody>
+                </table>
+            `;
+        }
+
+        function prevPreviewSlide() { if (currentSlideIndex > 0) { currentSlideIndex--; renderPreviewSlideContent(); } }
+        function nextPreviewSlide() { if (currentSlideIndex < previewPayload.length - 1) { currentSlideIndex++; renderPreviewSlideContent(); } }
+
+        function executeFullPrint() {
+            let fullPrintHtml = "";
+            previewPayload.forEach((item, index) => {
+                let tableRowsHtml = "";
+                item.data.forEach((row) => {
+                    tableRowsHtml += `
+                        <tr style="height: 36px;">
+                            <td style="text-align:center; font-weight:bold;">${row[0]}</td>
+                            <td style="text-align:center; font-weight:bold;">${row[1]}</td>
+                            <td class="col-lokasi" style="font-weight:bold;">${row[2]}</td>
+                            <td style="text-align:center; font-family:monospace;">${row[3]}</td>
+                            <td style="text-align:center; font-family:monospace;">${row[4]}</td>
+                            <td style="text-align:center; font-weight:bold;">${row[5]}</td>
+                            <td style="text-align:center; font-weight:bold;">${row[6]}</td>
+                            <td style="text-align:center; font-weight:bold;">${row[7]}</td>
+                            <td></td>
+                        </tr>
+                    `;
+                });
+
+                let isLast = (index === previewPayload.length - 1);
+                fullPrintHtml += `
+                    <div class="${isLast ? '' : 'page-break'}" style="width:100%; box-sizing:border-box;">
+                        <div style="border:2px solid #000; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:14pt; font-weight:900; text-transform:uppercase;">${item.team_name}</span>
+                            <span style="font-size:11pt; font-weight:800; text-transform:uppercase;">CUSTODY : ${item.member_name}</span>
+                        </div>
+                        <table class="print-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:35px; text-align:center;">NO</th>
+                                    <th style="width:100px; text-align:center;">TID</th>
+                                    <th class="col-lokasi" style="text-align:center;">LOKASI</th>
+                                    <th style="width:120px; text-align:center;">RPL</th>
+                                    <th style="width:120px; text-align:center;">FLM</th>
+                                    <th style="width:45px; text-align:center;">RAK</th>
+                                    <th style="width:45px; text-align:center;">BARIS</th>
+                                    <th style="width:45px; text-align:center;">KOLOM</th>
+                                    <th style="width:80px; text-align:center;">KET</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRowsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            });
+
+            const printContainer = document.getElementById("printContainer");
+            printContainer.innerHTML = fullPrintHtml;
+            printContainer.classList.remove("hidden");
+            window.print();
+
+            setTimeout(() => {
+                printContainer.classList.add("hidden");
+                printContainer.innerHTML = "";
+            }, 1000);
+        }
+
         function renderMasterDataHtml() {
-            const content = document.getElementById("contentArea");
-            content.innerHTML = `<div class="text-sm font-bold p-4">Masterdata Management Ready.</div>`;
+            document.getElementById("contentArea").innerHTML = `<div class="text-sm font-bold p-4">Masterdata Management Ready.</div>`;
         }
     </script>
 </body>
