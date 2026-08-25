@@ -87,6 +87,27 @@
                 white-space: nowrap !important;
                 word-break: normal !important;
             }
+
+            /* CSS Khusus Mode Cetak Black & White */
+            body.print-bw #printArea * {
+                color: black !important;
+                background-color: transparent !important;
+                border-color: #000000 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+            body.print-bw #printArea th {
+                background-color: #e2e8f0 !important;
+                color: black !important;
+            }
+
+            /* CSS Khusus Tingkat Kualitas Cetak */
+            body.print-draft #printArea table {
+                font-family: monospace !important;
+            }
+            body.print-high #printArea th, body.print-high #printArea td {
+                font-weight: 800 !important;
+            }
         }
 
         .col-lokasi {
@@ -353,6 +374,9 @@
                 </span>
             </div>
             <div class="flex items-center gap-2">
+                <button onclick="refreshCurrentDashboard()" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition flex items-center gap-1 active:scale-95">
+                    🔄 Refresh Dashboard
+                </button>
                 <button id="btnSyncSheet" class="bg-indigo-700 text-white text-[11px] font-bold px-3 py-1 rounded shadow flex items-center gap-1 cursor-default">
                     ⚡ Live Cloud Connected
                 </button>
@@ -408,6 +432,10 @@
         let masterDatabase = {}; 
         let syncTimeout = null; 
 
+        // Variable Opsi Kualitas Cetak
+        let selectedPrintColor = "colour"; // Opsi: colour | bw
+        let selectedPrintQuality = "standard"; // Opsi: draft | standard | high
+
         const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
 
         const DEFAULT_ACCESS_RULES = {
@@ -420,6 +448,17 @@
         let accessRules = JSON.parse(JSON.stringify(DEFAULT_ACCESS_RULES));
         let activeUserSessions = {};
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxwVRYg2BXVruhTnVuYA_5ryvJCzrvwJeVjXbh_oppaefIVjoxxyprK4zg7JU88pWoPAg/exec";
+
+        function refreshCurrentDashboard() {
+            loadLocalStorageData();
+            if (currentUser) {
+                if (currentUser.role === "SUPERVISOR") {
+                    renderItSupportDashboard();
+                } else {
+                    renderHomeDashboardHtml();
+                }
+            }
+        }
 
         function enforceSupervisorRole() {
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
@@ -854,9 +893,14 @@
                     <div class="relative bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-2xl p-8 text-white shadow-2xl border border-purple-800/50 overflow-hidden flex flex-col justify-between">
                         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="z-10 space-y-2 max-w-2xl text-left">
-                            <span class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/40 text-purple-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                                👑 KASTA TINGGI SUPERVISOR
-                            </span>
+                            <div class="flex items-center justify-between">
+                                <span class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/40 text-purple-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                                    👑 KASTA TINGGI SUPERVISOR
+                                </span>
+                                <button onclick="refreshCurrentDashboard()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg shadow transition transform active:scale-95 flex items-center gap-1">
+                                    🔄 REFRESH DATA
+                                </button>
+                            </div>
                             <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
                                 PANEL SUPERVISOR UTAMA - BG BEKASI
                             </h1>
@@ -1242,8 +1286,13 @@
                         <div class="absolute left-1/3 top-0 w-32 h-32 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
 
                         <div class="z-10 space-y-3 max-w-xl text-left">
-                            <div class="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Secured Cash & Vault Management
+                            <div class="flex items-center justify-between">
+                                <div class="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Secured Cash & Vault Management
+                                </div>
+                                <button onclick="refreshCurrentDashboard()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3 py-1 rounded-lg shadow transition transform active:scale-95 flex items-center gap-1">
+                                    🔄 REFRESH DATA
+                                </button>
                             </div>
                             <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
                                 BG BEKASI - MANAGEMENT KUNCI
@@ -1312,6 +1361,9 @@
                 <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
                     <span class="font-extrabold text-slate-800 text-base">📊 MASTER DATA KUNCI & LOKASI ATM</span>
                     <div class="flex gap-2">
+                        <button onclick="renderMasterDataHtml()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1 active:scale-95">
+                            🔄 Refresh Master
+                        </button>
                         <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
                             🔄 Replace Master Data (Excel/CSV)
                             <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
@@ -1848,10 +1900,10 @@
                         <table class="w-full border-collapse text-base rounded-lg overflow-hidden">
                             <thead>
                                 <tr>
-                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-left font-extrabold text-lg">
-                                        <div class="flex items-center">
+                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3.5 text-center font-extrabold text-lg">
+                                        <div class="flex items-center justify-center gap-8">
                                             <span>${teamName}</span>
-                                            <span class="ml-16 text-amber-800 font-extrabold text-sm uppercase">
+                                            <span class="text-amber-800 font-extrabold text-sm uppercase">
                                                 CUSTODY : <span id="previewMemberName">${previousMemberName || '-'}</span>
                                             </span>
                                         </div>
@@ -2232,6 +2284,22 @@
             };
         }
 
+        function triggerCustomPrint() {
+            document.body.classList.remove("print-bw", "print-draft", "print-high");
+
+            if (selectedPrintColor === "bw") {
+                document.body.classList.add("print-bw");
+            }
+
+            if (selectedPrintQuality === "draft") {
+                document.body.classList.add("print-draft");
+            } else if (selectedPrintQuality === "high") {
+                document.body.classList.add("print-high");
+            }
+
+            window.print();
+        }
+
         function renderSlideView() {
             const content = document.getElementById("contentArea");
             if (!previewPayload || previewPayload.length === 0) return;
@@ -2267,21 +2335,40 @@
             });
 
             let html = `
-                <div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                <div class="flex flex-wrap justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200 gap-3">
                     <button onclick="exitPreviewMode()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow transition flex items-center gap-1">
                         ⬅ Kembali
                     </button>
                     
-                    <div class="flex items-center gap-3">
-                        <button onclick="prevSlide()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow transition flex items-center gap-1 ${currentSlideIndex === 0 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>
-                            ◀ Sebelumnya
+                    <div class="flex items-center gap-2">
+                        <button onclick="prevSlide()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1 ${currentSlideIndex === 0 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentSlideIndex === 0 ? 'disabled' : ''}>
+                            ◀ Prev
                         </button>
-                        <span class="text-xs font-extrabold text-slate-800 bg-white px-3.5 py-1.5 rounded-md border border-slate-300 shadow-inner">
+                        <span class="text-xs font-extrabold text-slate-800 bg-white px-3 py-1.5 rounded-md border border-slate-300 shadow-inner">
                             Slide <span class="text-blue-700 font-black">${currentSlideIndex + 1}</span> dari ${previewPayload.length}
                         </span>
-                        <button onclick="nextSlide()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow transition flex items-center gap-1 ${currentSlideIndex === previewPayload.length - 1 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentSlideIndex === previewPayload.length - 1 ? 'disabled' : ''}>
-                            Selanjutnya ▶
+                        <button onclick="nextSlide()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1 ${currentSlideIndex === previewPayload.length - 1 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentSlideIndex === previewPayload.length - 1 ? 'disabled' : ''}>
+                            Next ▶
                         </button>
+                    </div>
+
+                    <!-- Pilihan Mode Warna & Kualitas Cetak -->
+                    <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-inner">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Warna:</span>
+                            <select id="printColorSelect" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                                <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
+                                <option value="bw" ${selectedPrintColor === 'bw' ? 'selected' : ''}>⚫⚪ Black & White</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Kualitas:</span>
+                            <select id="printQualitySelect" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                                <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
+                                <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
+                                <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -2290,7 +2377,7 @@
                                 📑 Cetak Semua (${previewPayload.length})
                             </button>
                         ` : ''}
-                        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow transition flex items-center gap-1">
+                        <button onclick="triggerCustomPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow transition flex items-center gap-1">
                             🖨️ CETAK SLIDE INI
                         </button>
                     </div>
@@ -2300,8 +2387,8 @@
                     <table class="w-full border-collapse text-xs rounded-lg overflow-hidden border border-slate-400">
                         <thead>
                             <tr>
-                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-base">
-                                    <div class="flex items-center justify-between">
+                                <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-center font-extrabold text-base">
+                                    <div class="flex items-center justify-center gap-8">
                                         <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
                                         <span class="text-amber-900 font-extrabold uppercase text-sm tracking-wide">
                                             CUSTODY : ${item.member_name}
@@ -2352,9 +2439,26 @@
 
         function printAllSlides() {
             const content = document.getElementById("contentArea");
-            let fullHtml = `<div class="flex justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+            let fullHtml = `<div class="flex flex-wrap justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200 gap-3">
                 <button onclick="renderSlideView()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali Ke Slide View</button>
-                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SEMUA</button>
+                <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-inner">
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Warna:</span>
+                        <select id="printColorSelectAll" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                            <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
+                            <option value="bw" ${selectedPrintColor === 'bw' ? 'selected' : ''}>⚫⚪ Black & White</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Kualitas:</span>
+                        <select id="printQualitySelectAll" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                            <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
+                            <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
+                            <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="triggerCustomPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SEMUA</button>
             </div><div id="printArea">`;
 
             previewPayload.forEach((item, pIdx) => {
@@ -2384,8 +2488,8 @@
                         <table class="w-full border-collapse text-xs rounded-lg overflow-hidden border border-slate-400">
                             <thead>
                                 <tr>
-                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-left font-extrabold text-base">
-                                        <div class="flex items-center justify-between">
+                                    <th colspan="10" class="bg-slate-200 text-slate-900 border-2 border-slate-400 p-3 text-center font-extrabold text-base">
+                                        <div class="flex items-center justify-center gap-8">
                                             <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
                                             <span class="text-amber-900 font-extrabold uppercase text-sm tracking-wide">
                                                 CUSTODY : ${item.member_name}
@@ -2414,7 +2518,7 @@
 
             fullHtml += `</div>`;
             content.innerHTML = fullHtml;
-            window.print();
+            triggerCustomPrint();
         }
 
         if ('serviceWorker' in navigator) {
