@@ -433,7 +433,7 @@
 
         const DEFAULT_ACCESS_RULES = {
             "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
-            "ADMIN":    { password: "1",   role: "ADMIN",      name: "TRI SULFA SUSANTO",        destination: "dashboard" },
+            "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
             "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
             "ADMIN03":    { password: "777",  role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
         };
@@ -886,7 +886,6 @@
                     <div class="relative bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-2xl p-8 text-white shadow-2xl border border-purple-800/50 overflow-hidden flex flex-col justify-between">
                         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
                         
-                        <!-- Tombol Refresh Data dipindahkan ke pojok kanan atas -->
                         <button onclick="refreshCurrentDashboard()" class="absolute top-4 right-4 z-20 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3.5 py-2 rounded-lg shadow-lg transition transform active:scale-95 flex items-center gap-1.5 border border-amber-300">
                             🔄 REFRESH DATA
                         </button>
@@ -898,7 +897,7 @@
                                 </span>
                             </div>
                             <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
-                                BG BEKASI SIAP MELESAT
+                                PANEL SUPERVISOR UTAMA - BG BEKASI
                             </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
                                 Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional cabang BG BEKASI.
@@ -1363,6 +1362,7 @@
         function renderMasterDataHtml() {
             const content = document.getElementById("contentArea");
             let keys = Object.keys(masterDatabase);
+            let isSupervisor = (currentUser && currentUser.role === "SUPERVISOR");
 
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
@@ -1371,26 +1371,30 @@
                         <button onclick="renderMasterDataHtml()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1 active:scale-95">
                             🔄 Refresh Master
                         </button>
-                        <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
-                            🔄 Replace Master Data (Excel/CSV)
-                            <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
-                        </label>
+                        ${isSupervisor ? `
+                            <label class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow cursor-pointer transition">
+                                🔄 Replace Master Data (Excel/CSV)
+                                <input type="file" id="masterFileUpload" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleMasterUpload(event)">
+                            </label>
+                        ` : ''}
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-5">
                     <div class="flex flex-col gap-3">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
-                                <span id="btnFormIcon" class="text-sm font-extrabold">+</span> <span id="btnFormText">Tambah Data</span>
-                            </button>
-                            <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
-                                <span>✏️</span> <span>Ubah Data</span>
-                            </button>
-                            <button onclick="handleDeleteDataClick()" id="btnDeleteData" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
-                                <span>🗑️</span> <span>Hapus Data</span>
-                            </button>
-                        </div>
+                        ${isSupervisor ? `
+                            <div class="flex gap-2 items-center">
+                                <button onclick="toggleMasterForm()" id="btnToggleForm" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                                    <span id="btnFormIcon" class="text-sm font-extrabold">+</span> <span id="btnFormText">Tambah Data</span>
+                                </button>
+                                <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                                    <span>✏️</span> <span>Ubah Data</span>
+                                </button>
+                                <button onclick="handleDeleteDataClick()" id="btnDeleteData" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                                    <span>🗑️</span> <span>Hapus Data</span>
+                                </button>
+                            </div>
+                        ` : ''}
 
                         <div id="masterFormContainer" class="hidden bg-slate-50 border border-slate-300 p-4 rounded-xl shadow-inner max-w-lg">
                             <h3 class="text-xs font-extrabold text-slate-700 mb-3 uppercase tracking-wider">➕ TAMBAH / UPDATE DATA MASTER TID</h3>
@@ -1499,7 +1503,9 @@
             `;
             renderMasterTable();
             setupSearchBoxKeyNavigation();
-            setupMasterInputNavigation();
+            if (isSupervisor) {
+                setupMasterInputNavigation();
+            }
         }
 
         function setupSearchBoxKeyNavigation() {
@@ -1630,23 +1636,32 @@
         }
 
         function toggleMasterForm() {
+            if (!currentUser || currentUser.role !== "SUPERVISOR") {
+                alert("Aksi ini hanya diperuntukkan untuk SUPERVISOR!");
+                return;
+            }
             const formContainer = document.getElementById("masterFormContainer");
             const btnText = document.getElementById("btnFormText");
             const btnIcon = document.getElementById("btnFormIcon");
-            if (formContainer.classList.contains("hidden")) {
+            if (formContainer && formContainer.classList.contains("hidden")) {
                 formContainer.classList.remove("hidden");
-                btnText.innerText = "Tutup Form";
-                btnIcon.innerText = "✕";
-                document.getElementById("m_tid").focus();
-            } else {
+                if (btnText) btnText.innerText = "Tutup Form";
+                if (btnIcon) btnIcon.innerText = "✕";
+                const tidInput = document.getElementById("m_tid");
+                if (tidInput) tidInput.focus();
+            } else if (formContainer) {
                 formContainer.classList.add("hidden");
-                btnText.innerText = "Tambah Data";
-                btnIcon.innerText = "+";
+                if (btnText) btnText.innerText = "Tambah Data";
+                if (btnIcon) btnIcon.innerText = "+";
                 clearMasterForm();
             }
         }
 
         function handleEditDataClick() {
+            if (!currentUser || currentUser.role !== "SUPERVISOR") {
+                alert("Aksi ini hanya diperuntukkan untuk SUPERVISOR!");
+                return;
+            }
             let tidTarget = prompt("Masukkan nomor TID yang ingin diubah datanya:");
             if (!tidTarget) return;
             tidTarget = tidTarget.trim().toUpperCase();
@@ -1658,7 +1673,7 @@
             }
             
             const formContainer = document.getElementById("masterFormContainer");
-            if (formContainer.classList.contains("hidden")) toggleMasterForm();
+            if (formContainer && formContainer.classList.contains("hidden")) toggleMasterForm();
 
             document.getElementById("m_tid").value = tidTarget;
             document.getElementById("m_tid").setAttribute("readonly", true);
@@ -1672,6 +1687,10 @@
         }
 
         function handleDeleteDataClick() {
+            if (!currentUser || currentUser.role !== "SUPERVISOR") {
+                alert("Aksi ini hanya diperuntukkan untuk SUPERVISOR!");
+                return;
+            }
             let tidTarget = prompt("Masukkan nomor TID yang ingin dihapus datanya:");
             if (!tidTarget) return;
             tidTarget = tidTarget.trim().toUpperCase();
@@ -1721,6 +1740,10 @@
         }
 
         function saveMasterItemManual() {
+            if (!currentUser || currentUser.role !== "SUPERVISOR") {
+                alert("Aksi ini hanya diperuntukkan untuk SUPERVISOR!");
+                return;
+            }
             let tid = document.getElementById("m_tid").value.trim().toUpperCase();
             if (!tid) {
                 alert("Nomor TID wajib diisi!");
@@ -1741,6 +1764,11 @@
         }
 
         function handleMasterUpload(event) {
+            if (!currentUser || currentUser.role !== "SUPERVISOR") {
+                alert("Aksi ini hanya diperuntukkan untuk SUPERVISOR!");
+                event.target.value = "";
+                return;
+            }
             const file = event.target.files[0];
             if (!file) return;
 
