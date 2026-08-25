@@ -55,17 +55,24 @@
             #printArea table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: fixed !important;
+                table-layout: auto !important; /* Fleksibel mengikuti isi teks terpanjang */
             }
             #printArea th, #printArea td {
                 padding: 2px 3px !important;
                 font-size: 10px !important;
                 line-height: 1.1 !important;
                 height: 22px !important;
+                white-space: nowrap !important;
             }
             #printArea th {
                 padding: 4px 3px !important;
                 font-size: 10.5px !important;
+            }
+            /* Menjaga agar kolom lokasi bisa memanjang secara selebar-lebarnya */
+            .col-lokasi {
+                width: auto !important;
+                white-space: normal !important;
+                word-break: break-word !important;
             }
         }
 
@@ -271,7 +278,6 @@
             </div>
 
             <h2 class="text-xl font-black text-white tracking-wider uppercase drop-shadow-md">BG BEKASI</h2>
-            <!-- Dibuat Font Tebal (font-extrabold & tracking-widest) -->
             <p class="text-[11px] font-extrabold text-amber-500 tracking-widest uppercase mb-4 drop-shadow">MANAGEMENT KUNCI</p>
             
             <div class="space-y-3 text-left mb-2">
@@ -384,7 +390,6 @@
 
         const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
 
-        // CONFIG KUNCI TUNGGAL (SUPERVISOR PASSWORD HANYA 9930)
         const DEFAULT_ACCESS_RULES = {
             "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
             "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
@@ -400,7 +405,7 @@
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
                 accessRules[DEFAULT_SUPERVISOR_ID] = { ...DEFAULT_ACCESS_RULES[DEFAULT_SUPERVISOR_ID] };
             } else {
-                accessRules[DEFAULT_SUPERVISOR_ID].password = "9930"; // Paksa password Supervisor selalu 9930
+                accessRules[DEFAULT_SUPERVISOR_ID].password = "9930";
                 accessRules[DEFAULT_SUPERVISOR_ID].role = "SUPERVISOR";
                 accessRules[DEFAULT_SUPERVISOR_ID].destination = "it_support_dashboard";
             }
@@ -674,7 +679,6 @@
             if (pwdInput) pwdInput.focus();
         }
 
-        // FUNGSI LOGIN DENGAN VALIDASI HANYA PASSWORD "9930" UNTUK SUPERVISOR
         async function handleLogin() {
             const userInput = document.getElementById("loginUserId");
             const pwdInput = document.getElementById("loginPass");
@@ -1396,7 +1400,7 @@
                                 <tr class="bg-slate-200 text-slate-800 font-bold">
                                     <th class="border border-slate-300 p-2 w-10">NO</th>
                                     <th class="border border-slate-300 p-2 w-20">TID</th>
-                                    <th class="border border-slate-300 p-2">LOKASI ATM</th>
+                                    <th class="border border-slate-300 p-2 col-lokasi">LOKASI ATM</th>
                                     <th class="border border-slate-300 p-2">BARCODE RPL</th>
                                     <th class="border border-slate-300 p-2">BARCODE FLM</th>
                                     <th class="border border-slate-300 p-2 w-16">RAK</th>
@@ -1486,7 +1490,7 @@
                     <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 transition">
                         <td class="border border-slate-300 p-2 text-center font-bold text-slate-500">${i + 1}</td>
                         <td class="border border-slate-300 p-2 text-center font-bold text-blue-900">${tid}</td>
-                        <td class="border border-slate-300 p-2 px-3 font-semibold text-slate-800">${item.lokasi || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 font-semibold text-slate-800 col-lokasi">${item.lokasi || '-'}</td>
                         <td class="border border-slate-300 p-2 px-3 text-center font-mono">${item.rpl || '-'}</td>
                         <td class="border border-slate-300 p-2 px-3 text-center font-mono">${item.flm || '-'}</td>
                         <td class="border border-slate-300 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/50">${item.rak || '-'}</td>
@@ -1752,6 +1756,7 @@
                                 </thead>
                                 <tbody>
             `;
+            // MAKSIMAL 18 BARIS
             for (let i = 0; i < 18; i++) {
                 let val = previousTids[i] || "";
                 html += `
@@ -1798,7 +1803,7 @@
                                 <tr class="bg-slate-500 text-white font-bold text-base">
                                     <th class="border border-slate-500 p-3 w-14 text-center">NO</th>
                                     <th class="border border-slate-500 p-3 w-28 text-center">TID</th>
-                                    <th class="border border-slate-500 p-3 px-4 text-center">LOKASI</th>
+                                    <th class="border border-slate-500 p-3 px-4 text-center col-lokasi">LOKASI</th>
                                     <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">RPL</th>
                                     <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">FLM</th>
                                     <th class="border border-slate-500 p-3 w-16 text-center">RAK</th>
@@ -1808,6 +1813,7 @@
                             </thead>
                             <tbody id="realtimePreviewBody">
             `;
+            // MAKSIMAL 18 BARIS
             for (let i = 0; i < 18; i++) {
                 let tid = previousTids[i] || "";
                 let master = getMasterDataByTid(tid) || {};
@@ -1816,7 +1822,7 @@
                     <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
                         <td class="border border-slate-300 p-3 text-center">${i + 1}</td>
                         <td class="border border-slate-300 p-3 text-center font-bold text-blue-900">${tid}</td>
-                        <td class="border border-slate-300 p-3 px-4 text-center">${master.lokasi || `ATM-${tid}`}</td>
+                        <td class="border border-slate-300 p-3 px-4 text-center col-lokasi">${master.lokasi || `ATM-${tid}`}</td>
                         <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.rpl || `RPL-${tid}-99`}</td>
                         <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.flm || ''}</td>
                         <td class="border border-slate-300 p-3 text-center">${master.rak || ''}</td>
@@ -1891,7 +1897,7 @@
                         
                         if (isDuplicate) {
                             row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-sky-900 bg-sky-200";
-                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center text-sky-900 font-extrabold italic bg-sky-100";
+                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center text-sky-900 font-extrabold italic bg-sky-100 col-lokasi";
                             row.cells[2].innerText = `⚠️ DUPLIKAT (${(master && master.lokasi) ? master.lokasi : 'ATM ' + tidUpper})`;
                             row.cells[3].innerText = (master && master.rpl) ? master.rpl : `RPL-${tidUpper}-99`;
                             row.cells[4].innerText = (master && master.flm) ? master.flm : "";
@@ -1900,7 +1906,7 @@
                             row.cells[7].innerText = (master && master.kolom) ? master.kolom : "";
                         } else if (!isExist) {
                             row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-red-700 bg-rose-100";
-                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center text-rose-700 font-extrabold italic bg-rose-50";
+                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center text-rose-700 font-extrabold italic bg-rose-50 col-lokasi";
                             row.cells[2].innerText = "⚠️ TID TIDAK TERDAFTAR";
                             row.cells[3].innerText = "-";
                             row.cells[4].innerText = "-";
@@ -1909,7 +1915,7 @@
                             row.cells[7].innerText = "-";
                         } else {
                             row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-blue-900";
-                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center font-semibold text-slate-800";
+                            row.cells[2].className = "border border-slate-300 p-3 px-4 text-center font-semibold text-slate-800 col-lokasi";
                             row.cells[2].innerText = master.lokasi || `ATM-${tidUpper}`;
                             row.cells[3].innerText = master.rpl || `RPL-${tidUpper}-99`;
                             row.cells[4].innerText = master.flm || "";
@@ -1964,8 +1970,12 @@
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
             let tids = [];
-            document.querySelectorAll(".tid-input").forEach(inp => {
-                if(inp.value.trim() !== "") tids.push(inp.value.trim().toUpperCase());
+            // BATASI MAKSIMAL 18 BARIS
+            let inputs = document.querySelectorAll(".tid-input");
+            inputs.forEach((inp, idx) => {
+                if(idx < 18 && inp.value.trim() !== "") {
+                    tids.push(inp.value.trim().toUpperCase());
+                }
             });
             batchTeamsData[teamName] = tids;
             if(memberName) batchTeamMembers[teamName] = memberName;
@@ -2067,16 +2077,17 @@
                         let currentIndex = parseInt(this.getAttribute("data-index"));
                         lines.forEach((lineText, offset) => {
                             let targetIndex = currentIndex + offset;
-                            if (targetIndex < inputs.length) {
+                            // DIPASTIKAN MAX 18 BARIS
+                            if (targetIndex < 18 && targetIndex < inputs.length) {
                                 inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
                             }
                         });
 
                         let nextFocusIndex = currentIndex + lines.length;
-                        if (nextFocusIndex < inputs.length) {
+                        if (nextFocusIndex < 18 && nextFocusIndex < inputs.length) {
                             inputs[nextFocusIndex].focus();
                         } else {
-                            inputs[inputs.length - 1].focus();
+                            inputs[Math.min(17, inputs.length - 1)].focus();
                         }
 
                         autoSaveDraft(teamName);
@@ -2088,7 +2099,7 @@
                     let currentIndex = parseInt(this.getAttribute("data-index"));
                     if (e.key === "Enter" || e.key === "ArrowDown") {
                         e.preventDefault();
-                        if (currentIndex + 1 < inputs.length) {
+                        if (currentIndex + 1 < 18 && currentIndex + 1 < inputs.length) {
                             inputs[currentIndex + 1].focus();
                             inputs[currentIndex + 1].select();
                         }
@@ -2114,11 +2125,14 @@
                 if (!tids || tids.length === 0) continue;
                 let memberName = batchTeamMembers[tName] || "-";
                 
+                // BATASI MAKSIMAL 18 BARIS DATANYA
+                let limitedTids = tids.slice(0, 18);
+
                 let tidCounts = {};
-                tids.forEach(t => { if(t) { let u = String(t).toUpperCase(); tidCounts[u] = (tidCounts[u] || 0) + 1; } });
+                limitedTids.forEach(t => { if(t) { let u = String(t).toUpperCase(); tidCounts[u] = (tidCounts[u] || 0) + 1; } });
 
                 let teamRows = [];
-                tids.forEach((tidRaw, i) => {
+                limitedTids.forEach((tidRaw, i) => {
                     let tid = String(tidRaw).toUpperCase();
                     let master = getMasterDataByTid(tid) || {};
                     let isNotFound = !getMasterDataByTid(tid);
@@ -2158,6 +2172,7 @@
                 </div>
 
                 <div id="printArea" class="border border-slate-300 bg-white p-3 rounded-xl shadow-md">
+                    <!-- 1 TIM TERDIRI DARI 1 Halaman / 1 BARIS KELOMPOK TABEL (FLEKSIBEL DI KOLOM LOKASI) -->
                     <table class="w-full border-collapse text-xs rounded-lg overflow-hidden">
                         <thead>
                             <tr>
@@ -2173,7 +2188,7 @@
                             <tr class="bg-slate-600 text-white font-bold text-xs">
                                 <th class="border border-slate-500 p-1.5 w-[32px] text-center">NO</th>
                                 <th class="border border-slate-500 p-1.5 w-[85px] text-center">TID</th>
-                                <th class="border border-slate-500 p-1.5 px-2 text-center">LOKASI</th>
+                                <th class="border border-slate-500 p-1.5 px-2 text-center col-lokasi">LOKASI</th>
                                 <th class="border border-slate-500 p-1.5 px-1 text-center w-[110px]">RPL</th>
                                 <th class="border border-slate-500 p-1.5 px-1 text-center w-[110px]">FLM</th>
                                 <th class="border border-slate-500 p-1.5 w-[42px] text-center">RAK</th>
@@ -2190,21 +2205,21 @@
                 let isDuplicate = row[2].includes("⚠️ DUPLIKAT");
 
                 let cellClass = "text-blue-900";
-                let lokasiClass = "";
+                let lokasiClass = "col-lokasi";
 
                 if (isDuplicate) {
                     cellClass = "text-sky-900 bg-sky-200 font-extrabold";
-                    lokasiClass = "text-sky-900 font-bold bg-sky-100";
+                    lokasiClass = "text-sky-900 font-bold bg-sky-100 col-lokasi";
                 } else if (isNotFound) {
                     cellClass = "text-red-700 bg-rose-100 font-extrabold";
-                    lokasiClass = "text-red-700 font-extrabold italic bg-rose-50";
+                    lokasiClass = "text-red-700 font-extrabold italic bg-rose-50 col-lokasi";
                 }
 
                 html += `
                     <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
                         <td class="border border-slate-300 p-1 text-center font-semibold">${row[0]}</td>
                         <td class="border border-slate-300 p-1 text-center font-bold ${cellClass}">${row[1]}</td>
-                        <td class="border border-slate-300 p-1 px-2 text-left truncate ${lokasiClass}">${row[2]}</td>
+                        <td class="border border-slate-300 p-1 px-2 text-left ${lokasiClass}">${row[2]}</td>
                         <td class="border border-slate-300 p-1 text-center font-mono text-[11px]">${row[3]}</td>
                         <td class="border border-slate-300 p-1 text-center font-mono text-[11px]">${row[4]}</td>
                         <td class="border border-slate-300 p-1 text-center font-bold">${row[5]}</td>
