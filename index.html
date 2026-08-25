@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PT. Bringin Gigantara - Management Kunci</title>
+    <title>[NAMA APLIKASI CABANG ANDA] - Management Kunci</title>
     
+    <!-- Meta Tag SEO & Pencarian Google -->
+    <meta name="description" content="Sistem Informasi Monitoring dan Management Kunci Operasional [NAMA APLIKASI CABANG ANDA]">
+    <meta name="keywords" content="Management Kunci, Kunci RPL, Kunci FLM, Monitoring Kunci, Operasional Cabang">
+    <meta name="robots" content="index, follow">
+
     <!-- PWA Manifest & Ikon Khusus Aplikasi Desktop/Mobile -->
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3064/3064155.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="theme-color" content="#1E3A8A">
 
     <!-- Tailwind CSS untuk styling modern -->
@@ -272,8 +277,9 @@
                 </div>
             </div>
 
-            <h2 class="text-xl font-black text-white tracking-wider uppercase drop-shadow-md">PT. Bringin Gigantara</h2>
-            <p class="text-[10px] font-bold text-amber-400 tracking-widest uppercase mb-4 drop-shadow">Integrated Cash Solutions</p>
+            <!-- GANTI TEKS DI BAWAH DENGAN NAMA APLIKASI CABANG ANDA -->
+            <h2 class="text-xl font-black text-white tracking-wider uppercase drop-shadow-md">[NAMA APLIKASI CABANG ANDA]</h2>
+            <p class="text-[10px] font-bold text-amber-400 tracking-widest uppercase mb-4 drop-shadow">Integrated Cash & Vault Management</p>
             
             <div class="space-y-3 text-left mb-2">
                 <div>
@@ -302,7 +308,7 @@
             <button onclick="handleLogin()" class="btn-3d-lock w-full text-slate-950 font-black text-xs tracking-wider uppercase py-2.5 rounded-xl transition transform active:scale-[0.98] flex items-center justify-center gap-2 mt-4">
                 <span>🔓</span> UNLOCK SYSTEM
             </button>
-            <p class="text-[9px] text-slate-500 font-semibold mt-4 uppercase tracking-widest">Secured Key Management BG Bekasi</p>
+            <p class="text-[9px] text-slate-500 font-semibold mt-4 uppercase tracking-widest">Secured Key Management System</p>
         </div>
     </div>
 
@@ -310,7 +316,7 @@
     <div id="mainApp" class="hidden flex flex-col flex-1">
         <header class="no-print bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#1E293B] h-20 flex items-center justify-between px-6 text-white shadow-xl border-b border-blue-900/50 overflow-hidden">
             <div class="flex items-center space-x-3 z-10 bg-[#0F172A] pr-4 shrink-0 cursor-pointer" onclick="handleLogoClick()">
-                <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ bgi</span>
+                <span class="text-3xl font-extrabold text-[#F97316] drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">∞ app</span>
                 <span class="text-xs text-slate-300 leading-tight font-medium">Integrated<br>Cash Solutions</span>
             </div>
             <div class="flex-1 overflow-hidden mx-6 relative flex items-center">
@@ -344,7 +350,7 @@
         <div class="flex flex-1 p-3 gap-3">
             <aside class="no-print w-[220px] flex flex-col gap-3 shrink-0">
                 <div class="neumorphic-profile p-3.5">
-                    <div id="sidebarRole" class="font-black text-amber-400 text-center mb-3 tracking-wider text-xs uppercase border-b border-white/10 pb-2">ADMIN<br>BG BEKASI</div>
+                    <div id="sidebarRole" class="font-black text-amber-400 text-center mb-3 tracking-wider text-xs uppercase border-b border-white/10 pb-2">ADMIN<br>OPERASIONAL</div>
                     <div class="space-y-2 font-mono text-[11px] font-bold">
                         <div class="neumorphic-inset-light p-2 rounded-lg flex flex-col justify-center text-left">
                             <span class="text-[9px] text-slate-500 uppercase font-bold">JAM</span>
@@ -609,7 +615,7 @@
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Masterdata");
 
-                XLSX.writeFile(workbook, `MASTERDATA_KUNCI_BGI_${new Date().toISOString().slice(0,10)}.xlsx`);
+                XLSX.writeFile(workbook, `MASTERDATA_KUNCI_${new Date().toISOString().slice(0,10)}.xlsx`);
                 alert("File Excel Masterdata berhasil diunduh!");
             } catch (e) {
                 alert("Terjadi kesalahan saat mengunduh file Excel.");
@@ -826,13 +832,13 @@
                         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="z-10 space-y-2 max-w-2xl text-left">
                             <span class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-400/40 text-purple-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                                👑 KASTA TINGGI SUPERVISOR - BG BEKASI
+                                👑 KASTA TINGGI SUPERVISOR
                             </span>
                             <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
                                 PANEL SUPERVISOR UTAMA
                             </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
-                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional BG Bekasi.
+                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional cabang.
                             </p>
                         </div>
                     </div>
@@ -919,7 +925,7 @@
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
                     <div>
                         <span class="font-extrabold text-slate-800 text-base">🔑 MANAJEMEN USER ADMIN & CREDENTIALS</span>
-                        <p class="text-xs text-slate-500">Kelola User ID, password, dan kredensial pengguna sistem BG Bekasi</p>
+                        <p class="text-xs text-slate-500">Kelola User ID, password, dan kredensial pengguna sistem operasional</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="openAddUserModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow cursor-pointer transition flex items-center gap-1">➕ Tambah Admin Baru</button>
@@ -1197,7 +1203,7 @@
                 let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
                 let downloadAnchor = document.createElement('a');
                 downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `BGI_BACKUP_SYSTEM_${new Date().toISOString().slice(0,10)}.json`);
+                downloadAnchor.setAttribute("download", `BACKUP_SYSTEM_${new Date().toISOString().slice(0,10)}.json`);
                 document.body.appendChild(downloadAnchor);
                 downloadAnchor.click();
                 downloadAnchor.remove();
@@ -1221,11 +1227,12 @@
                             <div class="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
                                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Secured Cash & Vault Management
                             </div>
+                            <!-- GANTI NAMA CABANG BUATAN ANDA DI SINI -->
                             <h1 class="text-3xl md:text-4xl font-black tracking-wide text-white drop-shadow-md">
-                                PT. BRINGIN GIGANTARA
+                                [NAMA APLIKASI CABANG ANDA]
                             </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
-                                Pusat Kontrol Administrasi Status Mesin ATM, Pengelolaan Ketersediaan Kas, Gudang Kunci RPL/FLM, dan Operasional Cash Processing Center <strong class="text-amber-300">BG Bekasi</strong>.
+                                Pusat Kontrol Administrasi Status Mesin ATM, Pengelolaan Ketersediaan Kas, Gudang Kunci RPL/FLM, dan Operasional Cash Processing Center <strong class="text-amber-300">Cabang Operasional</strong>.
                             </p>
                             <div class="pt-2 flex flex-wrap gap-3">
                                 <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
@@ -1315,7 +1322,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Lokasi ATM</label>
-                                    <input type="text" id="m_lokasi" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white" placeholder="Contoh: ATM-12345678 (BEKASI)" data-index="1">
+                                    <input type="text" id="m_lokasi" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white" placeholder="Contoh: ATM-12345678" data-index="1">
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Barcode RPL</label>
@@ -1621,7 +1628,7 @@
                 return;
             }
             masterDatabase[tid] = {
-                lokasi: document.getElementById("m_lokasi").value.trim().toUpperCase() || `ATM-${tid} (BEKASI)`,
+                lokasi: document.getElementById("m_lokasi").value.trim().toUpperCase() || `ATM-${tid}`,
                 rpl: document.getElementById("m_rpl").value.trim().toUpperCase() || `RPL-${tid}-99`,
                 flm: document.getElementById("m_flm").value.trim().toUpperCase() || "",
                 rak: document.getElementById("m_rak").value.trim().toUpperCase() || "",
@@ -1649,7 +1656,7 @@
                         let tid = String(row['TID'] || row['tid'] || '').trim().toUpperCase();
                         if (!tid) return;
                         masterDatabase[tid] = {
-                            lokasi: String(row['LOKASI ATM'] || row['lokasi'] || `ATM-${tid} (BEKASI)`).trim().toUpperCase(),
+                            lokasi: String(row['LOKASI ATM'] || row['lokasi'] || `ATM-${tid}`).trim().toUpperCase(),
                             rpl: String(row['BARCODE RPL'] || row['rpl'] || `RPL-${tid}-99`).trim().toUpperCase(),
                             flm: String(row['BARCODE FLM'] || row['flm'] || '').trim().toUpperCase(),
                             rak: String(row['RAK'] || row['rak'] || '').trim().toUpperCase(),
@@ -1816,7 +1823,7 @@
                     <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'}" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
                         <td class="border border-slate-300 p-3 text-center">${i + 1}</td>
                         <td class="border border-slate-300 p-3 text-center font-bold text-blue-900">${tid}</td>
-                        <td class="border border-slate-300 p-3 px-4 text-center">${master.lokasi || `ATM-${tid} (BEKASI)`}</td>
+                        <td class="border border-slate-300 p-3 px-4 text-center">${master.lokasi || `ATM-${tid}`}</td>
                         <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.rpl || `RPL-${tid}-99`}</td>
                         <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.flm || ''}</td>
                         <td class="border border-slate-300 p-3 text-center">${master.rak || ''}</td>
@@ -1910,7 +1917,7 @@
                         } else {
                             row.cells[1].className = "border border-slate-300 p-3 text-center font-bold text-blue-900";
                             row.cells[2].className = "border border-slate-300 p-3 px-4 text-center font-semibold text-slate-800";
-                            row.cells[2].innerText = master.lokasi || `ATM-${tidUpper} (BEKASI)`;
+                            row.cells[2].innerText = master.lokasi || `ATM-${tidUpper}`;
                             row.cells[3].innerText = master.rpl || `RPL-${tidUpper}-99`;
                             row.cells[4].innerText = master.flm || "";
                             row.cells[5].innerText = master.rak || "";
@@ -2124,7 +2131,7 @@
                     let isNotFound = !getMasterDataByTid(tid);
                     let isDuplicate = tidCounts[tid] > 1;
 
-                    let lokasiText = master.lokasi || (isNotFound ? "⚠️ TID TIDAK TERDAFTAR" : `ATM-${tid} (BEKASI)`);
+                    let lokasiText = master.lokasi || (isNotFound ? "⚠️ TID TIDAK TERDAFTAR" : `ATM-${tid}`);
                     if (isDuplicate) lokasiText = `⚠️ DUPLIKAT (${lokasiText})`;
 
                     teamRows.push([
