@@ -23,7 +23,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 8mm 6mm;
+                margin: 6mm 4mm;
             }
             body {
                 background: white !important;
@@ -65,24 +65,35 @@
                 table-layout: auto !important;
             }
             #printArea th, #printArea td {
-                padding: 4px 5px !important;
-                font-size: 11.5px !important;
-                line-height: 1.25 !important;
-                height: 32px !important;
+                padding: 4px 4px !important;
+                font-size: 11px !important;
+                line-height: 1.2 !important;
+                height: 30px !important;
                 vertical-align: middle !important;
             }
             #printArea th {
-                padding: 6px 5px !important;
-                font-size: 12px !important;
+                padding: 5px 4px !important;
+                font-size: 11.5px !important;
                 background-color: #475569 !important;
                 color: white !important;
             }
             .col-lokasi {
                 width: auto !important;
-                white-space: normal !important;
-                word-break: break-word !important;
-                max-width: 280px !important;
+                white-space: nowrap !important;
+                word-break: normal !important;
             }
+            .col-rpl, .col-flm {
+                width: auto !important;
+                white-space: nowrap !important;
+                word-break: normal !important;
+            }
+        }
+
+        .col-lokasi {
+            white-space: nowrap !important;
+        }
+        .col-rpl, .col-flm {
+            white-space: nowrap !important;
         }
 
         .tid-cell-selected {
@@ -1413,8 +1424,8 @@
                                     <th class="border border-slate-300 p-2 w-10">NO</th>
                                     <th class="border border-slate-300 p-2 w-20">TID</th>
                                     <th class="border border-slate-300 p-2 col-lokasi">LOKASI ATM</th>
-                                    <th class="border border-slate-300 p-2">BARCODE RPL</th>
-                                    <th class="border border-slate-300 p-2">BARCODE FLM</th>
+                                    <th class="border border-slate-300 p-2 col-rpl">BARCODE RPL</th>
+                                    <th class="border border-slate-300 p-2 col-flm">BARCODE FLM</th>
                                     <th class="border border-slate-300 p-2 w-16">RAK</th>
                                     <th class="border border-slate-300 p-2 w-16">BARIS</th>
                                     <th class="border border-slate-300 p-2 w-16">KOLOM</th>
@@ -1503,8 +1514,8 @@
                         <td class="border border-slate-300 p-2 text-center font-bold text-slate-500">${i + 1}</td>
                         <td class="border border-slate-300 p-2 text-center font-bold text-blue-900">${tid}</td>
                         <td class="border border-slate-300 p-2 px-3 font-semibold text-slate-800 col-lokasi">${item.lokasi || '-'}</td>
-                        <td class="border border-slate-300 p-2 px-3 text-center font-mono">${item.rpl || '-'}</td>
-                        <td class="border border-slate-300 p-2 px-3 text-center font-mono">${item.flm || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 text-center font-mono col-rpl">${item.rpl || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 text-center font-mono col-flm">${item.flm || '-'}</td>
                         <td class="border border-slate-300 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/50">${item.rak || '-'}</td>
                         <td class="border border-slate-300 p-2 text-center font-extrabold text-blue-900 bg-blue-50/50">${item.baris || '-'}</td>
                         <td class="border border-slate-300 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/50">${item.kolom || '-'}</td>
@@ -1850,8 +1861,8 @@
                                     <th class="border border-slate-500 p-3 w-14 text-center">NO</th>
                                     <th class="border border-slate-500 p-3 w-28 text-center">TID</th>
                                     <th class="border border-slate-500 p-3 px-4 text-center col-lokasi">LOKASI</th>
-                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">RPL</th>
-                                    <th class="border border-slate-500 p-3 px-2 text-center w-[130px]">FLM</th>
+                                    <th class="border border-slate-500 p-3 px-2 text-center col-rpl">RPL</th>
+                                    <th class="border border-slate-500 p-3 px-2 text-center col-flm">FLM</th>
                                     <th class="border border-slate-500 p-3 w-16 text-center">RAK</th>
                                     <th class="border border-slate-500 p-3 w-16 text-center">BARIS</th>
                                     <th class="border border-slate-500 p-3 w-16 text-center">KOLOM</th>
@@ -1868,8 +1879,8 @@
                         <td class="border border-slate-300 p-3 text-center">${i + 1}</td>
                         <td class="border border-slate-300 p-3 text-center font-bold text-blue-900">${tid}</td>
                         <td class="border border-slate-300 p-3 px-4 text-center col-lokasi">${master.lokasi || `ATM-${tid}`}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.rpl || `RPL-${tid}-99`}</td>
-                        <td class="border border-slate-300 p-3 px-2 text-center font-mono">${master.flm || ''}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono col-rpl">${master.rpl || `RPL-${tid}-99`}</td>
+                        <td class="border border-slate-300 p-3 px-2 text-center font-mono col-flm">${master.flm || ''}</td>
                         <td class="border border-slate-300 p-3 text-center">${master.rak || ''}</td>
                         <td class="border border-slate-300 p-3 text-center">${master.baris || ''}</td>
                         <td class="border border-slate-300 p-3 text-center">${master.kolom || ''}</td>
@@ -2244,8 +2255,8 @@
                         <td class="border border-slate-300 p-2.5 text-center font-bold text-slate-700 text-xs">${row.no}</td>
                         <td class="border border-slate-300 p-2.5 text-center font-black text-sm ${cellClass}">${row.tid}</td>
                         <td class="border border-slate-300 p-2.5 px-3 text-left font-bold text-slate-800 text-xs ${lokasiClass}">${row.lokasi}</td>
-                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.rpl}</td>
-                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.flm}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs col-rpl">${row.rpl}</td>
+                        <td class="border border-slate-300 p-2.5 text-center font-mono text-xs col-flm">${row.flm}</td>
                         <td class="border border-slate-300 p-2.5 text-center font-extrabold text-sm text-slate-900">${row.rak}</td>
                         <td class="border border-slate-300 p-2.5 text-center font-extrabold text-sm text-slate-900">${row.baris}</td>
                         <td class="border border-slate-300 p-2.5 text-center font-extrabold text-sm text-slate-900">${row.kolom}</td>
@@ -2302,12 +2313,12 @@
                                 <th class="border border-slate-500 p-2.5 w-[36px] text-center">NO</th>
                                 <th class="border border-slate-500 p-2.5 w-[90px] text-center">TID</th>
                                 <th class="border border-slate-500 p-2.5 px-3 text-center col-lokasi">LOKASI</th>
-                                <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">RPL</th>
-                                <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">FLM</th>
-                                <th class="border border-slate-500 p-2.5 w-[48px] text-center">RAK</th>
-                                <th class="border border-slate-500 p-2.5 w-[48px] text-center">BARIS</th>
-                                <th class="border border-slate-500 p-2.5 w-[48px] text-center">KOLOM</th>
-                                <th class="border border-slate-500 p-2.5 w-[90px] text-center">KET</th>
+                                <th class="border border-slate-500 p-2.5 px-2 text-center col-rpl">RPL</th>
+                                <th class="border border-slate-500 p-2.5 px-2 text-center col-flm">FLM</th>
+                                <th class="border border-slate-500 p-2.5 w-[44px] text-center">RAK</th>
+                                <th class="border border-slate-500 p-2.5 w-[44px] text-center">BARIS</th>
+                                <th class="border border-slate-500 p-2.5 w-[44px] text-center">KOLOM</th>
+                                <th class="border border-slate-500 p-2.5 w-[80px] text-center">KET</th>
                                 <th class="border border-slate-500 p-2.5 w-[36px] text-center"></th>
                             </tr>
                         </thead>
@@ -2357,8 +2368,8 @@
                             <td class="border border-slate-300 p-2.5 text-center font-semibold">${row.no}</td>
                             <td class="border border-slate-300 p-2.5 text-center font-bold ${cellClass}">${row.tid}</td>
                             <td class="border border-slate-300 p-2.5 px-3 text-left ${lokasiClass}">${row.lokasi}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.rpl}</td>
-                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs">${row.flm}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs col-rpl">${row.rpl}</td>
+                            <td class="border border-slate-300 p-2.5 text-center font-mono text-xs col-flm">${row.flm}</td>
                             <td class="border border-slate-300 p-2.5 text-center font-bold">${row.rak}</td>
                             <td class="border border-slate-300 p-2.5 text-center font-bold">${row.baris}</td>
                             <td class="border border-slate-300 p-2.5 text-center font-bold">${row.kolom}</td>
@@ -2386,12 +2397,12 @@
                                     <th class="border border-slate-500 p-2.5 w-[36px] text-center">NO</th>
                                     <th class="border border-slate-500 p-2.5 w-[90px] text-center">TID</th>
                                     <th class="border border-slate-500 p-2.5 px-3 text-center col-lokasi">LOKASI</th>
-                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">RPL</th>
-                                    <th class="border border-slate-500 p-2.5 px-2 text-center w-[120px]">FLM</th>
-                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">RAK</th>
-                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">BARIS</th>
-                                    <th class="border border-slate-500 p-2.5 w-[48px] text-center">KOLOM</th>
-                                    <th class="border border-slate-500 p-2.5 w-[90px] text-center">KET</th>
+                                    <th class="border border-slate-500 p-2.5 px-2 text-center col-rpl">RPL</th>
+                                    <th class="border border-slate-500 p-2.5 px-2 text-center col-flm">FLM</th>
+                                    <th class="border border-slate-500 p-2.5 w-[44px] text-center">RAK</th>
+                                    <th class="border border-slate-500 p-2.5 w-[44px] text-center">BARIS</th>
+                                    <th class="border border-slate-500 p-2.5 w-[44px] text-center">KOLOM</th>
+                                    <th class="border border-slate-500 p-2.5 w-[80px] text-center">KET</th>
                                     <th class="border border-slate-500 p-2.5 w-[36px] text-center"></th>
                                 </tr>
                             </thead>
