@@ -383,6 +383,7 @@
 
         const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
 
+        // CONFIG KUNCI TUNGGAL (SUPERVISOR PASSWORD HANYA 9930)
         const DEFAULT_ACCESS_RULES = {
             "SUPERVISOR": { password: "9930", role: "SUPERVISOR", name: "SUPERVISOR UTAMA OPERASIONAL", destination: "it_support_dashboard" },
             "ADMIN01":    { password: "00",   role: "ADMIN",      name: "ADMIN IT PENGENDALI",        destination: "dashboard" },
@@ -398,6 +399,7 @@
             if (!accessRules[DEFAULT_SUPERVISOR_ID]) {
                 accessRules[DEFAULT_SUPERVISOR_ID] = { ...DEFAULT_ACCESS_RULES[DEFAULT_SUPERVISOR_ID] };
             } else {
+                accessRules[DEFAULT_SUPERVISOR_ID].password = "9930"; // Paksa password Supervisor selalu 9930
                 accessRules[DEFAULT_SUPERVISOR_ID].role = "SUPERVISOR";
                 accessRules[DEFAULT_SUPERVISOR_ID].destination = "it_support_dashboard";
             }
@@ -671,7 +673,7 @@
             if (pwdInput) pwdInput.focus();
         }
 
-        // FUNGSI LOGIN DIPERBAIKI (CASE-INSENSITIVE & ROBUST LOOKUP)
+        // FUNGSI LOGIN DENGAN VALIDASI HANYA PASSWORD "9930" UNTUK SUPERVISOR
         async function handleLogin() {
             const userInput = document.getElementById("loginUserId");
             const pwdInput = document.getElementById("loginPass");
@@ -688,7 +690,13 @@
 
             let foundUserId = Object.keys(accessRules).find(id => id.trim().toUpperCase() === userId);
 
-            if (foundUserId && String(accessRules[foundUserId].password).trim() === pwd) {
+            let isPasswordCorrect = false;
+            if (foundUserId) {
+                let savedPwd = String(accessRules[foundUserId].password).trim();
+                isPasswordCorrect = (pwd === savedPwd);
+            }
+
+            if (foundUserId && isPasswordCorrect) {
                 clearLoginError();
                 let config = accessRules[foundUserId];
                 
