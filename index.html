@@ -55,7 +55,7 @@
             #printArea table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important; /* Fleksibel mengikuti isi teks terpanjang */
+                table-layout: auto !important;
             }
             #printArea th, #printArea td {
                 padding: 2px 3px !important;
@@ -68,7 +68,6 @@
                 padding: 4px 3px !important;
                 font-size: 10.5px !important;
             }
-            /* Menjaga agar kolom lokasi bisa memanjang secara selebar-lebarnya */
             .col-lokasi {
                 width: auto !important;
                 white-space: normal !important;
@@ -1308,6 +1307,10 @@
                             <button onclick="handleEditDataClick()" id="btnEditData" class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
                                 <span>✏️</span> <span>Ubah Data</span>
                             </button>
+                            <!-- TOMBOL HAPUS DATA -->
+                            <button onclick="handleDeleteDataClick()" id="btnDeleteData" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                                <span>🗑️</span> <span>Hapus Data</span>
+                            </button>
                         </div>
 
                         <div id="masterFormContainer" class="hidden bg-slate-50 border border-slate-300 p-4 rounded-xl shadow-inner max-w-lg">
@@ -1589,6 +1592,26 @@
             document.getElementById("m_lokasi").focus();
         }
 
+        function handleDeleteDataClick() {
+            let tidTarget = prompt("Masukkan nomor TID yang ingin dihapus datanya:");
+            if (!tidTarget) return;
+            tidTarget = tidTarget.trim().toUpperCase();
+            
+            let item = getMasterDataByTid(tidTarget);
+            if (!item) {
+                alert("Nomor TID tidak ditemukan di database master!");
+                return;
+            }
+
+            let isConfirmed = confirm(`Apakah Anda yakin ingin menghapus data aset TID [${tidTarget}] - (${item.lokasi || 'Tanpa Lokasi'}) secara permanen?`);
+            if (isConfirmed) {
+                delete masterDatabase[tidTarget];
+                saveLocalStorageData();
+                renderMasterTable();
+                alert(`✅ Data aset TID [${tidTarget}] berhasil dihapus!`);
+            }
+        }
+
         function setupMasterInputNavigation() {
             const inputs = document.querySelectorAll(".master-input");
             inputs.forEach(input => {
@@ -1756,7 +1779,6 @@
                                 </thead>
                                 <tbody>
             `;
-            // MAKSIMAL 18 BARIS
             for (let i = 0; i < 18; i++) {
                 let val = previousTids[i] || "";
                 html += `
@@ -1813,7 +1835,6 @@
                             </thead>
                             <tbody id="realtimePreviewBody">
             `;
-            // MAKSIMAL 18 BARIS
             for (let i = 0; i < 18; i++) {
                 let tid = previousTids[i] || "";
                 let master = getMasterDataByTid(tid) || {};
@@ -1970,7 +1991,6 @@
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
             let tids = [];
-            // BATASI MAKSIMAL 18 BARIS
             let inputs = document.querySelectorAll(".tid-input");
             inputs.forEach((inp, idx) => {
                 if(idx < 18 && inp.value.trim() !== "") {
@@ -2077,7 +2097,6 @@
                         let currentIndex = parseInt(this.getAttribute("data-index"));
                         lines.forEach((lineText, offset) => {
                             let targetIndex = currentIndex + offset;
-                            // DIPASTIKAN MAX 18 BARIS
                             if (targetIndex < 18 && targetIndex < inputs.length) {
                                 inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
                             }
@@ -2125,7 +2144,6 @@
                 if (!tids || tids.length === 0) continue;
                 let memberName = batchTeamMembers[tName] || "-";
                 
-                // BATASI MAKSIMAL 18 BARIS DATANYA
                 let limitedTids = tids.slice(0, 18);
 
                 let tidCounts = {};
@@ -2172,7 +2190,6 @@
                 </div>
 
                 <div id="printArea" class="border border-slate-300 bg-white p-3 rounded-xl shadow-md">
-                    <!-- 1 TIM TERDIRI DARI 1 Halaman / 1 BARIS KELOMPOK TABEL (FLEKSIBEL DI KOLOM LOKASI) -->
                     <table class="w-full border-collapse text-xs rounded-lg overflow-hidden">
                         <thead>
                             <tr>
