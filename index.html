@@ -1133,10 +1133,21 @@
                 return;
             }
 
-            if (confirm(`Apakah Anda yakin ingin menghapus user Admin [${accessRules[uId].name}] (${uId}) secara permanen?`)) {
+            let inputPwd = prompt(`AKSI VERIFIKASI DIBUTUHKAN!\n\nUntuk menghapus user Admin [${accessRules[uId].name}] (${uId}), silakan masukkan Password Supervisor:`);
+            
+            if (inputPwd === null) return;
+
+            let supervisorPassword = accessRules[DEFAULT_SUPERVISOR_ID] ? accessRules[DEFAULT_SUPERVISOR_ID].password : "9930";
+
+            if (inputPwd.trim() !== String(supervisorPassword).trim()) {
+                alert("❌ Password Supervisor SALAH! Gagal menghapus user.");
+                return;
+            }
+
+            if (confirm(`Password benar!\n\nApakah Anda benar-benar yakin ingin menghapus user Admin [${accessRules[uId].name}] (${uId}) secara permanen?`)) {
                 delete accessRules[uId];
                 saveLocalStorageData();
-                alert("✅ User Admin/Duplikat berhasil dihapus dari sistem!");
+                alert("✅ User Admin berhasil dihapus dari sistem!");
                 renderPasswordManagementHtml();
             }
         }
