@@ -118,6 +118,22 @@
             position: relative;
         }
 
+        /* DUKUNGAN SELEKSI DRAG UNTUK TABEL MASTER DATA */
+        .master-cell-selectable {
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        .master-cell-selected {
+            background-color: #FEF08A !important;
+            outline: 2px solid #2563EB !important;
+            color: #0F172A !important;
+            font-weight: bold !important;
+            z-index: 10;
+            position: relative;
+        }
+
         .tid-not-found {
             background-color: #FFE4E6 !important;
             border: 2px solid #F43F5E !important;
@@ -1473,7 +1489,12 @@
 
                     <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4 overflow-x-auto w-full">
                         <div class="flex flex-wrap justify-between items-center mb-3 bg-blue-50 border border-blue-200 p-2.5 rounded-lg gap-2">
-                            <span class="text-xs font-extrabold text-blue-900">📋 HASIL DATA KUNCI (TAMPILAN HORIZONTAL)</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-extrabold text-blue-900">📋 HASIL DATA KUNCI (TAMPILAN HORIZONTAL)</span>
+                                <span class="text-[10px] bg-amber-200 border border-amber-300 text-amber-900 px-2 py-0.5 rounded font-bold">
+                                    💡 Tip: Tahan CTRL + Drag Mouse untuk memilih sel, lalu tekan Ctrl+C untuk Copy
+                                </span>
+                            </div>
                             <div class="flex items-center gap-3">
                                 <input type="text" id="masterSearchInput" onkeyup="renderMasterTable()" placeholder="🔍 Cari TID / Lokasi..." class="border border-slate-300 rounded-md px-3 py-1 text-xs bg-white font-medium text-slate-700 outline-none w-48">
                                 <div class="bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1 rounded-md text-xs font-black">
@@ -1481,7 +1502,7 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="w-full border-collapse text-xs">
+                        <table class="w-full border-collapse text-xs select-none" id="masterDataTable">
                             <thead>
                                 <tr class="bg-slate-200 text-slate-800 font-bold">
                                     <th class="border border-slate-300 p-2 w-10">NO</th>
@@ -1575,19 +1596,102 @@
             finalKeys.forEach((tid, i) => {
                 let item = masterDatabase[tid] || {};
                 html += `
-                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 transition">
-                        <td class="border border-slate-300 p-2 text-center font-bold text-slate-500">${i + 1}</td>
-                        <td class="border border-slate-300 p-2 text-center font-bold text-blue-900">${tid}</td>
-                        <td class="border border-slate-300 p-2 px-3 font-semibold text-slate-800 col-lokasi">${item.lokasi || '-'}</td>
-                        <td class="border border-slate-300 p-2 px-3 text-center font-mono col-rpl">${item.rpl || '-'}</td>
-                        <td class="border border-slate-300 p-2 px-3 text-center font-mono col-flm">${item.flm || '-'}</td>
-                        <td class="border border-slate-300 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/50">${item.rak || '-'}</td>
-                        <td class="border border-slate-300 p-2 text-center font-extrabold text-blue-900 bg-blue-50/50">${item.baris || '-'}</td>
-                        <td class="border border-slate-300 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/50">${item.kolom || '-'}</td>
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 transition" data-row-index="${i}">
+                        <td class="border border-slate-300 p-2 text-center font-bold text-slate-500 master-cell-selectable" data-col-index="0">${i + 1}</td>
+                        <td class="border border-slate-300 p-2 text-center font-bold text-blue-900 master-cell-selectable" data-col-index="1">${tid}</td>
+                        <td class="border border-slate-300 p-2 px-3 font-semibold text-slate-800 col-lokasi master-cell-selectable" data-col-index="2">${item.lokasi || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 text-center font-mono col-rpl master-cell-selectable" data-col-index="3">${item.rpl || '-'}</td>
+                        <td class="border border-slate-300 p-2 px-3 text-center font-mono col-flm master-cell-selectable" data-col-index="4">${item.flm || '-'}</td>
+                        <td class="border border-slate-300 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/50 master-cell-selectable" data-col-index="5">${item.rak || '-'}</td>
+                        <td class="border border-slate-300 p-2 text-center font-extrabold text-blue-900 bg-blue-50/50 master-cell-selectable" data-col-index="6">${item.baris || '-'}</td>
+                        <td class="border border-slate-300 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/50 master-cell-selectable" data-col-index="7">${item.kolom || '-'}</td>
                     </tr>
                 `;
             });
-            if(tbody) tbody.innerHTML = html;
+            if(tbody) {
+                tbody.innerHTML = html;
+                setupMasterTableSelection();
+            }
+        }
+
+        /* METODE SELEKSI KONTROL (CTRL + DRAG MOUSE & COPY PASTE UNTUK EXCEL) */
+        function setupMasterTableSelection() {
+            let isMouseDown = false;
+            let startCell = null;
+            let cells = document.querySelectorAll("#masterTableBody .master-cell-selectable");
+
+            function clearSelection() {
+                cells.forEach(c => c.classList.remove("master-cell-selected"));
+            }
+
+            cells.forEach(cell => {
+                cell.addEventListener("mousedown", function(e) {
+                    if (e.ctrlKey || e.metaKey) {
+                        isMouseDown = true;
+                        startCell = this;
+
+                        if (!e.shiftKey) {
+                            this.classList.toggle("master-cell-selected");
+                        }
+                        e.preventDefault();
+                    } else {
+                        if (!this.classList.contains("master-cell-selected")) {
+                            clearSelection();
+                        }
+                    }
+                });
+
+                cell.addEventListener("mouseenter", function(e) {
+                    if (isMouseDown && (e.ctrlKey || e.metaKey)) {
+                        this.classList.add("master-cell-selected");
+                    }
+                });
+            });
+
+            document.addEventListener("mouseup", () => {
+                isMouseDown = false;
+            });
+
+            document.addEventListener("keydown", function(e) {
+                if (e.key === "Escape") {
+                    clearSelection();
+                }
+
+                // FITUR COPY (CTRL + C) DATA YANG DITERAPKAN DARI SELEKSI SEL
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
+                    let selectedCells = document.querySelectorAll("#masterTableBody .master-cell-selected");
+                    if (selectedCells.length > 0) {
+                        let rowMap = {};
+                        selectedCells.forEach(cell => {
+                            let tr = cell.parentElement;
+                            let rIdx = tr.getAttribute("data-row-index");
+                            let cIdx = parseInt(cell.getAttribute("data-col-index"));
+                            if (!rowMap[rIdx]) rowMap[rIdx] = [];
+                            rowMap[rIdx].push({ col: cIdx, text: cell.innerText.trim() });
+                        });
+
+                        let copyLines = [];
+                        let sortedRowKeys = Object.keys(rowMap).sort((a,b) => parseInt(a) - parseInt(b));
+                        sortedRowKeys.forEach(rIdx => {
+                            let cellsInRow = rowMap[rIdx].sort((a,b) => a.col - b.col);
+                            let line = cellsInRow.map(c => c.text).join("\t");
+                            copyLines.push(line);
+                        });
+
+                        let copyText = copyLines.join("\n");
+                        navigator.clipboard.writeText(copyText).then(() => {
+                            // Menampilkan Toast Ringkas
+                            let toast = document.createElement("div");
+                            toast.className = "fixed bottom-5 right-5 bg-blue-900 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-xl border border-blue-400 z-50 animate-bounce";
+                            toast.innerText = `📋 ${selectedCells.length} Sel Berhasil Di-Copy! Siap di-paste ke Excel.`;
+                            document.body.appendChild(toast);
+                            setTimeout(() => toast.remove(), 2500);
+                        }).catch(err => {
+                            console.error("Gagal menyalin data:", err);
+                        });
+                    }
+                }
+            });
         }
 
         function searchMasterDataRak() {
