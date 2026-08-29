@@ -16,15 +16,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        /* CSS Orientasi Cetak Halaman Dynamic (A4 Portrait / Landscape) */
+        @page print-portrait {
+            size: A4 portrait;
+            margin: 2mm 2mm;
+        }
+        @page print-landscape {
+            size: A4 landscape;
+            margin: 0mm 0mm;
+        }
+
+        body.print-orient-portrait {
+            page: print-portrait;
+        }
+        body.print-orient-landscape {
+            page: print-landscape;
+        }
+
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 6mm 4mm;
-            }
-            body {
+            html, body {
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 background: white !important;
                 color: black !important;
-                font-size: 13.5px !important;
+                font-size: 11.5px !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -39,57 +56,65 @@
                 left: 0;
                 top: 0;
                 width: 100% !important;
-                padding: 0 !important;
+                padding: 2mm !important;
                 margin: 0 !important;
                 background: white !important;
                 box-shadow: none !important;
                 border: none !important;
+                box-sizing: border-box !important;
             }
             .print-page-break {
                 page-break-after: always !important;
                 break-after: page !important;
                 display: block !important;
-                height: 100vh !important;
+                height: auto !important;
                 box-sizing: border-box !important;
             }
             .no-print { 
                 display: none !important; 
             }
+
+            /* Pengaturan Lebar Tabel & Kolom Cetak */
             #printArea table {
                 width: 100% !important;
                 border-collapse: collapse !important;
                 table-layout: auto !important;
-                border: 2px solid #000000 !important; /* Garis Luar Tabel Tebal */
+                border: 2px solid #000000 !important;
             }
             #printArea th {
-                padding: 6px 4px !important;
-                font-size: 13.5px !important;
+                padding: 5px 4px !important;
+                font-size: 11.5px !important;
                 font-weight: 800 !important;
-                background-color: #ffffff !important; /* Header Cetak Putih */
-                color: #000000 !important; /* Teks Header Hitam Pekat */
-                border: 1.5px solid #000000 !important; /* Garis Border Header Solid */
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                border: 1.5px solid #000000 !important;
                 text-transform: uppercase !important;
+                white-space: nowrap !important;
             }
             #printArea td {
-                padding: 5px 5px !important;
-                font-size: 13.5px !important; /* Ukuran Maksimalkan */
-                font-weight: 500 !important; 
-                line-height: 1.25 !important;
-                height: 32px !important;
+                padding: 4px 5px !important;
+                font-size: 11px !important;
+                font-weight: 600 !important; 
+                line-height: 1.2 !important;
+                height: 28px !important;
                 vertical-align: middle !important;
-                border: 1.5px solid #000000 !important; /* Garis Border Isi Solid */
+                border: 1.5px solid #000000 !important;
                 color: #000000 !important;
-            }
-            .col-lokasi, .col-merk {
-                width: auto !important;
                 white-space: nowrap !important;
-                word-break: normal !important;
             }
-            .col-rpl, .col-flm {
-                width: auto !important;
-                white-space: nowrap !important;
-                word-break: normal !important;
-            }
+
+            /* Pengaturan Presisi Lebar Kolom */
+            .col-no { width: 1% !important; text-align: center !important; }
+            .col-team { width: 1% !important; text-align: center !important; white-space: nowrap !important; }
+            .col-tid { width: 1% !important; text-align: center !important; white-space: nowrap !important; }
+            .col-lokasi { width: 1% !important; white-space: nowrap !important; text-align: left !important; }
+            .col-merk { width: 1% !important; white-space: nowrap !important; text-align: center !important; }
+            .col-rpl { width: 1% !important; white-space: nowrap !important; text-align: center !important; }
+            .col-flm { width: 1% !important; white-space: nowrap !important; text-align: center !important; }
+            .col-rak { width: 1% !important; text-align: center !important; }
+            .col-baris { width: 1% !important; text-align: center !important; }
+            .col-kolom { width: 1% !important; text-align: center !important; }
+            .col-ket { width: auto !important; text-align: left !important; white-space: normal !important; }
 
             body.print-bw #printArea * {
                 color: black !important;
@@ -106,7 +131,7 @@
                 font-weight: 900 !important;
             }
             body.print-high #printArea td {
-                font-weight: 600 !important;
+                font-weight: 700 !important;
             }
         }
 
@@ -436,8 +461,11 @@
         let masterDatabase = {}; 
         let syncTimeout = null; 
 
-        let selectedPrintColor = "colour";
-        let selectedPrintQuality = "standard";
+        // Opsi default cetak (Portrait A4, Black & White, High Quality)
+        let selectedPrintColor = "bw";
+        let selectedPrintQuality = "high";
+        let selectedPrintOrientation = "portrait";
+        let selectedSortOrder = "none"; 
 
         const DEFAULT_SUPERVISOR_ID = "SUPERVISOR";
 
@@ -1496,18 +1524,18 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="w-full border-collapse border border-slate-400">
+                        <table class="w-full border-collapse border border-slate-400" style="table-layout: auto;">
                             <thead>
                                 <tr class="bg-slate-200 text-slate-800 font-extrabold text-xs">
-                                    <th class="border border-slate-400 p-2.5 w-10 text-center">NO</th>
-                                    <th class="border border-slate-400 p-2.5 w-24 text-center">TID</th>
-                                    <th class="border border-slate-400 p-2.5 col-lokasi text-center">LOKASI ATM</th>
-                                    <th class="border border-slate-400 p-2.5 col-merk text-center">CLUSTER</th>
-                                    <th class="border border-slate-400 p-2.5 col-rpl text-center">BARCODE RPL</th>
-                                    <th class="border border-slate-400 p-2.5 col-flm text-center">BARCODE FLM</th>
-                                    <th class="border border-slate-400 p-2.5 w-16 text-center">RAK</th>
-                                    <th class="border border-slate-400 p-2.5 w-16 text-center">BARIS</th>
-                                    <th class="border border-slate-400 p-2.5 w-16 text-center">KOLOM</th>
+                                    <th class="border border-slate-400 p-2.5 w-10 text-center whitespace-nowrap">NO</th>
+                                    <th class="border border-slate-400 p-2.5 w-24 text-center whitespace-nowrap">TID</th>
+                                    <th class="border border-slate-400 p-2.5 col-lokasi text-center whitespace-nowrap">LOKASI ATM</th>
+                                    <th class="border border-slate-400 p-2.5 col-merk text-center whitespace-nowrap">CLUSTER</th>
+                                    <th class="border border-slate-400 p-2.5 col-rpl text-center whitespace-nowrap">BARCODE RPL</th>
+                                    <th class="border border-slate-400 p-2.5 col-flm text-center whitespace-nowrap">BARCODE FLM</th>
+                                    <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">RAK</th>
+                                    <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">BARIS</th>
+                                    <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">KOLOM</th>
                                 </tr>
                             </thead>
                             <tbody id="masterTableBody">
@@ -1594,15 +1622,15 @@
                 let merkVal = item.merk || item.cluster || '-';
                 html += `
                     <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 transition text-sm">
-                        <td class="border border-slate-400 p-2.5 text-center text-slate-700 font-normal">${i + 1}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 font-normal">${tid}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-slate-800 font-normal col-lokasi">${item.lokasi || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-center text-amber-950 font-normal col-merk">${merkVal}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-rpl">${item.rpl || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-flm">${item.flm || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-indigo-950 bg-indigo-50/50 font-normal">${item.rak || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 bg-blue-50/50 font-normal">${item.baris || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-emerald-950 bg-emerald-50/50 font-normal">${item.kolom || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-slate-700 font-normal whitespace-nowrap">${i + 1}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 font-normal whitespace-nowrap">${tid}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-slate-800 font-normal col-lokasi whitespace-nowrap">${item.lokasi || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-center text-amber-950 font-normal col-merk whitespace-nowrap">${merkVal}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-rpl whitespace-nowrap">${item.rpl || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-flm whitespace-nowrap">${item.flm || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-indigo-950 bg-indigo-50/50 font-normal whitespace-nowrap">${item.rak || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 bg-blue-50/50 font-normal whitespace-nowrap">${item.baris || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-emerald-950 bg-emerald-50/50 font-normal whitespace-nowrap">${item.kolom || '-'}</td>
                     </tr>
                 `;
             });
@@ -1859,11 +1887,14 @@
                     </div>
                     <div class="flex items-center gap-2">
                         ${hasData ? `
+                            <button onclick="renderAllDataSummaryPreview()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow transition flex items-center gap-1 active:scale-95">
+                                🔍 Pratinjau Slide Per-Team
+                            </button>
                             <button onclick="clearAllTeamsTid()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow transition flex items-center gap-1 active:scale-95">
                                 🗑️ Hapus Semua TID (Global)
                             </button>
-                            <button onclick="preparePreview(batchTeamsData)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition active:scale-95">
-                                🖨️ Pratinjau Semua Team
+                            <button onclick="directPrintAllTeams()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition active:scale-95 flex items-center gap-1.5">
+                                🖨️ CETAK SEMUA TEAM TERINPUT
                             </button>
                         ` : ''}
                     </div>
@@ -1899,6 +1930,22 @@
             content.innerHTML = html;
         }
 
+        /* Langsung Cetak Semua Team RPL Terinput */
+        function directPrintAllTeams() {
+            preparePreview(batchTeamsData);
+            printAllSlides();
+        }
+
+        /* Pratinjau Tampilan Slide Per-Team Sebelum Cetak */
+        function renderAllDataSummaryPreview() {
+            let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
+            if (!hasData) {
+                alert("Belum ada data TID terinput pada team mana pun!");
+                return;
+            }
+            preparePreview(batchTeamsData);
+        }
+
         function clearAllTeamsTid() {
             let isConfirmed = confirm("⚠️ APAKAH ANDA YAKIN?\n\nAksi ini akan MENGHAPUS SEMUA TID YANG TERINPUT DI SELURUH TEAM RPL secara permanen!");
             if (isConfirmed) {
@@ -1921,7 +1968,7 @@
                         <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${teamName}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
+                        <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak Team Ini</button>
                         <button onclick="saveAndReturnMenu('${teamName}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
                         <button onclick="clearAllTids('${teamName}')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus Semua</button>
                     </div>
@@ -1975,10 +2022,10 @@
                                 </span>
                             </div>
                         </div>
-                        <table class="w-full border-collapse text-sm rounded-lg overflow-hidden border-2 border-black printable-table-border">
+                        <table class="w-full border-collapse text-xs rounded-lg overflow-hidden border-2 border-black printable-table-border" style="table-layout: auto;">
                             <thead>
                                 <tr>
-                                    <th colspan="11" class="bg-white text-black border-2 border-black p-3.5 text-center font-extrabold text-lg">
+                                    <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
                                         <div class="flex items-center justify-center gap-8">
                                             <span>${teamName}</span>
                                             <span class="text-slate-900 font-extrabold text-sm uppercase">
@@ -1987,16 +2034,18 @@
                                         </div>
                                     </th>
                                 </tr>
-                                <tr class="bg-white text-black font-extrabold text-xs uppercase border-b-2 border-black">
-                                    <th class="border border-black p-2.5 w-14 text-center">NO</th>
-                                    <th class="border border-black p-2.5 w-28 text-center">TID</th>
-                                    <th class="border border-black p-2.5 px-4 text-center col-lokasi">LOKASI</th>
-                                    <th class="border border-black p-2.5 px-3 text-center col-merk">CLUSTER</th>
-                                    <th class="border border-black p-2.5 px-2 text-center col-rpl">RPL</th>
-                                    <th class="border border-black p-2.5 px-2 text-center col-flm">FLM</th>
-                                    <th class="border border-black p-2.5 w-16 text-center">RAK</th>
-                                    <th class="border border-black p-2.5 w-16 text-center">BARIS</th>
-                                    <th class="border border-black p-2.5 w-16 text-center">KOLOM</th>
+                                <tr class="bg-white text-black font-extrabold text-[11px] uppercase border-b-2 border-black">
+                                    <th class="border border-black p-2 col-no">NO</th>
+                                    <th class="border border-black p-2 col-tid">TID</th>
+                                    <th class="border border-black p-2 col-lokasi">LOKASI</th>
+                                    <th class="border border-black p-2 col-merk">CLUSTER</th>
+                                    <th class="border border-black p-2 col-rpl">RPL</th>
+                                    <th class="border border-black p-2 col-flm">FLM</th>
+                                    <th class="border border-black p-2 col-rak">RAK</th>
+                                    <th class="border border-black p-2 col-baris">BARIS</th>
+                                    <th class="border border-black p-2 col-kolom">KOLOM</th>
+                                    <th class="border border-black p-2 col-ket">KET</th>
+                                    <th class="border border-black p-2 col-no"></th>
                                 </tr>
                             </thead>
                             <tbody id="realtimePreviewBody">
@@ -2007,16 +2056,18 @@
                 let merkVal = master.merk || master.cluster || "";
 
                 html += `
-                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} text-sm font-normal" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${i + 1}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-950 font-normal">${tid}</td>
-                        <td class="border border-black p-2.5 px-4 text-center text-slate-950 font-normal col-lokasi">${master.lokasi || `ATM-${tid}`}</td>
-                        <td class="border border-black p-2.5 px-3 text-center text-slate-950 font-normal col-merk">${merkVal}</td>
-                        <td class="border border-black p-2.5 px-2 text-center font-mono font-normal col-rpl">${master.rpl || `RPL-${tid}-99`}</td>
-                        <td class="border border-black p-2.5 px-2 text-center font-mono font-normal col-flm">${master.flm || ''}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${master.rak || ''}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${master.baris || ''}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${master.kolom || ''}</td>
+                    <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} text-xs font-normal" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
+                        <td class="border border-black p-2 col-no text-slate-900 font-normal">${i + 1}</td>
+                        <td class="border border-black p-2 col-tid text-slate-950 font-normal">${tid}</td>
+                        <td class="border border-black p-2 col-lokasi text-slate-950 font-normal">${master.lokasi || `ATM-${tid}`}</td>
+                        <td class="border border-black p-2 col-merk text-slate-950 font-normal">${merkVal}</td>
+                        <td class="border border-black p-2 col-rpl font-mono font-normal">${master.rpl || `RPL-${tid}-99`}</td>
+                        <td class="border border-black p-2 col-flm font-mono font-normal">${master.flm || ''}</td>
+                        <td class="border border-black p-2 col-rak text-slate-900 font-normal">${master.rak || ''}</td>
+                        <td class="border border-black p-2 col-baris text-slate-900 font-normal">${master.baris || ''}</td>
+                        <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${master.kolom || ''}</td>
+                        <td class="border border-black p-2 col-ket text-slate-900 font-normal"></td>
+                        <td class="border border-black p-2 col-no text-slate-900 font-normal"></td>
                     </tr>
                 `;
             }
@@ -2087,8 +2138,8 @@
                         let merkVal = (master && (master.merk || master.cluster)) ? (master.merk || master.cluster) : "";
 
                         if (isDuplicate) {
-                            row.cells[1].className = "border border-black p-2.5 text-center font-normal text-sky-950 bg-sky-200";
-                            row.cells[2].className = "border border-black p-2.5 px-4 text-center text-sky-950 font-normal italic bg-sky-100 col-lokasi";
+                            row.cells[1].className = "border border-black p-2 col-tid font-normal text-sky-950 bg-sky-200";
+                            row.cells[2].className = "border border-black p-2 col-lokasi font-normal text-sky-950 italic bg-sky-100";
                             row.cells[2].innerText = `⚠️ DUPLIKAT (${(master && master.lokasi) ? master.lokasi : 'ATM ' + tidUpper})`;
                             row.cells[3].innerText = merkVal;
                             row.cells[4].innerText = (master && master.rpl) ? master.rpl : `RPL-${tidUpper}-99`;
@@ -2097,8 +2148,8 @@
                             row.cells[7].innerText = (master && master.baris) ? master.baris : "";
                             row.cells[8].innerText = (master && master.kolom) ? master.kolom : "";
                         } else if (!isExist) {
-                            row.cells[1].className = "border border-black p-2.5 text-center font-normal text-red-800 bg-rose-100";
-                            row.cells[2].className = "border border-black p-2.5 px-4 text-center text-rose-800 font-normal italic bg-rose-50 col-lokasi";
+                            row.cells[1].className = "border border-black p-2 col-tid font-normal text-red-800 bg-rose-100";
+                            row.cells[2].className = "border border-black p-2 col-lokasi font-normal text-rose-800 italic bg-rose-50";
                             row.cells[2].innerText = "⚠️ TID TIDAK TERDAFTAR";
                             row.cells[3].innerText = "-";
                             row.cells[4].innerText = "-";
@@ -2107,8 +2158,8 @@
                             row.cells[7].innerText = "-";
                             row.cells[8].innerText = "-";
                         } else {
-                            row.cells[1].className = "border border-black p-2.5 text-center font-normal text-black";
-                            row.cells[2].className = "border border-black p-2.5 px-4 text-center font-normal text-black col-lokasi";
+                            row.cells[1].className = "border border-black p-2 col-tid font-normal text-black";
+                            row.cells[2].className = "border border-black p-2 col-lokasi font-normal text-black";
                             row.cells[2].innerText = master.lokasi || `ATM-${tidUpper}`;
                             row.cells[3].innerText = merkVal;
                             row.cells[4].innerText = master.rpl || `RPL-${tidUpper}-99`;
@@ -2311,6 +2362,23 @@
             });
         }
 
+        /* Fungsi Sort Data Rak, Baris, Kolom */
+        function sortLocationData(rows, sortOrder) {
+            if (!sortOrder || sortOrder === "none") return rows;
+
+            return [...rows].sort((a, b) => {
+                let keyA = `${a.rak || ''}-${a.baris || ''}-${a.kolom || ''}`.toUpperCase();
+                let keyB = `${b.rak || ''}-${b.baris || ''}-${b.kolom || ''}`.toUpperCase();
+
+                if (sortOrder === "asc") {
+                    return keyA.localeCompare(keyB, undefined, { numeric: true, sensitivity: 'base' });
+                } else if (sortOrder === "desc") {
+                    return keyB.localeCompare(keyA, undefined, { numeric: true, sensitivity: 'base' });
+                }
+                return 0;
+            });
+        }
+
         function preparePreview(dataDict) {
             previewPayload = [];
             for (let [tName, tids] of Object.entries(dataDict)) {
@@ -2350,6 +2418,7 @@
                         isDuplicate: isDuplicate
                     });
                 });
+
                 previewPayload.push({ team_name: tName, member_name: memberName, data: teamRows });
             }
             
@@ -2371,7 +2440,7 @@
         }
 
         function triggerCustomPrint() {
-            document.body.classList.remove("print-bw", "print-draft", "print-high");
+            document.body.classList.remove("print-bw", "print-draft", "print-high", "print-orient-portrait", "print-orient-landscape");
 
             if (selectedPrintColor === "bw") {
                 document.body.classList.add("print-bw");
@@ -2383,6 +2452,12 @@
                 document.body.classList.add("print-high");
             }
 
+            if (selectedPrintOrientation === "landscape") {
+                document.body.classList.add("print-orient-landscape");
+            } else {
+                document.body.classList.add("print-orient-portrait");
+            }
+
             window.print();
         }
 
@@ -2391,32 +2466,34 @@
             if (!previewPayload || previewPayload.length === 0) return;
             let item = previewPayload[currentSlideIndex];
             
+            let sortedRows = sortLocationData(item.data, selectedSortOrder);
+
             let rowsHtml = "";
-            item.data.forEach((row, rIdx) => {
-                let cellClass = "text-black font-normal";
+            sortedRows.forEach((row, rIdx) => {
+                let cellClass = "text-black font-normal col-tid";
                 let lokasiClass = "col-lokasi font-normal";
 
                 if (row.isDuplicate) {
-                    cellClass = "text-sky-950 bg-sky-200 font-normal";
+                    cellClass = "text-sky-950 bg-sky-200 font-normal col-tid";
                     lokasiClass = "text-sky-950 bg-sky-100 col-lokasi font-normal";
                 } else if (row.isNotFound) {
-                    cellClass = "text-red-800 bg-rose-100 font-normal";
+                    cellClass = "text-red-800 bg-rose-100 font-normal col-tid";
                     lokasiClass = "text-red-800 italic bg-rose-50 col-lokasi font-normal";
                 }
 
                 rowsHtml += `
-                    <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-sm">
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${row.no}</td>
-                        <td class="border border-black p-2.5 text-center ${cellClass}">${row.tid}</td>
-                        <td class="border border-black p-2.5 px-3 text-left text-slate-950 ${lokasiClass}">${row.lokasi}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-950 font-normal col-merk">${row.merk}</td>
-                        <td class="border border-black p-2.5 text-center font-mono font-normal col-rpl">${row.rpl}</td>
-                        <td class="border border-black p-2.5 text-center font-mono font-normal col-flm">${row.flm}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${row.rak}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${row.baris}</td>
-                        <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${row.kolom}</td>
-                        <td class="border border-black p-2.5 text-center font-normal"></td>
-                        <td class="border border-black p-2.5 text-center font-normal"></td>
+                    <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-xs">
+                        <td class="border border-black p-2 col-no text-slate-900 font-normal">${rIdx + 1}</td>
+                        <td class="border border-black p-2 ${cellClass}">${row.tid}</td>
+                        <td class="border border-black p-2 col-lokasi text-slate-950 ${lokasiClass}">${row.lokasi}</td>
+                        <td class="border border-black p-2 col-merk text-slate-950 font-normal">${row.merk}</td>
+                        <td class="border border-black p-2 col-rpl font-mono font-normal">${row.rpl}</td>
+                        <td class="border border-black p-2 col-flm font-mono font-normal">${row.flm}</td>
+                        <td class="border border-black p-2 col-rak text-slate-900 font-normal">${row.rak}</td>
+                        <td class="border border-black p-2 col-baris text-slate-900 font-normal">${row.baris}</td>
+                        <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${row.kolom}</td>
+                        <td class="border border-black p-2 col-ket font-normal"></td>
+                        <td class="border border-black p-2 col-no font-normal"></td>
                     </tr>
                 `;
             });
@@ -2439,20 +2516,35 @@
                         </button>
                     </div>
 
-                    <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-inner">
+                    <div class="flex flex-wrap items-center gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-inner">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Sort Rak/Baris/Kolom:</span>
+                            <select id="sortOrderSelect" onchange="selectedSortOrder = this.value; renderSlideView();" class="text-xs font-bold bg-indigo-50 text-indigo-900 p-1 rounded border border-indigo-300 outline-none">
+                                <option value="none" ${selectedSortOrder === 'none' ? 'selected' : ''}>--- Sesuai Input ---</option>
+                                <option value="asc" ${selectedSortOrder === 'asc' ? 'selected' : ''}>⬆ Small to Large (A-Z / 1-9)</option>
+                                <option value="desc" ${selectedSortOrder === 'desc' ? 'selected' : ''}>⬇ Large to Small (Z-A / 9-1)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Orientasi:</span>
+                            <select id="printOrientationSelect" onchange="selectedPrintOrientation = this.value" class="text-xs font-bold bg-amber-100 text-amber-900 p-1 rounded border border-amber-300 outline-none">
+                                <option value="portrait" ${selectedPrintOrientation === 'portrait' ? 'selected' : ''}>📱 Potret (Portrait A4 Default)</option>
+                                <option value="landscape" ${selectedPrintOrientation === 'landscape' ? 'selected' : ''}>🖥️ Lanskap Penuh (A4 Margin 0)</option>
+                            </select>
+                        </div>
                         <div class="flex items-center gap-1">
                             <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Warna:</span>
                             <select id="printColorSelect" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
-                                <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
                                 <option value="bw" ${selectedPrintColor === 'bw' ? 'selected' : ''}>⚫⚪ Black & White</option>
+                                <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
                             </select>
                         </div>
                         <div class="flex items-center gap-1">
                             <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Kualitas:</span>
                             <select id="printQualitySelect" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
-                                <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
-                                <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
                                 <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality</option>
+                                <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
+                                <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
                             </select>
                         </div>
                     </div>
@@ -2460,7 +2552,7 @@
                     <div class="flex items-center gap-2">
                         ${previewPayload.length > 1 ? `
                             <button onclick="printAllSlides()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
-                                📑 Cetak Semua (${previewPayload.length})
+                                📑 Cetak Semua Team (${previewPayload.length})
                             </button>
                         ` : ''}
                         <button onclick="triggerCustomPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow transition flex items-center gap-1">
@@ -2469,11 +2561,11 @@
                     </div>
                 </div>
 
-                <div id="printArea" class="border-2 border-black bg-white p-4 rounded-xl shadow-md transition-all">
-                    <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border">
+                <div id="printArea" class="border-2 border-black bg-white p-3 rounded-xl shadow-md transition-all overflow-x-auto">
+                    <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border" style="table-layout: auto;">
                         <thead>
                             <tr>
-                                <th colspan="11" class="bg-white text-black border-2 border-black p-3 text-center font-extrabold text-base">
+                                <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
                                     <div class="flex items-center justify-center gap-8">
                                         <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
                                         <span class="text-slate-900 font-extrabold uppercase text-sm tracking-wide">
@@ -2482,18 +2574,18 @@
                                     </div>
                                 </th>
                             </tr>
-                            <tr class="bg-white text-black font-extrabold text-xs uppercase border-b-2 border-black">
-                                <th class="border border-black p-2.5 w-[36px] text-center">NO</th>
-                                <th class="border border-black p-2.5 w-[90px] text-center">TID</th>
-                                <th class="border border-black p-2.5 px-3 text-center col-lokasi">LOKASI</th>
-                                <th class="border border-black p-2.5 px-3 text-center col-merk">CLUSTER</th>
-                                <th class="border border-black p-2.5 px-2 text-center col-rpl">RPL</th>
-                                <th class="border border-black p-2.5 px-2 text-center col-flm">FLM</th>
-                                <th class="border border-black p-2.5 w-[44px] text-center">RAK</th>
-                                <th class="border border-black p-2.5 w-[44px] text-center">BARIS</th>
-                                <th class="border border-black p-2.5 w-[44px] text-center">KOLOM</th>
-                                <th class="border border-black p-2.5 w-[80px] text-center">KET</th>
-                                <th class="border border-black p-2.5 w-[36px] text-center"></th>
+                            <tr class="bg-white text-black font-extrabold text-[11px] uppercase border-b-2 border-black">
+                                <th class="border border-black p-2 col-no">NO</th>
+                                <th class="border border-black p-2 col-tid">TID</th>
+                                <th class="border border-black p-2 col-lokasi">LOKASI</th>
+                                <th class="border border-black p-2 col-merk">CLUSTER</th>
+                                <th class="border border-black p-2 col-rpl">RPL</th>
+                                <th class="border border-black p-2 col-flm">FLM</th>
+                                <th class="border border-black p-2 col-rak">RAK</th>
+                                <th class="border border-black p-2 col-baris">BARIS</th>
+                                <th class="border border-black p-2 col-kolom">KOLOM</th>
+                                <th class="border border-black p-2 col-ket">KET</th>
+                                <th class="border border-black p-2 col-no"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2528,55 +2620,72 @@
             const content = document.getElementById("contentArea");
             let fullHtml = `<div class="flex flex-wrap justify-between items-center mb-4 no-print bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200 gap-3">
                 <button onclick="renderSlideView()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali Ke Slide View</button>
-                <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-inner">
+                <div class="flex flex-wrap items-center gap-2 bg-white p-1 rounded-lg border border-slate-300 shadow-inner">
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Sort Rak/Baris/Kolom:</span>
+                        <select id="sortOrderSelectAll" onchange="selectedSortOrder = this.value; printAllSlides();" class="text-xs font-bold bg-indigo-50 text-indigo-900 p-1 rounded border border-indigo-300 outline-none">
+                            <option value="none" ${selectedSortOrder === 'none' ? 'selected' : ''}>--- Sesuai Input ---</option>
+                            <option value="asc" ${selectedSortOrder === 'asc' ? 'selected' : ''}>⬆ Small to Large (A-Z / 1-9)</option>
+                            <option value="desc" ${selectedSortOrder === 'desc' ? 'selected' : ''}>⬇ Large to Small (Z-A / 9-1)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Orientasi:</span>
+                        <select id="printOrientationSelectAll" onchange="selectedPrintOrientation = this.value" class="text-xs font-bold bg-amber-100 text-amber-900 p-1 rounded border border-amber-300 outline-none">
+                            <option value="portrait" ${selectedPrintOrientation === 'portrait' ? 'selected' : ''}>📱 Potret (Portrait A4 Default)</option>
+                            <option value="landscape" ${selectedPrintOrientation === 'landscape' ? 'selected' : ''}>🖥️ Lanskap Penuh (A4 Margin 0)</option>
+                        </select>
+                    </div>
                     <div class="flex items-center gap-1">
                         <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Warna:</span>
                         <select id="printColorSelectAll" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
-                            <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
                             <option value="bw" ${selectedPrintColor === 'bw' ? 'selected' : ''}>⚫⚪ Black & White</option>
+                            <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
                         </select>
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Kualitas:</span>
                         <select id="printQualitySelectAll" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
-                            <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
-                            <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
                             <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality</option>
+                            <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
+                            <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
                         </select>
                     </div>
                 </div>
-                <button onclick="triggerCustomPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SEMUA</button>
+                <button onclick="triggerCustomPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SEMUA TEAM</button>
             </div><div id="printArea">`;
 
             previewPayload.forEach((item, pIdx) => {
+                let sortedRows = sortLocationData(item.data, selectedSortOrder);
                 let rowsHtml = "";
-                item.data.forEach((row, rIdx) => {
-                    let cellClass = row.isDuplicate ? "text-sky-950 bg-sky-200 font-normal" : (row.isNotFound ? "text-red-800 bg-rose-100 font-normal" : "text-black font-normal");
+
+                sortedRows.forEach((row, rIdx) => {
+                    let cellClass = row.isDuplicate ? "text-sky-950 bg-sky-200 font-normal col-tid" : (row.isNotFound ? "text-red-800 bg-rose-100 font-normal col-tid" : "text-black font-normal col-tid");
                     let lokasiClass = row.isDuplicate ? "text-sky-950 bg-sky-100 col-lokasi font-normal" : (row.isNotFound ? "text-red-800 italic bg-rose-50 col-lokasi font-normal" : "col-lokasi font-normal");
 
                     rowsHtml += `
-                        <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} text-sm">
-                            <td class="border border-black p-2.5 text-center text-slate-900 font-normal">${row.no}</td>
-                            <td class="border border-black p-2.5 text-center ${cellClass}">${row.tid}</td>
-                            <td class="border border-black p-2.5 px-3 text-left ${lokasiClass}">${row.lokasi}</td>
-                            <td class="border border-black p-2.5 text-center text-slate-950 font-normal col-merk">${row.merk}</td>
-                            <td class="border border-black p-2.5 text-center font-mono font-normal col-rpl">${row.rpl}</td>
-                            <td class="border border-black p-2.5 text-center font-mono font-normal col-flm">${row.flm}</td>
-                            <td class="border border-black p-2.5 text-center font-normal">${row.rak}</td>
-                            <td class="border border-black p-2.5 text-center font-normal">${row.baris}</td>
-                            <td class="border border-black p-2.5 text-center font-normal">${row.kolom}</td>
-                            <td class="border border-black p-2.5 text-center font-normal"></td>
-                            <td class="border border-black p-2.5 text-center font-normal"></td>
+                        <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} text-xs">
+                            <td class="border border-black p-2 col-no text-slate-900 font-normal">${rIdx + 1}</td>
+                            <td class="border border-black p-2 ${cellClass}">${row.tid}</td>
+                            <td class="border border-black p-2 col-lokasi text-slate-950 ${lokasiClass}">${row.lokasi}</td>
+                            <td class="border border-black p-2 col-merk text-slate-950 font-normal">${row.merk}</td>
+                            <td class="border border-black p-2 col-rpl font-mono font-normal">${row.rpl}</td>
+                            <td class="border border-black p-2 col-flm font-mono font-normal">${row.flm}</td>
+                            <td class="border border-black p-2 col-rak text-slate-900 font-normal">${row.rak}</td>
+                            <td class="border border-black p-2 col-baris text-slate-900 font-normal">${row.baris}</td>
+                            <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${row.kolom}</td>
+                            <td class="border border-black p-2 col-ket font-normal"></td>
+                            <td class="border border-black p-2 col-no font-normal"></td>
                         </tr>
                     `;
                 });
 
                 fullHtml += `
                     <div class="${pIdx < previewPayload.length - 1 ? 'print-page-break' : ''} border-2 border-black bg-white p-3 rounded-xl shadow-md">
-                        <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border">
+                        <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border" style="table-layout: auto;">
                             <thead>
                                 <tr>
-                                    <th colspan="11" class="bg-white text-black border-2 border-black p-3 text-center font-extrabold text-base">
+                                    <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
                                         <div class="flex items-center justify-center gap-8">
                                             <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
                                             <span class="text-slate-900 font-extrabold uppercase text-sm tracking-wide">
@@ -2585,18 +2694,18 @@
                                         </div>
                                     </th>
                                 </tr>
-                                <tr class="bg-white text-black font-extrabold text-xs uppercase border-b-2 border-black">
-                                    <th class="border border-black p-2.5 w-[36px] text-center">NO</th>
-                                    <th class="border border-black p-2.5 w-[90px] text-center">TID</th>
-                                    <th class="border border-black p-2.5 px-3 text-center col-lokasi">LOKASI</th>
-                                    <th class="border border-black p-2.5 px-3 text-center col-merk">CLUSTER</th>
-                                    <th class="border border-black p-2.5 px-2 text-center col-rpl">RPL</th>
-                                    <th class="border border-black p-2.5 px-2 text-center col-flm">FLM</th>
-                                    <th class="border border-black p-2.5 w-[44px] text-center">RAK</th>
-                                    <th class="border border-black p-2.5 w-[44px] text-center">BARIS</th>
-                                    <th class="border border-black p-2.5 w-[44px] text-center">KOLOM</th>
-                                    <th class="border border-black p-2.5 w-[80px] text-center">KET</th>
-                                    <th class="border border-black p-2.5 w-[36px] text-center"></th>
+                                <tr class="bg-white text-black font-extrabold text-[11px] uppercase border-b-2 border-black">
+                                    <th class="border border-black p-2 col-no">NO</th>
+                                    <th class="border border-black p-2 col-tid">TID</th>
+                                    <th class="border border-black p-2 col-lokasi">LOKASI</th>
+                                    <th class="border border-black p-2 col-merk">CLUSTER</th>
+                                    <th class="border border-black p-2 col-rpl">RPL</th>
+                                    <th class="border border-black p-2 col-flm">FLM</th>
+                                    <th class="border border-black p-2 col-rak">RAK</th>
+                                    <th class="border border-black p-2 col-baris">BARIS</th>
+                                    <th class="border border-black p-2 col-kolom">KOLOM</th>
+                                    <th class="border border-black p-2 col-ket">KET</th>
+                                    <th class="border border-black p-2 col-no"></th>
                                 </tr>
                             </thead>
                             <tbody>${rowsHtml}</tbody>
