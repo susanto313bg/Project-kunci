@@ -15,11 +15,14 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Library Barcode Generator JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
     <style>
-        /* CSS Orientasi Cetak Halaman Dynamic (A4 Portrait / Landscape) */
+        /* CSS Orientasi & Layout Cetak Dynamic (A4 Portrait Center-Up Default Fit A4) */
         @page print-portrait {
             size: A4 portrait;
-            margin: 2mm 2mm;
+            margin: 5mm auto 0 auto;
         }
         @page print-landscape {
             size: A4 landscape;
@@ -42,6 +45,9 @@
                 background: white !important;
                 color: black !important;
                 font-size: 11.5px !important;
+                display: flex !important;
+                justify-content: center !important; 
+                align-items: flex-start !important; 
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -52,12 +58,11 @@
                 visibility: visible;
             }
             #printArea {
-                position: absolute;
-                left: 0;
-                top: 0;
+                position: relative;
                 width: 100% !important;
+                max-width: 210mm !important; 
                 padding: 2mm !important;
-                margin: 0 !important;
+                margin: 0 auto !important;
                 background: white !important;
                 box-shadow: none !important;
                 border: none !important;
@@ -74,7 +79,6 @@
                 display: none !important; 
             }
 
-            /* Pengaturan Lebar Tabel & Kolom Cetak */
             #printArea table {
                 width: 100% !important;
                 border-collapse: collapse !important;
@@ -103,7 +107,6 @@
                 white-space: nowrap !important;
             }
 
-            /* Pengaturan Presisi Lebar Kolom */
             .col-no { width: 1% !important; text-align: center !important; }
             .col-team { width: 1% !important; text-align: center !important; white-space: nowrap !important; }
             .col-tid { width: 1% !important; text-align: center !important; white-space: nowrap !important; }
@@ -247,6 +250,45 @@
         }
         .animate-shake {
             animation: shake 0.4s ease-in-out;
+        }
+
+        /* STYLING BINGKAI BARCODE PRESISI (4.5 cm x 1.7 cm) */
+        .barcode-label-box {
+            width: 4.5cm;
+            height: 1.7cm;
+            border: 1px solid #777777;
+            outline: 1px solid #777777;
+            outline-offset: -3px;
+            padding: 2px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .barcode-label-box svg {
+            max-width: 100% !important;
+            height: 30px !important;
+        }
+
+        .barcode-label-text {
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            font-size: 11px;
+            color: #0033cc;
+            letter-spacing: 0.5px;
+            margin-top: -2px;
+        }
+
+        .barcode-grid-print {
+            display: grid;
+            grid-template-columns: repeat(4, 4.5cm);
+            gap: 4mm;
+            justify-content: center;
         }
     </style>
 </head>
@@ -461,8 +503,8 @@
         let masterDatabase = {}; 
         let syncTimeout = null; 
 
-        // Opsi default cetak (Portrait A4, Black & White, High Quality)
-        let selectedPrintColor = "bw";
+        // 1. DEFAULT KONFIGURASI CETAK (COLOUR, HIGH QUALITY, PORTRAIT A4)
+        let selectedPrintColor = "colour";
         let selectedPrintQuality = "high";
         let selectedPrintOrientation = "portrait";
         let selectedSortOrder = "none"; 
@@ -862,6 +904,11 @@
             }
         }
 
+        function toggleBarcodeMenu() {
+            const dropdown = document.getElementById("barcodeDropdownMenu");
+            if (dropdown) dropdown.classList.toggle("hidden");
+        }
+
         function buildSidebarMenu() {
             const menuContainer = document.getElementById("sidebarMenuContainer");
             if (!menuContainer) return;
@@ -871,6 +918,26 @@
                 <button onclick="handleLogout()" class="text-left bg-gradient-to-r from-red-100 via-rose-100 to-red-200 hover:from-red-200 hover:to-rose-300 text-[#991B1B] font-bold py-2.5 px-3 rounded-lg text-xs shadow-[0_4px_10px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition border border-red-300 transform active:scale-[0.98]">
                     🚨 Logout
                 </button>
+            `;
+
+            const barcodeButtonHtml = `
+                <div class="relative flex flex-col gap-1">
+                    <button onclick="toggleBarcodeMenu()" class="text-left bg-gradient-to-r from-emerald-100 via-teal-100 to-emerald-200 hover:from-emerald-200 text-[#047857] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-emerald-300 flex items-center justify-between">
+                        <span>🏷️ CETAK BARCODE KUNCI</span>
+                        <span class="text-[10px]">▼</span>
+                    </button>
+                    <div id="barcodeDropdownMenu" class="hidden flex flex-col gap-1 pl-3 pt-1 border-l-2 border-emerald-400">
+                        <button onclick="renderSingleBarcodePrintHtml()" class="text-left bg-emerald-50 hover:bg-emerald-100 text-emerald-950 font-bold py-2 px-2.5 rounded text-[11px] border border-emerald-200 transition">
+                            📌 1. Cetak Satuan / Manual
+                        </button>
+                        <button onclick="renderDynamicBarcodePrintHtml()" class="text-left bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-bold py-2 px-2.5 rounded text-[11px] border border-indigo-200 transition">
+                            ⚡ 2. Cetak Barcode Dinamis
+                        </button>
+                        <button onclick="renderBatchBarcodePrintHtml()" class="text-left bg-teal-50 hover:bg-teal-100 text-teal-950 font-bold py-2 px-2.5 rounded text-[11px] border border-teal-200 transition">
+                            📦 3. Cetak Per Cluster
+                        </button>
+                    </div>
+                </div>
             `;
 
             if (currentUser && currentUser.role === "SUPERVISOR") {
@@ -884,6 +951,7 @@
                     <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
                         🌺 CETAK KUNCI RPL
                     </button>
+                    ${barcodeButtonHtml}
                     <button onclick="renderPasswordManagementHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
                         🔑 MANAJEMEN USER ADMIN
                     </button>
@@ -909,10 +977,580 @@
                     <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
                         🌺 CETAK KUNCI RPL
                     </button>
+                    ${barcodeButtonHtml}
                     ${logoutButtonHtml}
                 `;
             }
             menuContainer.innerHTML = html;
+        }
+
+        /* --- MODUL 1: CETAK BARCODE SATUAN / INPUT MANUAL --- */
+        function renderSingleBarcodePrintHtml(defaultTid = "") {
+            const content = document.getElementById("contentArea");
+
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">📌 1. CETAK BARCODE SATUAN & INPUT MANUAL (4.5 cm x 1.7 cm)</span>
+                        <p class="text-xs text-slate-500">Cetak label barcode tunggal presisi menggunakan TID atau teks manual secara langsung</p>
+                    </div>
+                    <button onclick="renderMasterDataHtml()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+                    <div class="bg-white border border-slate-300 rounded-xl p-5 shadow-sm space-y-4">
+                        <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Form Input Barcode Satuan</h3>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Mode Input:</label>
+                            <select id="singleInputModeSelect" onchange="toggleSingleInputMode()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                <option value="tid">Cari Berdasarkan TID Master</option>
+                                <option value="manual">Ketik Teks / Isi Barcode Secara Manual</option>
+                            </select>
+                        </div>
+
+                        <div id="containerTidInput">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor TID ATM:</label>
+                            <input type="text" id="barcodeTidInput" value="${defaultTid}" placeholder="Contoh: 70075" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-blue-900 uppercase focus:ring-2 focus:ring-emerald-500 outline-none" oninput="generateSingleBarcodePreview()">
+                        </div>
+
+                        <div id="containerManualInput" class="hidden">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Ketik Isi Barcode Manual:</label>
+                            <input type="text" id="barcodeManualInput" placeholder="Contoh: A4TMFD0117 / ABC-12345" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-emerald-900 uppercase focus:ring-2 focus:ring-emerald-500 outline-none" oninput="generateSingleBarcodePreview()">
+                        </div>
+
+                        <div id="containerTypeSelect">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Tipe Barcode Yang Dicetak:</label>
+                            <select id="barcodeTypeSelect" onchange="generateSingleBarcodePreview()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                <option value="rpl">Barcode Kunci RPL (A4TMFD... / RPL-...)</option>
+                                <option value="flm">Barcode Kunci FLM</option>
+                                <option value="tid">Nomor TID Murni</option>
+                            </select>
+                        </div>
+
+                        <div class="pt-2">
+                            <button onclick="printSingleBarcode()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white font-black text-xs py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
+                                🖨️ CETAK LABEL BARCODE SATUAN
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 border border-slate-300 rounded-xl p-6 shadow-inner flex flex-col items-center justify-center">
+                        <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-4">Pratinjau Hasil (Lebar: 4.5 cm × Tinggi: 1.7 cm)</span>
+                        
+                        <div id="singleBarcodeContainer" class="barcode-label-box shadow-md">
+                            <svg id="singleBarcodeSvg"></svg>
+                            <div id="singleBarcodeLabelText" class="barcode-label-text">A4TMFD0117</div>
+                        </div>
+
+                        <p class="text-[10px] text-slate-400 mt-5 text-center leading-relaxed">
+                            *Format teks menggunakan gaya Serif Bold beraksen warna presisi sesuai referensi.<br>Garis tepi otomatis menyesuaikan bingkai barcode tanpa meluap. Mode Cetak Default: Portrait.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            if (defaultTid) {
+                generateSingleBarcodePreview();
+            } else {
+                let keys = Object.keys(masterDatabase);
+                if (keys.length > 0) {
+                    document.getElementById("barcodeTidInput").value = keys[0];
+                    generateSingleBarcodePreview();
+                }
+            }
+        }
+
+        function toggleSingleInputMode() {
+            let mode = document.getElementById("singleInputModeSelect").value;
+            let containerTid = document.getElementById("containerTidInput");
+            let containerManual = document.getElementById("containerManualInput");
+            let containerType = document.getElementById("containerTypeSelect");
+
+            if (mode === "manual") {
+                containerTid.classList.add("hidden");
+                containerType.classList.add("hidden");
+                containerManual.classList.remove("hidden");
+            } else {
+                containerTid.classList.remove("hidden");
+                containerType.classList.remove("hidden");
+                containerManual.classList.add("hidden");
+            }
+            generateSingleBarcodePreview();
+        }
+
+        function generateSingleBarcodePreview() {
+            let mode = document.getElementById("singleInputModeSelect") ? document.getElementById("singleInputModeSelect").value : "tid";
+            let textLabel = document.getElementById("singleBarcodeLabelText");
+            let barcodeVal = "";
+
+            if (mode === "manual") {
+                barcodeVal = document.getElementById("barcodeManualInput").value.trim().toUpperCase();
+                if (!barcodeVal) barcodeVal = "EXAMPLE123";
+            } else {
+                let tid = document.getElementById("barcodeTidInput").value.trim().toUpperCase();
+                let type = document.getElementById("barcodeTypeSelect").value;
+
+                if (!tid) {
+                    JsBarcode("#singleBarcodeSvg", "000000", { displayValue: false, height: 26, width: 1.0, margin: 0 });
+                    if (textLabel) textLabel.innerText = "LABEL BARCODE";
+                    return;
+                }
+
+                let item = getMasterDataByTid(tid) || {};
+                barcodeVal = tid;
+
+                if (type === "rpl") {
+                    barcodeVal = item.rpl || `A4TMFD0117`;
+                } else if (type === "flm") {
+                    barcodeVal = item.flm || `FLM-${tid}`;
+                }
+            }
+
+            try {
+                JsBarcode("#singleBarcodeSvg", barcodeVal, {
+                    format: "CODE128",
+                    displayValue: false,
+                    height: 28,
+                    width: 1.0,
+                    margin: 0
+                });
+                if (textLabel) textLabel.innerText = barcodeVal;
+            } catch (e) {
+                console.error("Gagal generate barcode:", e);
+            }
+        }
+
+        function printSingleBarcode() {
+            let barcodeElement = document.getElementById("singleBarcodeContainer");
+            if (!barcodeElement) return;
+
+            let printWindow = window.open('', '', 'width=450,height=300');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Cetak Label Barcode Satuan</title>
+                        <style>
+                            @page {
+                                size: 4.5cm 1.7cm portrait;
+                                margin: 0;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                display: flex;
+                                items-center: center;
+                                justify-content: center;
+                                height: 1.7cm;
+                                background: white;
+                            }
+                            .barcode-label-box {
+                                width: 4.5cm;
+                                height: 1.7cm;
+                                border: 1px solid #000000;
+                                outline: 1px solid #000000;
+                                outline-offset: -3px;
+                                padding: 2px;
+                                box-sizing: border-box;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                overflow: hidden;
+                            }
+                            .barcode-label-box svg {
+                                max-width: 100% !important;
+                                height: 30px !important;
+                            }
+                            .barcode-label-text {
+                                font-family: 'Times New Roman', Times, serif;
+                                font-weight: bold;
+                                font-size: 11px;
+                                color: #000000;
+                                letter-spacing: 0.5px;
+                                margin-top: -2px;
+                            }
+                        </style>
+                    </head>
+                    <body onload="window.print(); window.close();">
+                        ${barcodeElement.outerHTML}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        /* --- MODUL 2: CETAK BARCODE DINAMIS (BEBERAPA TID & FLEKSIBEL) --- */
+        function renderDynamicBarcodePrintHtml() {
+            const content = document.getElementById("contentArea");
+
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">⚡ 2. CETAK BARCODE DINAMIS (CUSTOM LIST)</span>
+                        <p class="text-xs text-slate-500">Ketik/paste daftar beberapa TID atau kode barcode secara bebas dan tentukan jenis barcode-nya</p>
+                    </div>
+                    <button onclick="renderMasterDataHtml()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                </div>
+
+                <div class="bg-white border border-slate-300 rounded-xl p-5 shadow-md space-y-4 max-w-4xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Daftar TID / Kode Barcode (Pisahkan dengan baris baru / Enter):</label>
+                            <textarea id="dynamicTidListInput" rows="8" placeholder="Contoh:&#10;70075&#10;70076&#10;A4TMFD0117&#10;FLM-8890" class="w-full border border-slate-300 rounded-lg p-3 text-xs font-mono font-bold text-slate-900 bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none uppercase" oninput="updateDynamicBarcodeCount()"></textarea>
+                            <span id="dynamicCountBadge" class="text-[11px] font-bold text-indigo-700 mt-1 block">Total Item: 0 Barcode</span>
+                        </div>
+
+                        <div class="space-y-4 flex flex-col justify-between">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Jenis Barcode Yang Dihasilkan:</label>
+                                <select id="dynamicBarcodeType" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                    <option value="auto">Auto / Ambil Barcode RPL Dari Master (Jika Terdaftar)</option>
+                                    <option value="rpl">Wajib Barcode RPL</option>
+                                    <option value="flm">Wajib Barcode FLM</option>
+                                    <option value="raw">Teks Murni (Sesuai Karakter Yang Diketik)</option>
+                                </select>
+                            </div>
+
+                            <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-lg text-xs text-indigo-900">
+                                <strong>💡 Tips Cetak Dinamis:</strong>
+                                <p class="text-[11px] mt-1 text-indigo-700">Anda dapat menyalin (*copy-paste*) kolom TID dari Excel langsung ke dalam kotak di sebelah kiri. Sistem akan memproses seluruh barcode secara cepat dalam format grid A4.</p>
+                            </div>
+
+                            <button onclick="printDynamicBarcodes()" class="w-full bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 text-white font-black text-xs py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
+                                🖨️ CETAK SELEKSI BARCODE DINAMIS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateDynamicBarcodeCount() {
+            let text = document.getElementById("dynamicTidListInput").value;
+            let items = text.split(/\r\n|\n|\r/).map(s => s.trim()).filter(s => s !== "");
+            let badge = document.getElementById("dynamicCountBadge");
+            if (badge) badge.innerText = `Total Item: ${items.length} Barcode`;
+        }
+
+        function printDynamicBarcodes() {
+            let text = document.getElementById("dynamicTidListInput").value;
+            let items = text.split(/\r\n|\n|\r/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
+
+            if (items.length === 0) {
+                alert("Masukkan minimal 1 TID / Kode Barcode!");
+                return;
+            }
+
+            let typeMode = document.getElementById("dynamicBarcodeType").value;
+            let labelsHtml = "";
+
+            items.forEach(rawItem => {
+                let master = getMasterDataByTid(rawItem) || {};
+                let barcodeVal = rawItem;
+
+                if (typeMode === "rpl") {
+                    barcodeVal = master.rpl || `RPL-${rawItem}`;
+                } else if (typeMode === "flm") {
+                    barcodeVal = master.flm || `FLM-${rawItem}`;
+                } else if (typeMode === "auto") {
+                    barcodeVal = master.rpl || rawItem;
+                }
+
+                let tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                try {
+                    JsBarcode(tempSvg, barcodeVal, {
+                        format: "CODE128",
+                        displayValue: false,
+                        height: 28,
+                        width: 1.0,
+                        margin: 0
+                    });
+                } catch(e) {}
+
+                labelsHtml += `
+                    <div class="barcode-label-box">
+                        ${tempSvg.outerHTML}
+                        <div class="barcode-label-text">${barcodeVal}</div>
+                    </div>
+                `;
+            });
+
+            let printWindow = window.open('', '', 'width=900,height=600');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Cetak Barcode Dinamis</title>
+                        <style>
+                            @page {
+                                size: A4 portrait;
+                                margin: 5mm;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background: white;
+                                font-family: sans-serif;
+                            }
+                            .barcode-grid-print {
+                                display: grid;
+                                grid-template-columns: repeat(4, 4.5cm);
+                                gap: 4mm;
+                                justify-content: center;
+                                padding-top: 5mm;
+                            }
+                            .barcode-label-box {
+                                width: 4.5cm;
+                                height: 1.7cm;
+                                border: 1px solid #000000;
+                                outline: 1px solid #000000;
+                                outline-offset: -3px;
+                                padding: 2px;
+                                box-sizing: border-box;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                overflow: hidden;
+                                page-break-inside: avoid;
+                            }
+                            .barcode-label-box svg {
+                                max-width: 100% !important;
+                                height: 30px !important;
+                            }
+                            .barcode-label-text {
+                                font-family: 'Times New Roman', Times, serif;
+                                font-weight: bold;
+                                font-size: 11px;
+                                color: #000000;
+                                letter-spacing: 0.5px;
+                                margin-top: -2px;
+                            }
+                        </style>
+                    </head>
+                    <body onload="window.print(); window.close();">
+                        <div class="barcode-grid-print">
+                            ${labelsHtml}
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        /* --- MODUL 3: CETAK BARCODE PER CLUSTER --- */
+        function renderBatchBarcodePrintHtml() {
+            const content = document.getElementById("contentArea");
+            let keys = Object.keys(masterDatabase);
+
+            let clusters = new Set();
+            keys.forEach(k => {
+                let item = masterDatabase[k];
+                let cName = item.merk || item.cluster;
+                if (cName) clusters.add(cName.toUpperCase());
+            });
+
+            let clusterOptionsHtml = `<option value="ALL">-- SEMUA CLUSTER (TOTAL ${keys.length} TID) --</option>`;
+            clusters.forEach(c => {
+                clusterOptionsHtml += `<option value="${c}">CLUSTER ${c}</option>`;
+            });
+
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">📦 3. CETAK BARCODE PER CLUSTER / MERK</span>
+                        <p class="text-xs text-slate-500">Pilih cluster merk ATM (Hyosung, NCR, Wincor, Diebold) untuk cetak stiker masal</p>
+                    </div>
+                    <button onclick="renderMasterDataHtml()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                </div>
+
+                <div class="bg-white border border-slate-300 rounded-xl p-5 shadow-sm mb-5 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Filter Cluster / Merk:</label>
+                            <select id="batchClusterSelect" onchange="filterBatchBarcodeItems()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                ${clusterOptionsHtml}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Tipe Barcode:</label>
+                            <select id="batchBarcodeType" onchange="filterBatchBarcodeItems()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                <option value="rpl">Barcode Kunci RPL</option>
+                                <option value="flm">Barcode Kunci FLM</option>
+                                <option value="tid">Nomor TID</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button onclick="toggleSelectAllBatch(true)" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
+                                ☑️ Pilih Semua
+                            </button>
+                            <button onclick="toggleSelectAllBatch(false)" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition">
+                                ⏹️ Batal Semua
+                            </button>
+                            <button onclick="printSelectedBatchBarcodes()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-4 py-2 rounded-lg shadow transition ml-auto">
+                                🖨️ CETAK LABEL TERPILIH
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4">
+                    <div class="flex justify-between items-center mb-3 text-xs font-extrabold text-slate-800">
+                        <span>DAFTAR TID TERSEDIA UNTUK DICETAK:</span>
+                        <span id="batchSelectedCountBadge" class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300">Terpilih: 0 TID</span>
+                    </div>
+                    <div id="batchItemsGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[400px] overflow-y-auto p-2 bg-slate-50 rounded-lg border border-slate-200">
+                    </div>
+                </div>
+            `;
+
+            filterBatchBarcodeItems();
+        }
+
+        function filterBatchBarcodeItems() {
+            let selectedCluster = document.getElementById("batchClusterSelect").value;
+            let gridContainer = document.getElementById("batchItemsGrid");
+            let keys = Object.keys(masterDatabase);
+
+            let filteredKeys = keys.filter(tid => {
+                if (selectedCluster === "ALL") return true;
+                let item = masterDatabase[tid] || {};
+                let cName = (item.merk || item.cluster || "").toUpperCase();
+                return cName === selectedCluster;
+            });
+
+            if (filteredKeys.length === 0) {
+                gridContainer.innerHTML = `<div class="col-span-full text-center text-slate-400 py-6 italic text-xs">Tidak ada TID ditemukan untuk cluster ini.</div>`;
+                updateBatchSelectedCount();
+                return;
+            }
+
+            let html = "";
+            filteredKeys.forEach((tid) => {
+                let item = masterDatabase[tid] || {};
+                html += `
+                    <label class="bg-white border border-slate-300 rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:bg-amber-50 transition shadow-sm">
+                        <input type="checkbox" class="batch-tid-checkbox w-4 h-4 text-emerald-600 rounded" value="${tid}" checked onchange="updateBatchSelectedCount()">
+                        <div class="overflow-hidden">
+                            <div class="font-extrabold text-xs text-slate-900">${tid}</div>
+                            <div class="text-[10px] text-slate-500 truncate">${item.lokasi || '-'}</div>
+                        </div>
+                    </label>
+                `;
+            });
+
+            gridContainer.innerHTML = html;
+            updateBatchSelectedCount();
+        }
+
+        function toggleSelectAllBatch(isCheck) {
+            document.querySelectorAll(".batch-tid-checkbox").forEach(cb => cb.checked = isCheck);
+            updateBatchSelectedCount();
+        }
+
+        function updateBatchSelectedCount() {
+            let checkedCount = document.querySelectorAll(".batch-tid-checkbox:checked").length;
+            let badge = document.getElementById("batchSelectedCountBadge");
+            if (badge) badge.innerText = `Terpilih: ${checkedCount} TID`;
+        }
+
+        function printSelectedBatchBarcodes() {
+            let checkedInputs = document.querySelectorAll(".batch-tid-checkbox:checked");
+            if (checkedInputs.length === 0) {
+                alert("Pilih minimal 1 TID untuk dicetak!");
+                return;
+            }
+
+            let type = document.getElementById("batchBarcodeType").value;
+            let labelsHtml = "";
+
+            checkedInputs.forEach(cb => {
+                let tid = cb.value;
+                let item = getMasterDataByTid(tid) || {};
+                let barcodeVal = tid;
+
+                if (type === "rpl") barcodeVal = item.rpl || `A4TMFD0117`;
+                else if (type === "flm") barcodeVal = item.flm || `FLM-${tid}`;
+
+                let tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                try {
+                    JsBarcode(tempSvg, barcodeVal, {
+                        format: "CODE128",
+                        displayValue: false,
+                        height: 28,
+                        width: 1.0,
+                        margin: 0
+                    });
+                } catch(e) {}
+
+                labelsHtml += `
+                    <div class="barcode-label-box">
+                        ${tempSvg.outerHTML}
+                        <div class="barcode-label-text">${barcodeVal}</div>
+                    </div>
+                `;
+            });
+
+            let printWindow = window.open('', '', 'width=900,height=600');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Cetak Label Barcode Cluster</title>
+                        <style>
+                            @page {
+                                size: A4 portrait;
+                                margin: 5mm;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background: white;
+                                font-family: sans-serif;
+                            }
+                            .barcode-grid-print {
+                                display: grid;
+                                grid-template-columns: repeat(4, 4.5cm);
+                                gap: 4mm;
+                                justify-content: center;
+                                padding-top: 5mm;
+                            }
+                            .barcode-label-box {
+                                width: 4.5cm;
+                                height: 1.7cm;
+                                border: 1px solid #000000;
+                                outline: 1px solid #000000;
+                                outline-offset: -3px;
+                                padding: 2px;
+                                box-sizing: border-box;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                overflow: hidden;
+                                page-break-inside: avoid;
+                            }
+                            .barcode-label-box svg {
+                                max-width: 100% !important;
+                                height: 30px !important;
+                            }
+                            .barcode-label-text {
+                                font-family: 'Times New Roman', Times, serif;
+                                font-weight: bold;
+                                font-size: 11px;
+                                color: #000000;
+                                letter-spacing: 0.5px;
+                                margin-top: -2px;
+                            }
+                        </style>
+                    </head>
+                    <body onload="window.print(); window.close();">
+                        <div class="barcode-grid-print">
+                            ${labelsHtml}
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         function renderItSupportDashboard() {
@@ -1536,10 +2174,11 @@
                                     <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">RAK</th>
                                     <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">BARIS</th>
                                     <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">KOLOM</th>
+                                    <th class="border border-slate-400 p-2.5 w-16 text-center whitespace-nowrap">CETAK</th>
                                 </tr>
                             </thead>
                             <tbody id="masterTableBody">
-                                <tr><td colspan="9" class="text-center p-4 text-slate-400 italic">Belum ada data master.</td></tr>
+                                <tr><td colspan="10" class="text-center p-4 text-slate-400 italic">Belum ada data master.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1590,7 +2229,7 @@
             if(countBadge) countBadge.innerText = keys.length;
 
             if (keys.length === 0) {
-                if(tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center p-4 text-red-600 font-extrabold italic text-sm tracking-wide">Data Kosong !!</td></tr>`;
+                if(tbody) tbody.innerHTML = `<tr><td colspan="10" class="text-center p-4 text-red-600 font-extrabold italic text-sm tracking-wide">Data Kosong !!</td></tr>`;
                 return;
             }
 
@@ -1612,7 +2251,7 @@
             });
 
             if (finalKeys.length === 0) {
-                if(tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center p-4 text-red-600 font-extrabold italic text-sm tracking-wide">Data Kosong !!</td></tr>`;
+                if(tbody) tbody.innerHTML = `<tr><td colspan="10" class="text-center p-4 text-red-600 font-extrabold italic text-sm tracking-wide">Data Kosong !!</td></tr>`;
                 return;
             }
 
@@ -1631,6 +2270,11 @@
                         <td class="border border-slate-400 p-2.5 text-center text-indigo-950 bg-indigo-50/50 font-normal whitespace-nowrap">${item.rak || '-'}</td>
                         <td class="border border-slate-400 p-2.5 text-center text-blue-950 bg-blue-50/50 font-normal whitespace-nowrap">${item.baris || '-'}</td>
                         <td class="border border-slate-400 p-2.5 text-center text-emerald-950 bg-emerald-50/50 font-normal whitespace-nowrap">${item.kolom || '-'}</td>
+                        <td class="border border-slate-400 p-1.5 text-center whitespace-nowrap">
+                            <button onclick="renderSingleBarcodePrintHtml('${tid}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded shadow transition">
+                                🏷️ Label
+                            </button>
+                        </td>
                     </tr>
                 `;
             });
@@ -1930,13 +2574,11 @@
             content.innerHTML = html;
         }
 
-        /* Langsung Cetak Semua Team RPL Terinput */
         function directPrintAllTeams() {
             preparePreview(batchTeamsData);
             printAllSlides();
         }
 
-        /* Pratinjau Tampilan Slide Per-Team Sebelum Cetak */
         function renderAllDataSummaryPreview() {
             let hasData = Object.values(batchTeamsData).some(tids => tids && tids.length > 0);
             if (!hasData) {
@@ -2362,7 +3004,6 @@
             });
         }
 
-        /* Fungsi Sort Data Rak, Baris, Kolom */
         function sortLocationData(rows, sortOrder) {
             if (!sortOrder || sortOrder === "none") return rows;
 
@@ -2526,25 +3167,25 @@
                             </select>
                         </div>
                         <div class="flex items-center gap-1">
-                            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Orientasi:</span>
-                            <select id="printOrientationSelect" onchange="selectedPrintOrientation = this.value" class="text-xs font-bold bg-amber-100 text-amber-900 p-1 rounded border border-amber-300 outline-none">
-                                <option value="portrait" ${selectedPrintOrientation === 'portrait' ? 'selected' : ''}>📱 Potret (Portrait A4 Default)</option>
-                                <option value="landscape" ${selectedPrintOrientation === 'landscape' ? 'selected' : ''}>🖥️ Lanskap Penuh (A4 Margin 0)</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1">
                             <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Warna:</span>
-                            <select id="printColorSelect" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                            <select id="printColorSelect" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-amber-50 text-amber-900 p-1 rounded border border-amber-300 outline-none">
+                                <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour (Default)</option>
                                 <option value="bw" ${selectedPrintColor === 'bw' ? 'selected' : ''}>⚫⚪ Black & White</option>
-                                <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
                             </select>
                         </div>
                         <div class="flex items-center gap-1">
                             <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Kualitas:</span>
-                            <select id="printQualitySelect" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
-                                <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality</option>
+                            <select id="printQualitySelect" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-emerald-50 text-emerald-900 p-1 rounded border border-emerald-300 outline-none">
+                                <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality (Default)</option>
                                 <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
                                 <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Orientasi:</span>
+                            <select id="printOrientationSelect" onchange="selectedPrintOrientation = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                                <option value="portrait" ${selectedPrintOrientation === 'portrait' ? 'selected' : ''}>📱 Potret (A4 Default)</option>
+                                <option value="landscape" ${selectedPrintOrientation === 'landscape' ? 'selected' : ''}>🖥️ Lanskap Penuh</option>
                             </select>
                         </div>
                     </div>
@@ -2561,7 +3202,7 @@
                     </div>
                 </div>
 
-                <div id="printArea" class="border-2 border-black bg-white p-3 rounded-xl shadow-md transition-all overflow-x-auto">
+                <div id="printArea" class="border-2 border-black bg-white p-3 rounded-xl shadow-md transition-all overflow-x-auto mx-auto my-0 max-w-[210mm]">
                     <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border" style="table-layout: auto;">
                         <thead>
                             <tr>
@@ -2639,14 +3280,14 @@
                     <div class="flex items-center gap-1">
                         <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Warna:</span>
                         <select id="printColorSelectAll" onchange="selectedPrintColor = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                            <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour (Default)</option>
                             <option value="bw" ${selectedPrintColor === 'bw' ? 'selected' : ''}>⚫⚪ Black & White</option>
-                            <option value="colour" ${selectedPrintColor === 'colour' ? 'selected' : ''}>🎨 Colour</option>
                         </select>
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Kualitas:</span>
                         <select id="printQualitySelectAll" onchange="selectedPrintQuality = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
-                            <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality</option>
+                            <option value="high" ${selectedPrintQuality === 'high' ? 'selected' : ''}>✨ High Quality (Default)</option>
                             <option value="standard" ${selectedPrintQuality === 'standard' ? 'selected' : ''}>📄 Standard</option>
                             <option value="draft" ${selectedPrintQuality === 'draft' ? 'selected' : ''}>⚡ Draft</option>
                         </select>
