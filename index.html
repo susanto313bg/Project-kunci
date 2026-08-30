@@ -252,7 +252,6 @@
             animation: shake 0.4s ease-in-out;
         }
 
-        /* STYLING BINGKAI BARCODE PRESISI (4.5 cm x 1.7 cm) */
         .barcode-label-box {
             width: 4.5cm;
             height: 1.7cm;
@@ -503,7 +502,6 @@
         let masterDatabase = {}; 
         let syncTimeout = null; 
 
-        // 1. DEFAULT KONFIGURASI CETAK (COLOUR, HIGH QUALITY, PORTRAIT A4)
         let selectedPrintColor = "colour";
         let selectedPrintQuality = "high";
         let selectedPrintOrientation = "portrait";
@@ -940,6 +938,13 @@
                 </div>
             `;
 
+            const opnameButtonHtml = `
+                <button onclick="renderAuditPhysicalCheckHtml()" class="text-left bg-gradient-to-r from-emerald-100 via-teal-100 to-emerald-200 hover:from-emerald-200 hover:to-teal-300 text-[#065F46] font-extrabold py-2.5 px-3 rounded-lg text-xs shadow transition border border-emerald-400 flex items-center justify-between">
+                    <span>📋 MENU CEK KUNCI</span>
+                    <span class="text-[9px] bg-emerald-700 text-white px-1.5 py-0.5 rounded font-black">ACUAN</span>
+                </button>
+            `;
+
             if (currentUser && currentUser.role === "SUPERVISOR") {
                 html = `
                     <button onclick="renderItSupportDashboard()" class="text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-purple-300">
@@ -948,6 +953,7 @@
                     <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
                         📊 MASTER DATA
                     </button>
+                    ${opnameButtonHtml}
                     <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
                         🌺 CETAK KUNCI RPL
                     </button>
@@ -974,6 +980,7 @@
                     <button onclick="renderMasterDataHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
                         📊 MASTER DATA
                     </button>
+                    ${opnameButtonHtml}
                     <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
                         🌺 CETAK KUNCI RPL
                     </button>
@@ -982,6 +989,580 @@
                 `;
             }
             menuContainer.innerHTML = html;
+        }
+
+        /* --- FITUR AUDIT / OPNAME & PENGECEKAN KUNCI --- */
+        function toggleRackOverviewBox() {
+            let overviewBox = document.getElementById("rackOverviewBox");
+            if (overviewBox) {
+                overviewBox.classList.toggle("hidden");
+            }
+        }
+
+        function renderAuditPhysicalCheckHtml() {
+            const content = document.getElementById("contentArea");
+            let keys = Object.keys(masterDatabase);
+
+            let clusters = new Set();
+            keys.forEach(k => {
+                let item = masterDatabase[k];
+                let cName = item.merk || item.cluster;
+                if (cName) clusters.add(cName.toUpperCase());
+            });
+
+            let clusterOptionsHtml = `<option value="ALL">-- SEMUA CLUSTER (TOTAL ${keys.length} TID) --</option>`;
+            clusters.forEach(c => {
+                clusterOptionsHtml += `<option value="${c}">CLUSTER ${c}</option>`;
+            });
+
+            content.innerHTML = `
+                <div class="flex flex-wrap justify-between items-center mb-5 pb-3 border-b border-slate-200 gap-2">
+                    <div>
+                        <span class="font-extrabold text-slate-800 text-base">📋 PENGECEKAN KUNCI OPERASIONAL</span>
+                        <p class="text-xs text-slate-500">Lembar acuan verifikasi fisik posisi kunci sebelum meninggalkan shift operasional</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleRackOverviewBox()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow transition flex items-center gap-1">
+                            👁️ Tampilkan / Sembunyikan Petunjuk
+                        </button>
+                        <button onclick="downloadAuditChecklistExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow transition flex items-center gap-1">
+                            📊 Download Format Audit (Excel)
+                        </button>
+                        <button onclick="printAuditChecklistReport()" class="bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-bold px-4 py-1.5 rounded shadow transition flex items-center gap-1">
+                            🖨️ CETAK LEMBAR AUDIT (A4)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-300 rounded-xl p-4 mb-5 shadow-inner space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Mode Pengecekan Kunci:</label>
+                            <select id="auditModeTypeSelect" onchange="toggleAuditModeUI()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white text-blue-900 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="SUMMARY_CLUSTER">📊 Ringkasan Total Kunci Per Cluster (Dashboard)</option>
+                                <option value="RPL_RAK" selected>Pengecekan Kunci RPL (Berdasarkan RAK)</option>
+                                <option value="RPL_CLUSTER">Pengecekan Kunci RPL (Berdasarkan Cluster)</option>
+                                <option value="FLM">Pengecekan Kunci FLM (Berdasarkan Cluster)</option>
+                            </select>
+                        </div>
+
+                        <div id="containerFilterRplRak">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Filter Kategori / RAK Kunci RPL:</label>
+                            <select id="auditRakFilter" onchange="renderAuditCheckTable()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white text-indigo-900 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="ALL">-- SEMUA RAK RUANG KUNCI --</option>
+                                <option value="A1">Cek Kunci RAK 1 (RAK A1)</option>
+                                <option value="A2">Cek Kunci RAK 2 (RAK A2)</option>
+                                <option value="A3">Cek Kunci RAK 3 (RAK A3)</option>
+                                <option value="A5">Cek Kunci RAK 5 (RAK A5)</option>
+                                <option value="A6">Cek Kunci RAK 6 (RAK A6)</option>
+                                <option value="A7">Cek Kunci RAK 7 (RAK A7)</option>
+                                <option value="NO_BARCODE">Cek Kunci Tanpa Barcode (Unregistered Rak)</option>
+                            </select>
+                        </div>
+
+                        <div id="containerFilterFlmCluster" class="hidden">
+                            <label id="clusterFilterLabel" class="block text-xs font-bold text-slate-700 mb-1">Filter Cluster Kunci:</label>
+                            <select id="auditClusterFilter" onchange="renderAuditCheckTable()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                ${clusterOptionsHtml}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-300 rounded-xl shadow-md p-4 overflow-x-auto">
+                    <div class="flex justify-between items-center mb-3 bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+                        <span id="auditTitleHeaderLabel" class="text-xs font-extrabold text-slate-800">📋 HASIL PENGECEKAN KUNCI RPL</span>
+                        <span id="auditCountBadge" class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1 rounded-full text-xs font-black">Total: 0 TID</span>
+                    </div>
+
+                    <div id="auditPrintArea" class="bg-white p-2">
+                        <!-- PETUNJUK INDIKASI KUNCI KOSONG (DISEMBUNYIKAN SECARA DEFAULT) -->
+                        <div id="rackOverviewBox" class="hidden mb-4 p-3 border-2 border-black bg-slate-50 text-xs">
+                            <div class="font-extrabold uppercase mb-1 text-slate-900 border-b border-black pb-1">
+                                🔑 PETUNJUK VERIFIKASI KELENGKAPAN RAK SEBELUM MENINGGALKAN SHIFT:
+                            </div>
+                            <div class="text-[10px] text-slate-800 leading-relaxed font-semibold">
+                                <span class="font-bold text-red-700">⚠️ APABILA KUNCI KOSONG TANPA TANDA / GANTUNGAN INFORMASI (DIISIKAN MENGGUNAKAN BOLPOIN):</span>
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-1.5 mt-1 font-bold text-slate-900">
+                                    <span class="bg-white p-1 border border-black rounded text-center">1. Kunci belum kembali dari tim pengisian</span>
+                                    <span class="bg-white p-1 border border-black rounded text-center">2. Kunci masih dipegang oleh IT</span>
+                                    <span class="bg-white p-1 border border-black rounded text-center">3. Kunci sudah di HO ke vendor lain</span>
+                                    <span class="bg-white p-1 border border-black rounded text-center">4. Kunci faskia tidak lengkap</span>
+                                    <span class="bg-white p-1 border border-black rounded text-center">5. HO kunci dengan tim RPL</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="w-full border-collapse border border-slate-400 text-xs">
+                            <thead>
+                                <tr id="auditTableHeader" class="bg-slate-200 text-slate-900 font-extrabold text-[11px] uppercase">
+                                </tr>
+                            </thead>
+                            <tbody id="auditTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            renderAuditCheckTable();
+        }
+
+        function toggleAuditModeUI() {
+            let mode = document.getElementById("auditModeTypeSelect").value;
+            let containerRpl = document.getElementById("containerFilterRplRak");
+            let containerCluster = document.getElementById("containerFilterFlmCluster");
+            let clusterLabel = document.getElementById("clusterFilterLabel");
+
+            if (mode === "SUMMARY_CLUSTER") {
+                containerRpl.classList.add("hidden");
+                containerCluster.classList.add("hidden");
+            } else if (mode === "FLM") {
+                containerRpl.classList.add("hidden");
+                containerCluster.classList.remove("hidden");
+                if (clusterLabel) clusterLabel.innerText = "Filter Cluster Kunci FLM:";
+            } else if (mode === "RPL_CLUSTER") {
+                containerRpl.classList.add("hidden");
+                containerCluster.classList.remove("hidden");
+                if (clusterLabel) clusterLabel.innerText = "Filter Cluster Kunci RPL:";
+            } else {
+                containerRpl.classList.remove("hidden");
+                containerCluster.classList.add("hidden");
+            }
+            renderAuditCheckTable();
+        }
+
+        function getFilteredAuditData() {
+            let mode = document.getElementById("auditModeTypeSelect") ? document.getElementById("auditModeTypeSelect").value : "RPL_RAK";
+            let rakFilter = document.getElementById("auditRakFilter") ? document.getElementById("auditRakFilter").value : "ALL";
+            let clusterFilter = document.getElementById("auditClusterFilter") ? document.getElementById("auditClusterFilter").value : "ALL";
+            
+            let keys = Object.keys(masterDatabase);
+
+            if (mode === "FLM") {
+                return keys.filter(tid => {
+                    let item = masterDatabase[tid] || {};
+                    let itemCluster = (item.merk || item.cluster || "").toUpperCase();
+                    let matchCluster = (clusterFilter === "ALL" || itemCluster === clusterFilter);
+                    return !!item.flm && matchCluster;
+                });
+            } else if (mode === "RPL_CLUSTER") {
+                return keys.filter(tid => {
+                    let item = masterDatabase[tid] || {};
+                    let itemCluster = (item.merk || item.cluster || "").toUpperCase();
+                    let matchCluster = (clusterFilter === "ALL" || itemCluster === clusterFilter);
+                    return matchCluster;
+                });
+            } else if (mode === "RPL_RAK") {
+                let filtered = keys.filter(tid => {
+                    let item = masterDatabase[tid] || {};
+                    let itemRak = String(item.rak || '').trim().toUpperCase();
+
+                    if (rakFilter === "ALL") return true;
+                    if (rakFilter === "NO_BARCODE") {
+                        return (!item.rak || item.rak.trim() === "" || !item.rpl);
+                    }
+                    
+                    return itemRak === rakFilter || itemRak === `RAK ${rakFilter}` || itemRak === `RAK_${rakFilter}` || itemRak.includes(rakFilter);
+                });
+
+                filtered.sort((a, b) => {
+                    let itemA = masterDatabase[a] || {};
+                    let itemB = masterDatabase[b] || {};
+
+                    let barisA = String(itemA.baris || '').toUpperCase();
+                    let barisB = String(itemB.baris || '').toUpperCase();
+                    let kolomA = String(itemA.kolom || '').toUpperCase();
+                    let kolomB = String(itemB.kolom || '').toUpperCase();
+
+                    let compBaris = barisA.localeCompare(barisB, undefined, { numeric: true, sensitivity: 'base' });
+                    if (compBaris !== 0) return compBaris;
+                    return kolomA.localeCompare(kolomB, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
+                return filtered;
+            }
+            return keys;
+        }
+
+        function renderAuditCheckTable() {
+            let tbody = document.getElementById("auditTableBody");
+            let theader = document.getElementById("auditTableHeader");
+            let badge = document.getElementById("auditCountBadge");
+            let titleHeader = document.getElementById("auditTitleHeaderLabel");
+            let mode = document.getElementById("auditModeTypeSelect") ? document.getElementById("auditModeTypeSelect").value : "RPL_RAK";
+
+            if (mode === "SUMMARY_CLUSTER") {
+                if (titleHeader) titleHeader.innerText = `📊 RINGKASAN REKAPITULASI TOTAL KUNCI PER CLUSTER (BERDASARKAN MASTER DATA)`;
+
+                if (theader) {
+                    theader.innerHTML = `
+                        <th class="border border-slate-400 p-2 text-center w-8">NO</th>
+                        <th class="border border-slate-400 p-2 text-left">NAMA CLUSTER / MERK ATM</th>
+                        <th class="border border-slate-400 p-2 text-center w-36 bg-blue-100 text-blue-900">TOTAL KUNCI RPL</th>
+                        <th class="border border-slate-400 p-2 text-center w-36 bg-emerald-100 text-emerald-900">TOTAL KUNCI FLM</th>
+                        <th class="border border-slate-400 p-2 text-center w-40 bg-amber-100 text-amber-900">TOTAL KUNCI (RPL + FLM)</th>
+                        <th class="border border-slate-400 p-2 text-center w-28">PERSENTASE</th>
+                    `;
+                }
+
+                let clusterMap = {};
+                let totalRplGlobal = 0;
+                let totalFlmGlobal = 0;
+                let totalKunciGlobal = 0;
+
+                Object.keys(masterDatabase).forEach(tid => {
+                    let item = masterDatabase[tid] || {};
+                    let cName = (item.merk || item.cluster || "TANPA CLUSTER").toUpperCase().trim();
+                    if (!cName) cName = "TANPA CLUSTER";
+
+                    if (!clusterMap[cName]) {
+                        clusterMap[cName] = { rpl: 0, flm: 0, total: 0 };
+                    }
+
+                    if (item.rpl) {
+                        clusterMap[cName].rpl++;
+                        totalRplGlobal++;
+                    }
+                    if (item.flm) {
+                        clusterMap[cName].flm++;
+                        totalFlmGlobal++;
+                    }
+                    clusterMap[cName].total++;
+                    totalKunciGlobal++;
+                });
+
+                let sortedClusters = Object.keys(clusterMap).map(name => {
+                    return {
+                        name: name,
+                        rpl: clusterMap[name].rpl,
+                        flm: clusterMap[name].flm,
+                        total: clusterMap[name].total
+                    };
+                }).sort((a, b) => b.total - a.total);
+
+                if (badge) badge.innerText = `Total: ${sortedClusters.length} Cluster (${totalKunciGlobal} TID Master)`;
+
+                if (sortedClusters.length === 0) {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-slate-400 italic">Belum ada data cluster di master data.</td></tr>`;
+                    return;
+                }
+
+                let html = "";
+                sortedClusters.forEach((item, idx) => {
+                    let percentage = totalKunciGlobal > 0 ? ((item.total / totalKunciGlobal) * 100).toFixed(1) : 0;
+                    html += `
+                        <tr class="${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-slate-900">
+                            <td class="border border-slate-400 p-2.5 text-center font-bold">${idx + 1}</td>
+                            <td class="border border-slate-400 p-2.5 font-extrabold text-blue-950 uppercase">${item.name}</td>
+                            <td class="border border-slate-400 p-2.5 text-center font-extrabold text-blue-900 bg-blue-50/50">${item.rpl} Kunci</td>
+                            <td class="border border-slate-400 p-2.5 text-center font-extrabold text-emerald-900 bg-emerald-50/50">${item.flm} Kunci</td>
+                            <td class="border border-slate-400 p-2.5 text-center font-black text-amber-950 bg-amber-100/60">${item.total} Kunci</td>
+                            <td class="border border-slate-400 p-2.5 text-center font-bold text-slate-700">${percentage}%</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                    <tr class="bg-slate-800 text-white font-black text-sm uppercase">
+                        <td colspan="2" class="border border-slate-600 p-3 text-right">TOTAL KESELURUHAN:</td>
+                        <td class="border border-slate-600 p-3 text-center text-blue-300">${totalRplGlobal} Kunci</td>
+                        <td class="border border-slate-600 p-3 text-center text-emerald-300">${totalFlmGlobal} Kunci</td>
+                        <td class="border border-slate-600 p-3 text-center text-amber-300">${totalKunciGlobal} Kunci</td>
+                        <td class="border border-slate-600 p-3 text-center">100%</td>
+                    </tr>
+                `;
+
+                if (tbody) tbody.innerHTML = html;
+                return;
+            }
+
+            let filteredKeys = getFilteredAuditData();
+            if (badge) badge.innerText = `Total: ${filteredKeys.length} TID`;
+
+            if (mode === "FLM") {
+                let clusterVal = document.getElementById("auditClusterFilter") ? document.getElementById("auditClusterFilter").value : "ALL";
+                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI FLM (CLUSTER: ${clusterVal})`;
+                
+                if (theader) {
+                    theader.innerHTML = `
+                        <th class="border border-slate-400 p-2 text-center w-8">NO</th>
+                        <th class="border border-slate-400 p-2 text-center w-20">TID</th>
+                        <th class="border border-slate-400 p-2 text-left">LOKASI</th>
+                        <th class="border border-slate-400 p-2 text-center w-36">BARCODE FLM</th>
+                        <th class="border border-slate-400 p-2 text-center w-24">STATUS KUNCI</th>
+                        <th class="border border-slate-400 p-2 text-left">KETERANGAN (DIISI BOLPOIN)</th>
+                    `;
+                }
+            } else if (mode === "RPL_CLUSTER") {
+                let clusterVal = document.getElementById("auditClusterFilter") ? document.getElementById("auditClusterFilter").value : "ALL";
+                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI RPL (CLUSTER: ${clusterVal})`;
+
+                if (theader) {
+                    theader.innerHTML = `
+                        <th class="border border-slate-400 p-2 text-center w-8">NO</th>
+                        <th class="border border-slate-400 p-2 text-center w-20">TID</th>
+                        <th class="border border-slate-400 p-2 text-left">LOKASI ATM</th>
+                        <th class="border border-slate-400 p-2 text-center w-24">CLUSTER</th>
+                        <th class="border border-slate-400 p-2 text-center w-28">BARCODE RPL</th>
+                        <th class="border border-slate-400 p-2 text-center w-16">RAK</th>
+                        <th class="border border-slate-400 p-2 text-center w-16">BARIS</th>
+                        <th class="border border-slate-400 p-2 text-center w-16">KOLOM</th>
+                        <th class="border border-slate-400 p-2 text-center w-20">STATUS KUNCI</th>
+                        <th class="border border-slate-400 p-2 text-left">KETERANGAN INDIKASI KUNCI KOSONG (DIISI BOLPOIN)</th>
+                    `;
+                }
+            } else {
+                let rakVal = document.getElementById("auditRakFilter") ? document.getElementById("auditRakFilter").value : "ALL";
+                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI RPL (RAK: ${rakVal})`;
+
+                if (theader) {
+                    theader.innerHTML = `
+                        <th class="border border-slate-400 p-2 text-center w-8">NO</th>
+                        <th class="border border-slate-400 p-2 text-center w-20">TID</th>
+                        <th class="border border-slate-400 p-2 text-left">LOKASI ATM</th>
+                        <th class="border border-slate-400 p-2 text-center w-24">CLUSTER</th>
+                        <th class="border border-slate-400 p-2 text-center w-28">BARCODE RPL</th>
+                        <th class="border border-slate-400 p-2 text-center w-16">RAK</th>
+                        <th class="border border-slate-400 p-2 text-center w-16">BARIS</th>
+                        <th class="border border-slate-400 p-2 text-center w-16">KOLOM</th>
+                        <th class="border border-slate-400 p-2 text-center w-20">STATUS KUNCI</th>
+                        <th class="border border-slate-400 p-2 text-left">KETERANGAN INDIKASI KUNCI KOSONG (DIISI BOLPOIN)</th>
+                    `;
+                }
+            }
+
+            if (filteredKeys.length === 0) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="10" class="text-center p-4 text-slate-400 italic">Tidak ada data TID sesuai filter.</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            filteredKeys.forEach((tid, idx) => {
+                let item = masterDatabase[tid] || {};
+                
+                if (mode === "FLM") {
+                    html += `
+                        <tr class="${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-slate-900">
+                            <td class="border border-slate-400 p-2 text-center font-bold">${idx + 1}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900">${tid}</td>
+                            <td class="border border-slate-400 p-2 font-bold">${item.lokasi || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-mono font-bold">${item.flm || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-bold text-slate-400"> [ &nbsp; ] LENGKAP </td>
+                            <td class="border border-slate-400 p-2 text-left text-slate-400 italic"> </td>
+                        </tr>
+                    `;
+                } else {
+                    html += `
+                        <tr class="${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-slate-900">
+                            <td class="border border-slate-400 p-2 text-center font-bold">${idx + 1}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900">${tid}</td>
+                            <td class="border border-slate-400 p-2 font-bold">${item.lokasi || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-semibold text-amber-900">${item.merk || item.cluster || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-mono">${item.rpl || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/40">${item.rak || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900 bg-blue-50/40">${item.baris || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/40">${item.kolom || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-bold text-slate-400"> [ &nbsp; ] OK </td>
+                            <td class="border border-slate-400 p-2 text-left text-slate-400 italic"> </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (tbody) tbody.innerHTML = html;
+        }
+
+        function downloadAuditChecklistExcel() {
+            let mode = document.getElementById("auditModeTypeSelect").value;
+            let filteredKeys = getFilteredAuditData();
+
+            if (mode === "SUMMARY_CLUSTER") {
+                let clusterMap = {};
+                Object.keys(masterDatabase).forEach(tid => {
+                    let item = masterDatabase[tid] || {};
+                    let cName = (item.merk || item.cluster || "TANPA CLUSTER").toUpperCase().trim();
+                    if (!cName) cName = "TANPA CLUSTER";
+
+                    if (!clusterMap[cName]) clusterMap[cName] = { rpl: 0, flm: 0, total: 0 };
+                    if (item.rpl) clusterMap[cName].rpl++;
+                    if (item.flm) clusterMap[cName].flm++;
+                    clusterMap[cName].total++;
+                });
+
+                let sortedClusters = Object.keys(clusterMap).map(name => {
+                    return {
+                        name: name,
+                        rpl: clusterMap[name].rpl,
+                        flm: clusterMap[name].flm,
+                        total: clusterMap[name].total
+                    };
+                }).sort((a, b) => b.total - a.total);
+
+                let excelRows = sortedClusters.map((c, i) => ({
+                    "NO": i + 1,
+                    "NAMA CLUSTER / MERK ATM": c.name,
+                    "TOTAL KUNCI RPL": c.rpl,
+                    "TOTAL KUNCI FLM": c.flm,
+                    "TOTAL KUNCI (RPL + FLM)": c.total
+                }));
+
+                const worksheet = XLSX.utils.json_to_sheet(excelRows);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Cluster");
+                XLSX.writeFile(workbook, `REKAP_TOTAL_KUNCI_CLUSTER_${new Date().toISOString().slice(0,10)}.xlsx`);
+                return;
+            }
+
+            if (filteredKeys.length === 0) {
+                alert("Tidak ada data untuk di-download.");
+                return;
+            }
+
+            let rakFilter = document.getElementById("auditRakFilter").value;
+            let clusterFilter = document.getElementById("auditClusterFilter").value;
+
+            let excelRows = [];
+            filteredKeys.forEach((tid, idx) => {
+                let item = masterDatabase[tid] || {};
+                
+                if (mode === "FLM") {
+                    excelRows.push({
+                        "NO": idx + 1,
+                        "TID": tid,
+                        "LOKASI": item.lokasi || "",
+                        "BARCODE FLM": item.flm || "",
+                        "STATUS KUNCI": "[   ] LENGKAP",
+                        "KETERANGAN (ISIKAN BOLPOIN)": ""
+                    });
+                } else {
+                    excelRows.push({
+                        "NO": idx + 1,
+                        "TID": tid,
+                        "LOKASI ATM": item.lokasi || "",
+                        "CLUSTER": item.merk || item.cluster || "",
+                        "BARCODE RPL": item.rpl || "",
+                        "RAK": item.rak || "",
+                        "BARIS": item.baris || "",
+                        "KOLOM": item.kolom || "",
+                        "STATUS KUNCI": "[   ] OK",
+                        "KETERANGAN INDIKASI KUNCI KOSONG (ISIKAN BOLPOIN)": ""
+                    });
+                }
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(excelRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Cek Fisik Kunci");
+
+            let fileName = "";
+            if (mode === "FLM") fileName = `CEK_KUNCI_FLM_${clusterFilter}_${new Date().toISOString().slice(0,10)}.xlsx`;
+            else if (mode === "RPL_CLUSTER") fileName = `CEK_KUNCI_RPL_CLUSTER_${clusterFilter}_${new Date().toISOString().slice(0,10)}.xlsx`;
+            else fileName = `CEK_KUNCI_RPL_RAK_${rakFilter}_${new Date().toISOString().slice(0,10)}.xlsx`;
+
+            XLSX.writeFile(workbook, fileName);
+            alert("File Excel Audit Pengecekan Kunci berhasil diunduh!");
+        }
+
+        function printAuditChecklistReport() {
+            let tableArea = document.getElementById("auditPrintArea");
+            let mode = document.getElementById("auditModeTypeSelect").value;
+            let rakFilter = document.getElementById("auditRakFilter") ? document.getElementById("auditRakFilter").value : "";
+            let clusterFilter = document.getElementById("auditClusterFilter") ? document.getElementById("auditClusterFilter").value : "";
+            if (!tableArea) return;
+
+            let printTitle = "";
+            if (mode === "SUMMARY_CLUSTER") printTitle = `RINGKASAN REKAPITULASI TOTAL KUNCI PER CLUSTER`;
+            else if (mode === "FLM") printTitle = `LEMBAR PENGECEKAN KUNCI FLM (CLUSTER: ${clusterFilter})`;
+            else if (mode === "RPL_CLUSTER") printTitle = `LEMBAR PENGECEKAN KUNCI RPL (CLUSTER: ${clusterFilter})`;
+            else printTitle = `LEMBAR PENGECEKAN KUNCI RPL (BERDASARKAN RAK: ${rakFilter})`;
+
+            let printWindow = window.open('', '', 'width=1000,height=700');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Cetak Audit Cek Fisik Kunci - BG BEKASI</title>
+                        <style>
+                            @page {
+                                size: A4 portrait;
+                                margin: 8mm;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                font-family: Arial, sans-serif;
+                                font-size: 11px;
+                                color: black;
+                                background: white;
+                            }
+                            h2, h4 {
+                                margin: 0;
+                                padding: 0;
+                                text-align: center;
+                            }
+                            .header-box {
+                                border-bottom: 2px solid black;
+                                padding-bottom: 5px;
+                                margin-bottom: 10px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                border: 1.5px solid black;
+                            }
+                            th {
+                                border: 1px solid black;
+                                padding: 5px;
+                                background-color: #f2f2f2;
+                                font-weight: bold;
+                                text-transform: uppercase;
+                                font-size: 10px;
+                            }
+                            td {
+                                border: 1px solid black;
+                                padding: 4px;
+                                font-size: 10px;
+                            }
+                            .text-center { text-align: center; }
+                            .text-left { text-align: left; }
+                            .signature-box {
+                                margin-top: 20px;
+                                display: flex;
+                                justify-content: space-between;
+                                padding: 0 50px;
+                            }
+                            .sig-col {
+                                text-align: center;
+                                width: 200px;
+                            }
+                            .sig-space {
+                                height: 50px;
+                            }
+                        </style>
+                    </head>
+                    <body onload="window.print(); window.close();">
+                        <div class="header-box">
+                            <h2>BG BEKASI - MANAGEMENT KUNCI</h2>
+                            <h4>${printTitle}</h4>
+                            <p style="text-align: right; font-size: 9px; margin: 2px 0 0 0;">Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</p>
+                        </div>
+                        ${tableArea.innerHTML}
+                        <div class="signature-box">
+                            <div class="sig-col">
+                                <p>Petugas Shift / RPL</p>
+                                <div class="sig-space"></div>
+                                <p>( .................................... )</p>
+                            </div>
+                            <div class="sig-col">
+                                <p>Supervisor Operasional</p>
+                                <div class="sig-space"></div>
+                                <p>( .................................... )</p>
+                            </div>
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         /* --- MODUL 1: CETAK BARCODE SATUAN / INPUT MANUAL --- */
@@ -1594,6 +2175,17 @@
                             </div>
                         </div>
 
+                        <div onclick="renderAuditPhysicalCheckHtml()" class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl p-2.5 bg-emerald-600 text-white rounded-xl shadow">📋</span>
+                                <span class="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-full">Audit & Opname</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Pengecekan Kunci</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Cek Kunci RPL per-RAK/Cluster serta Cek Kunci FLM per-Cluster.</p>
+                            </div>
+                        </div>
+
                         <div onclick="renderTeamMenuHtml()" class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
                             <div class="flex items-center justify-between">
                                 <span class="text-2xl p-2.5 bg-blue-600 text-white rounded-xl shadow">🌺</span>
@@ -1613,17 +2205,6 @@
                             <div>
                                 <h3 class="text-sm font-extrabold text-slate-900">Manajemen User ID & Password</h3>
                                 <p class="text-[11px] text-slate-600 mt-0.5">Tambah Admin tanpa batas, ubah User ID/password & opsi recovery Supervisor.</p>
-                            </div>
-                        </div>
-
-                        <div onclick="renderOnlineUsersHtml()" class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-2xl p-2.5 bg-emerald-600 text-white rounded-xl shadow">🟢</span>
-                                <span class="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-full">${onlineCount} Online</span>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-extrabold text-slate-900">User Sedang Online</h3>
-                                <p class="text-[11px] text-slate-600 mt-0.5">Pantau sesi aktif Admin & Supervisor.</p>
                             </div>
                         </div>
                     </div>
@@ -1987,6 +2568,9 @@
                                 <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
                                     <span>📊</span> Lihat Master Data (${totalTidCount} TID)
                                 </button>
+                                <button onclick="renderAuditPhysicalCheckHtml()" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
+                                    <span>📋</span> Menu Cek Kunci (RAK & Cluster)
+                                </button>
                                 <button onclick="renderTeamMenuHtml()" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
                                     <span>🌺</span> Cetak Kunci RPL Shift
                                 </button>
@@ -2099,7 +2683,7 @@
                                 <div class="grid grid-cols-3 gap-2">
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Rak</label>
-                                        <input type="text" id="m_rak" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center uppercase" placeholder="R-01" data-index="5">
+                                        <input type="text" id="m_rak" class="master-input w-full border border-slate-300 rounded p-1.5 text-xs bg-white text-center uppercase" placeholder="A1" data-index="5">
                                     </div>
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Baris</label>
