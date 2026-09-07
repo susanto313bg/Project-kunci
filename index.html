@@ -7,7 +7,7 @@
     
     <meta name="description" content="Sistem Informasi Monitoring dan Management Kunci Operasional BG BEKASI">
     <meta name="keywords" content="Management Kunci, BG BEKASI, Kunci RPL, Kunci FLM, Monitoring Kunci, Operasional Cabang">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
 
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230F172A'/><path d='M30 45 V32 A20 20 0 0 1 70 32 V45' fill='none' stroke='%23ffffff' stroke-width='8' stroke-linecap='round'/><rect x='22' y='42' width='56' height='44' rx='10' fill='%231E3A8A' stroke='%23ffffff' stroke-width='4'/><circle cx='50' cy='62' r='5' fill='%231e293b'/></svg>">
@@ -438,7 +438,7 @@
 
         <div class="no-print bg-gradient-to-r from-[#CBD5E1] to-[#94A3B8] px-6 py-1.5 text-xs font-bold text-[#1E293B] pl-[170px] shadow-inner border-b border-slate-400 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <span id="appVersionLabel">NEWCRO_PHP_V7 (WEB VERSION)</span>
+                <span id="appVersionLabel">NEWCRO_PHP_V7 (SECURED WEB VERSION)</span>
                 <span id="syncStatusIndicator" class="text-[10px] bg-emerald-700 text-white px-2.5 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-inner">
                     <span class="w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span> Real-Time Auto-Sync Active
                 </span>
@@ -494,6 +494,17 @@
     </div>
 
     <script>
+        // HELPER SECURITY SANITIZATION (MENCEGAH INJEKSI SCRIPT/XSS)
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         let currentUser = null;
         let batchTeamsData = {}; 
         let batchTeamMembers = {}; 
@@ -861,9 +872,9 @@
                 let config = accessRules[foundUserId];
                 
                 currentUser = {
-                    id: foundUserId,
-                    name: config.name,
-                    role: config.role,
+                    id: escapeHtml(foundUserId),
+                    name: escapeHtml(config.name),
+                    role: escapeHtml(config.role),
                     destination: config.destination || (config.role === "SUPERVISOR" ? "it_support_dashboard" : "dashboard"),
                     location: "BG BEKASI",
                     loginTime: new Date().toLocaleTimeString('id-ID')
@@ -989,7 +1000,7 @@
 
                 fileSubItemsHtml += `
                     <button onclick="${onClickAction}" class="text-left bg-slate-50 hover:bg-indigo-50 text-slate-800 font-bold py-1.5 px-2 rounded text-[11px] border border-slate-200 transition flex items-center justify-between">
-                        <span class="truncate">${doc.icon} ${doc.name}</span>
+                        <span class="truncate">${doc.icon} ${escapeHtml(doc.name)}</span>
                         <span class="text-[8px] font-black px-1 rounded ${hasFile ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-500'}">
                             ${hasFile ? '✓' : '—'}
                         </span>
@@ -1071,8 +1082,8 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 uploadedFiles[docKey] = {
-                    fileName: file.name,
-                    fileType: file.type,
+                    fileName: escapeHtml(file.name),
+                    fileType: escapeHtml(file.type),
                     fileData: e.target.result,
                     fileSize: (file.size / 1024).toFixed(1) + " KB",
                     uploadDate: new Date().toLocaleString('id-ID')
@@ -1095,7 +1106,6 @@
                 return;
             }
 
-            // Ambil ekstensi format file asli
             let ext = "";
             if (fileObj.fileName && fileObj.fileName.includes(".")) {
                 ext = fileObj.fileName.substring(fileObj.fileName.lastIndexOf("."));
@@ -1103,44 +1113,10 @@
 
             const downloadLink = document.createElement("a");
             downloadLink.href = fileObj.fileData;
-            // Nama file unduhan disesuaikan persis dengan nama tombol
             downloadLink.download = `${docName}${ext}`;
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
-        }
-
-        function printDocumentPreview(docKey) {
-            let fileObj = uploadedFiles[docKey];
-            let docInfo = DOCUMENT_LIST.find(d => d.key === docKey);
-            let docName = docInfo ? docInfo.name : docKey;
-
-            if (!fileObj || !fileObj.fileData) {
-                alert(`⚠️ Berkas "${docName}" belum diunggah oleh Supervisor.`);
-                return;
-            }
-
-            let printWindow = window.open('', '', 'width=900,height=700');
-            if (fileObj.fileType.includes("image")) {
-                printWindow.document.write(`
-                    <html>
-                        <head><title>Cetak Berkas - ${docName}</title></head>
-                        <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh;" onload="window.print(); window.close();">
-                            <img src="${fileObj.fileData}" style="max-width:100%; max-height:100vh; object-fit:contain;" />
-                        </body>
-                    </html>
-                `);
-            } else {
-                printWindow.document.write(`
-                    <html>
-                        <head><title>Cetak Berkas - ${docName}</title></head>
-                        <body style="margin:0;" onload="setTimeout(function(){ window.print(); window.close(); }, 800);">
-                            <iframe src="${fileObj.fileData}" style="width:100%; height:100vh; border:none;"></iframe>
-                        </body>
-                    </html>
-                `);
-            }
-            printWindow.document.close();
         }
 
         function renderDocumentPreviewHtml(docKey) {
@@ -1155,7 +1131,7 @@
                 if (fileObj.fileType.includes("image")) {
                     previewBodyHtml = `
                         <div class="flex items-center justify-center p-4 bg-slate-100 rounded-xl border border-slate-300 min-h-[480px]">
-                            <img src="${fileObj.fileData}" alt="${fileObj.fileName}" class="max-w-full max-h-[580px] object-contain rounded-lg shadow-lg border border-slate-200" />
+                            <img src="${fileObj.fileData}" alt="${escapeHtml(fileObj.fileName)}" class="max-w-full max-h-[580px] object-contain rounded-lg shadow-lg border border-slate-200" />
                         </div>
                     `;
                 } else {
@@ -1172,7 +1148,7 @@
                         <div>
                             <h3 class="text-base font-extrabold text-slate-800">BERKAS BELUM TERSEDIA</h3>
                             <p class="text-xs text-slate-500 mt-1 max-w-md">
-                                Berkas <strong class="text-indigo-900">${docInfo.name}</strong> belum diunggah ke dalam sistem oleh Supervisor.
+                                Berkas <strong class="text-indigo-900">${escapeHtml(docInfo.name)}</strong> belum diunggah ke dalam sistem oleh Supervisor.
                             </p>
                         </div>
                         ${isSpv ? `
@@ -1195,13 +1171,12 @@
                         <div class="flex items-center gap-2">
                             <span class="text-2xl">${docInfo.icon}</span>
                             <div>
-                                <span class="font-black text-slate-900 text-base block">${docInfo.name}</span>
-                                <span class="text-xs text-slate-500 font-semibold">${docInfo.desc}</span>
+                                <span class="font-black text-slate-900 text-base block">${escapeHtml(docInfo.name)}</span>
+                                <span class="text-xs text-slate-500 font-semibold">${escapeHtml(docInfo.desc)}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Hanya menyisakan tombol Upload/Ganti Berkas untuk Supervisor -->
                     <div class="flex flex-wrap items-center gap-2">
                         ${isSpv ? `
                             <label class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs py-2 px-3.5 rounded-lg shadow cursor-pointer transition flex items-center gap-1.5 active:scale-95">
@@ -1214,9 +1189,9 @@
 
                 ${hasFile ? `
                     <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-4 flex flex-wrap justify-between items-center text-xs text-indigo-950 font-bold gap-2">
-                        <span>📄 File Name: <strong class="text-blue-900">${fileObj.fileName}</strong></span>
-                        <span>📅 Diunggah: <strong>${fileObj.uploadDate}</strong></span>
-                        <span>📊 Ukuran: <strong>${fileObj.fileSize}</strong></span>
+                        <span>📄 File Name: <strong class="text-blue-900">${escapeHtml(fileObj.fileName)}</strong></span>
+                        <span>📅 Diunggah: <strong>${escapeHtml(fileObj.uploadDate)}</strong></span>
+                        <span>📊 Ukuran: <strong>${escapeHtml(fileObj.fileSize)}</strong></span>
                     </div>
                 ` : ''}
 
@@ -1247,7 +1222,7 @@
 
             let clusterOptionsHtml = `<option value="ALL">-- SEMUA CLUSTER (TOTAL ${keys.length} TID) --</option>`;
             clusters.forEach(c => {
-                clusterOptionsHtml += `<option value="${c}">CLUSTER ${c}</option>`;
+                clusterOptionsHtml += `<option value="${escapeHtml(c)}">CLUSTER ${escapeHtml(c)}</option>`;
             });
 
             content.innerHTML = `
@@ -1311,7 +1286,6 @@
                     </div>
 
                     <div id="auditPrintArea" class="bg-white p-2">
-                        <!-- PETUNJUK INDIKASI KUNCI KOSONG (DISEMBUNYIKAN SECARA DEFAULT) -->
                         <div id="rackOverviewBox" class="hidden mb-4 p-3 border-2 border-black bg-slate-50 text-xs">
                             <div class="font-extrabold uppercase mb-1 text-slate-900 border-b border-black pb-1">
                                 🔑 PETUNJUK VERIFIKASI KELENGKAPAN RAK SEBELUM MENINGGALKAN SHIFT:
@@ -1489,7 +1463,7 @@
                     html += `
                         <tr class="${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-slate-900">
                             <td class="border border-slate-400 p-2.5 text-center font-bold">${idx + 1}</td>
-                            <td class="border border-slate-400 p-2.5 font-extrabold text-blue-950 uppercase">${item.name}</td>
+                            <td class="border border-slate-400 p-2.5 font-extrabold text-blue-950 uppercase">${escapeHtml(item.name)}</td>
                             <td class="border border-slate-400 p-2.5 text-center font-extrabold text-blue-900 bg-blue-50/50">${item.rpl} Kunci</td>
                             <td class="border border-slate-400 p-2.5 text-center font-extrabold text-emerald-900 bg-emerald-50/50">${item.flm} Kunci</td>
                             <td class="border border-slate-400 p-2.5 text-center font-black text-amber-950 bg-amber-100/60">${item.total} Kunci</td>
@@ -1517,7 +1491,7 @@
 
             if (mode === "FLM") {
                 let clusterVal = document.getElementById("auditClusterFilter") ? document.getElementById("auditClusterFilter").value : "ALL";
-                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI FLM (CLUSTER: ${clusterVal})`;
+                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI FLM (CLUSTER: ${escapeHtml(clusterVal)})`;
                 
                 if (theader) {
                     theader.innerHTML = `
@@ -1531,7 +1505,7 @@
                 }
             } else if (mode === "RPL_CLUSTER") {
                 let clusterVal = document.getElementById("auditClusterFilter") ? document.getElementById("auditClusterFilter").value : "ALL";
-                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI RPL (CLUSTER: ${clusterVal})`;
+                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI RPL (CLUSTER: ${escapeHtml(clusterVal)})`;
 
                 if (theader) {
                     theader.innerHTML = `
@@ -1549,7 +1523,7 @@
                 }
             } else {
                 let rakVal = document.getElementById("auditRakFilter") ? document.getElementById("auditRakFilter").value : "ALL";
-                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI RPL (RAK: ${rakVal})`;
+                if (titleHeader) titleHeader.innerText = `📋 HASIL PENGECEKAN KUNCI RPL (RAK: ${escapeHtml(rakVal)})`;
 
                 if (theader) {
                     theader.innerHTML = `
@@ -1580,9 +1554,9 @@
                     html += `
                         <tr class="${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-slate-900">
                             <td class="border border-slate-400 p-2 text-center font-bold">${idx + 1}</td>
-                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900">${tid}</td>
-                            <td class="border border-slate-400 p-2 font-bold">${item.lokasi || '-'}</td>
-                            <td class="border border-slate-400 p-2 text-center font-mono font-bold">${item.flm || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900">${escapeHtml(tid)}</td>
+                            <td class="border border-slate-400 p-2 font-bold">${escapeHtml(item.lokasi || '-')}</td>
+                            <td class="border border-slate-400 p-2 text-center font-mono font-bold">${escapeHtml(item.flm || '-')}</td>
                             <td class="border border-slate-400 p-2 text-center font-bold text-slate-400"> [ &nbsp; ] LENGKAP </td>
                             <td class="border border-slate-400 p-2 text-left text-slate-400 italic"> </td>
                         </tr>
@@ -1591,13 +1565,13 @@
                     html += `
                         <tr class="${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-slate-900">
                             <td class="border border-slate-400 p-2 text-center font-bold">${idx + 1}</td>
-                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900">${tid}</td>
-                            <td class="border border-slate-400 p-2 font-bold">${item.lokasi || '-'}</td>
-                            <td class="border border-slate-400 p-2 text-center font-semibold text-amber-900">${item.merk || item.cluster || '-'}</td>
-                            <td class="border border-slate-400 p-2 text-center font-mono">${item.rpl || '-'}</td>
-                            <td class="border border-slate-400 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/40">${item.rak || '-'}</td>
-                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900 bg-blue-50/40">${item.baris || '-'}</td>
-                            <td class="border border-slate-400 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/40">${item.kolom || '-'}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900">${escapeHtml(tid)}</td>
+                            <td class="border border-slate-400 p-2 font-bold">${escapeHtml(item.lokasi || '-')}</td>
+                            <td class="border border-slate-400 p-2 text-center font-semibold text-amber-900">${escapeHtml(item.merk || item.cluster || '-')}</td>
+                            <td class="border border-slate-400 p-2 text-center font-mono">${escapeHtml(item.rpl || '-')}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-indigo-900 bg-indigo-50/40">${escapeHtml(item.rak || '-')}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-blue-900 bg-blue-50/40">${escapeHtml(item.baris || '-')}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-emerald-900 bg-emerald-50/40">${escapeHtml(item.kolom || '-')}</td>
                             <td class="border border-slate-400 p-2 text-center font-bold text-slate-400"> [ &nbsp; ] OK </td>
                             <td class="border border-slate-400 p-2 text-left text-slate-400 italic"> </td>
                         </tr>
@@ -1718,67 +1692,22 @@
                     <head>
                         <title>Cetak Audit Cek Fisik Kunci - BG BEKASI</title>
                         <style>
-                            @page {
-                                size: A4 portrait;
-                                margin: 8mm;
-                            }
-                            body {
-                                margin: 0;
-                                padding: 0;
-                                font-family: Arial, sans-serif;
-                                font-size: 11px;
-                                color: black;
-                                background: white;
-                            }
-                            h2, h4 {
-                                margin: 0;
-                                padding: 0;
-                                text-align: center;
-                            }
-                            .header-box {
-                                border-bottom: 2px solid black;
-                                padding-bottom: 5px;
-                                margin-bottom: 10px;
-                            }
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                                border: 1.5px solid black;
-                            }
-                            th {
-                                border: 1px solid black;
-                                padding: 5px;
-                                background-color: #f2f2f2;
-                                font-weight: bold;
-                                text-transform: uppercase;
-                                font-size: 10px;
-                            }
-                            td {
-                                border: 1px solid black;
-                                padding: 4px;
-                                font-size: 10px;
-                            }
-                            .text-center { text-align: center; }
-                            .text-left { text-align: left; }
-                            .signature-box {
-                                margin-top: 20px;
-                                display: flex;
-                                justify-content: space-between;
-                                padding: 0 50px;
-                            }
-                            .sig-col {
-                                text-align: center;
-                                width: 200px;
-                            }
-                            .sig-space {
-                                height: 50px;
-                            }
+                            @page { size: A4 portrait; margin: 8mm; }
+                            body { margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 11px; color: black; background: white; }
+                            h2, h4 { margin: 0; padding: 0; text-align: center; }
+                            .header-box { border-bottom: 2px solid black; padding-bottom: 5px; margin-bottom: 10px; }
+                            table { width: 100%; border-collapse: collapse; border: 1.5px solid black; }
+                            th { border: 1px solid black; padding: 5px; background-color: #f2f2f2; font-weight: bold; text-transform: uppercase; font-size: 10px; }
+                            td { border: 1px solid black; padding: 4px; font-size: 10px; }
+                            .signature-box { margin-top: 20px; display: flex; justify-content: space-between; padding: 0 50px; }
+                            .sig-col { text-align: center; width: 200px; }
+                            .sig-space { height: 50px; }
                         </style>
                     </head>
                     <body onload="window.print(); window.close();">
                         <div class="header-box">
                             <h2>BG BEKASI - MANAGEMENT KUNCI</h2>
-                            <h4>${printTitle}</h4>
+                            <h4>${escapeHtml(printTitle)}</h4>
                             <p style="text-align: right; font-size: 9px; margin: 2px 0 0 0;">Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</p>
                         </div>
                         ${tableArea.innerHTML}
@@ -1827,7 +1756,7 @@
 
                         <div id="containerTidInput">
                             <label class="block text-xs font-bold text-slate-700 mb-1">Nomor TID ATM:</label>
-                            <input type="text" id="barcodeTidInput" value="${defaultTid}" placeholder="Contoh: 70075" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-blue-900 uppercase focus:ring-2 focus:ring-emerald-500 outline-none" oninput="generateSingleBarcodePreview()">
+                            <input type="text" id="barcodeTidInput" value="${escapeHtml(defaultTid)}" placeholder="Contoh: 70075" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold text-blue-900 uppercase focus:ring-2 focus:ring-emerald-500 outline-none" oninput="generateSingleBarcodePreview()">
                         </div>
 
                         <div id="containerManualInput" class="hidden">
@@ -1931,7 +1860,7 @@
                     width: 1.0,
                     margin: 0
                 });
-                if (textLabel) textLabel.innerText = barcodeVal;
+                if (textLabel) textLabel.innerText = escapeHtml(barcodeVal);
             } catch (e) {
                 console.error("Gagal generate barcode:", e);
             }
@@ -1947,45 +1876,11 @@
                     <head>
                         <title>Cetak Label Barcode Satuan</title>
                         <style>
-                            @page {
-                                size: 4.5cm 1.7cm portrait;
-                                margin: 0;
-                            }
-                            body {
-                                margin: 0;
-                                padding: 0;
-                                display: flex;
-                                items-center: center;
-                                justify-content: center;
-                                height: 1.7cm;
-                                background: white;
-                            }
-                            .barcode-label-box {
-                                width: 4.5cm;
-                                height: 1.7cm;
-                                border: 1px solid #000000;
-                                outline: 1px solid #000000;
-                                outline-offset: -3px;
-                                padding: 2px;
-                                box-sizing: border-box;
-                                display: flex;
-                                flex-direction: column;
-                                align-items: center;
-                                justify-content: center;
-                                overflow: hidden;
-                            }
-                            .barcode-label-box svg {
-                                max-width: 100% !important;
-                                height: 30px !important;
-                            }
-                            .barcode-label-text {
-                                font-family: 'Times New Roman', Times, serif;
-                                font-weight: bold;
-                                font-size: 11px;
-                                color: #000000;
-                                letter-spacing: 0.5px;
-                                margin-top: -2px;
-                            }
+                            @page { size: 4.5cm 1.7cm portrait; margin: 0; }
+                            body { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 1.7cm; background: white; }
+                            .barcode-label-box { width: 4.5cm; height: 1.7cm; border: 1px solid #000000; outline: 1px solid #000000; outline-offset: -3px; padding: 2px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+                            .barcode-label-box svg { max-width: 100% !important; height: 30px !important; }
+                            .barcode-label-text { font-family: 'Times New Roman', Times, serif; font-weight: bold; font-size: 11px; color: #000000; letter-spacing: 0.5px; margin-top: -2px; }
                         </style>
                     </head>
                     <body onload="window.print(); window.close();">
@@ -1996,7 +1891,7 @@
             printWindow.document.close();
         }
 
-        /* --- MODUL 2: CETAK BARCODE DINAMIS (BEBERAPA TID & FLEKSIBEL) --- */
+        /* --- MODUL 2: CETAK BARCODE DINAMIS --- */
         function renderDynamicBarcodePrintHtml() {
             const content = document.getElementById("contentArea");
 
@@ -2087,7 +1982,7 @@
                 labelsHtml += `
                     <div class="barcode-label-box">
                         ${tempSvg.outerHTML}
-                        <div class="barcode-label-text">${barcodeVal}</div>
+                        <div class="barcode-label-text">${escapeHtml(barcodeVal)}</div>
                     </div>
                 `;
             });
@@ -2098,50 +1993,12 @@
                     <head>
                         <title>Cetak Barcode Dinamis</title>
                         <style>
-                            @page {
-                                size: A4 portrait;
-                                margin: 5mm;
-                            }
-                            body {
-                                margin: 0;
-                                padding: 0;
-                                background: white;
-                                font-family: sans-serif;
-                            }
-                            .barcode-grid-print {
-                                display: grid;
-                                grid-template-columns: repeat(4, 4.5cm);
-                                gap: 4mm;
-                                justify-content: center;
-                                padding-top: 5mm;
-                            }
-                            .barcode-label-box {
-                                width: 4.5cm;
-                                height: 1.7cm;
-                                border: 1px solid #000000;
-                                outline: 1px solid #000000;
-                                outline-offset: -3px;
-                                padding: 2px;
-                                box-sizing: border-box;
-                                display: flex;
-                                flex-direction: column;
-                                align-items: center;
-                                justify-content: center;
-                                overflow: hidden;
-                                page-break-inside: avoid;
-                            }
-                            .barcode-label-box svg {
-                                max-width: 100% !important;
-                                height: 30px !important;
-                            }
-                            .barcode-label-text {
-                                font-family: 'Times New Roman', Times, serif;
-                                font-weight: bold;
-                                font-size: 11px;
-                                color: #000000;
-                                letter-spacing: 0.5px;
-                                margin-top: -2px;
-                            }
+                            @page { size: A4 portrait; margin: 5mm; }
+                            body { margin: 0; padding: 0; background: white; font-family: sans-serif; }
+                            .barcode-grid-print { display: grid; grid-template-columns: repeat(4, 4.5cm); gap: 4mm; justify-content: center; padding-top: 5mm; }
+                            .barcode-label-box { width: 4.5cm; height: 1.7cm; border: 1px solid #000000; outline: 1px solid #000000; outline-offset: -3px; padding: 2px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; page-break-inside: avoid; }
+                            .barcode-label-box svg { max-width: 100% !important; height: 30px !important; }
+                            .barcode-label-text { font-family: 'Times New Roman', Times, serif; font-weight: bold; font-size: 11px; color: #000000; letter-spacing: 0.5px; margin-top: -2px; }
                         </style>
                     </head>
                     <body onload="window.print(); window.close();">
@@ -2168,7 +2025,7 @@
 
             let clusterOptionsHtml = `<option value="ALL">-- SEMUA CLUSTER (TOTAL ${keys.length} TID) --</option>`;
             clusters.forEach(c => {
-                clusterOptionsHtml += `<option value="${c}">CLUSTER ${c}</option>`;
+                clusterOptionsHtml += `<option value="${escapeHtml(c)}">CLUSTER ${escapeHtml(c)}</option>`;
             });
 
             content.innerHTML = `
@@ -2246,10 +2103,10 @@
                 let item = masterDatabase[tid] || {};
                 html += `
                     <label class="bg-white border border-slate-300 rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:bg-amber-50 transition shadow-sm">
-                        <input type="checkbox" class="batch-tid-checkbox w-4 h-4 text-emerald-600 rounded" value="${tid}" checked onchange="updateBatchSelectedCount()">
+                        <input type="checkbox" class="batch-tid-checkbox w-4 h-4 text-emerald-600 rounded" value="${escapeHtml(tid)}" checked onchange="updateBatchSelectedCount()">
                         <div class="overflow-hidden">
-                            <div class="font-extrabold text-xs text-slate-900">${tid}</div>
-                            <div class="text-[10px] text-slate-500 truncate">${item.lokasi || '-'}</div>
+                            <div class="font-extrabold text-xs text-slate-900">${escapeHtml(tid)}</div>
+                            <div class="text-[10px] text-slate-500 truncate">${escapeHtml(item.lokasi || '-')}</div>
                         </div>
                     </label>
                 `;
@@ -2302,7 +2159,7 @@
                 labelsHtml += `
                     <div class="barcode-label-box">
                         ${tempSvg.outerHTML}
-                        <div class="barcode-label-text">${barcodeVal}</div>
+                        <div class="barcode-label-text">${escapeHtml(barcodeVal)}</div>
                     </div>
                 `;
             });
@@ -2313,50 +2170,12 @@
                     <head>
                         <title>Cetak Label Barcode Cluster</title>
                         <style>
-                            @page {
-                                size: A4 portrait;
-                                margin: 5mm;
-                            }
-                            body {
-                                margin: 0;
-                                padding: 0;
-                                background: white;
-                                font-family: sans-serif;
-                            }
-                            .barcode-grid-print {
-                                display: grid;
-                                grid-template-columns: repeat(4, 4.5cm);
-                                gap: 4mm;
-                                justify-content: center;
-                                padding-top: 5mm;
-                            }
-                            .barcode-label-box {
-                                width: 4.5cm;
-                                height: 1.7cm;
-                                border: 1px solid #000000;
-                                outline: 1px solid #000000;
-                                outline-offset: -3px;
-                                padding: 2px;
-                                box-sizing: border-box;
-                                display: flex;
-                                flex-direction: column;
-                                align-items: center;
-                                justify-content: center;
-                                overflow: hidden;
-                                page-break-inside: avoid;
-                            }
-                            .barcode-label-box svg {
-                                max-width: 100% !important;
-                                height: 30px !important;
-                            }
-                            .barcode-label-text {
-                                font-family: 'Times New Roman', Times, serif;
-                                font-weight: bold;
-                                font-size: 11px;
-                                color: #000000;
-                                letter-spacing: 0.5px;
-                                margin-top: -2px;
-                            }
+                            @page { size: A4 portrait; margin: 5mm; }
+                            body { margin: 0; padding: 0; background: white; font-family: sans-serif; }
+                            .barcode-grid-print { display: grid; grid-template-columns: repeat(4, 4.5cm); gap: 4mm; justify-content: center; padding-top: 5mm; }
+                            .barcode-label-box { width: 4.5cm; height: 1.7cm; border: 1px solid #000000; outline: 1px solid #000000; outline-offset: -3px; padding: 2px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; page-break-inside: avoid; }
+                            .barcode-label-box svg { max-width: 100% !important; height: 30px !important; }
+                            .barcode-label-text { font-family: 'Times New Roman', Times, serif; font-weight: bold; font-size: 11px; color: #000000; letter-spacing: 0.5px; margin-top: -2px; }
                         </style>
                     </head>
                     <body onload="window.print(); window.close();">
@@ -2371,7 +2190,6 @@
 
         function renderItSupportDashboard() {
             const content = document.getElementById("contentArea");
-            let onlineCount = Object.keys(activeUserSessions).length;
             let totalRoles = Object.keys(accessRules).length;
 
             content.innerHTML = `
@@ -2457,12 +2275,12 @@
                 rulesListHtml += `
                     <tr class="border-b border-slate-200 ${isSupervisor ? 'bg-amber-50/60 font-bold' : ''}">
                         <td class="p-3 text-center text-slate-700 font-normal text-sm">${indexNo++}</td>
-                        <td class="p-3 font-mono text-slate-900 text-sm font-normal">${uId}</td>
-                        <td class="p-3 font-mono text-slate-900 text-sm font-normal">${data.password || '-'}</td>
+                        <td class="p-3 font-mono text-slate-900 text-sm font-normal">${escapeHtml(uId)}</td>
+                        <td class="p-3 font-mono text-slate-900 text-sm font-normal">${escapeHtml(data.password || '-')}</td>
                         <td class="p-3 text-sm">
                             ${isSupervisor ? `<span class="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-full border border-amber-600 shadow-sm">👑 SUPERVISOR</span>` : `<span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-blue-200">ADMIN</span>`}
                         </td>
-                        <td class="p-3 text-slate-800 font-normal text-sm">${data.name}</td>
+                        <td class="p-3 text-slate-800 font-normal text-sm">${escapeHtml(data.name)}</td>
                         <td class="p-3 text-center space-x-1">
                             <button onclick="editUserIdPrompt('${uId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Edit User ID</button>
                             <button onclick="editPasswordPrompt('${uId}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">Ubah Password</button>
@@ -2660,9 +2478,9 @@
                     rowsHtml += `
                         <tr class="border-b border-slate-200">
                             <td class="p-3 text-center text-slate-700 text-sm font-normal">${idx + 1}</td>
-                            <td class="p-3 text-slate-900 text-sm font-normal">${id} - ${sess.name}</td>
-                            <td class="p-3 text-sm font-normal ${sess.role === 'SUPERVISOR' ? 'text-amber-700 font-bold' : 'text-blue-800'}">${sess.role}</td>
-                            <td class="p-3 text-center font-mono text-emerald-700 text-sm font-normal">🟢 ONLINE (Sejak ${sess.loginTime})</td>
+                            <td class="p-3 text-slate-900 text-sm font-normal">${escapeHtml(id)} - ${escapeHtml(sess.name)}</td>
+                            <td class="p-3 text-sm font-normal ${sess.role === 'SUPERVISOR' ? 'text-amber-700 font-bold' : 'text-blue-800'}">${escapeHtml(sess.role)}</td>
+                            <td class="p-3 text-center font-mono text-emerald-700 text-sm font-normal">🟢 ONLINE (Sejak ${escapeHtml(sess.loginTime)})</td>
                         </tr>
                     `;
                 });
@@ -3085,14 +2903,14 @@
                 html += `
                     <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 transition text-sm">
                         <td class="border border-slate-400 p-2.5 text-center text-slate-700 font-normal whitespace-nowrap">${i + 1}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 font-normal whitespace-nowrap">${tid}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-slate-800 font-normal col-lokasi whitespace-nowrap">${item.lokasi || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-center text-amber-950 font-normal col-merk whitespace-nowrap">${merkVal}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-rpl whitespace-nowrap">${item.rpl || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-flm whitespace-nowrap">${item.flm || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-indigo-950 bg-indigo-50/50 font-normal whitespace-nowrap">${item.rak || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 bg-blue-50/50 font-normal whitespace-nowrap">${item.baris || '-'}</td>
-                        <td class="border border-slate-400 p-2.5 text-center text-emerald-950 bg-emerald-50/50 font-normal whitespace-nowrap">${item.kolom || '-'}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 font-normal whitespace-nowrap">${escapeHtml(tid)}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-slate-800 font-normal col-lokasi whitespace-nowrap">${escapeHtml(item.lokasi || '-')}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-center text-amber-950 font-normal col-merk whitespace-nowrap">${escapeHtml(merkVal)}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-rpl whitespace-nowrap">${escapeHtml(item.rpl || '-')}</td>
+                        <td class="border border-slate-400 p-2.5 px-3 text-center font-mono font-normal col-flm whitespace-nowrap">${escapeHtml(item.flm || '-')}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-indigo-950 bg-indigo-50/50 font-normal whitespace-nowrap">${escapeHtml(item.rak || '-')}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-blue-950 bg-blue-50/50 font-normal whitespace-nowrap">${escapeHtml(item.baris || '-')}</td>
+                        <td class="border border-slate-400 p-2.5 text-center text-emerald-950 bg-emerald-50/50 font-normal whitespace-nowrap">${escapeHtml(item.kolom || '-')}</td>
                         <td class="border border-slate-400 p-1.5 text-center whitespace-nowrap">
                             <button onclick="renderSingleBarcodePrintHtml('${tid}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded shadow transition">
                                 🏷️ Label
@@ -3375,7 +3193,7 @@
                 html += `
                     <div class="${theme.cardBg} border rounded-2xl p-4 shadow-xl flex flex-col gap-3">
                         <div class="flex justify-between items-center pb-2 border-b ${theme.titleColor}">
-                            <span class="font-black text-sm tracking-wider uppercase">SHIFT ${groupName}</span>
+                            <span class="font-black text-sm tracking-wider uppercase">SHIFT ${escapeHtml(groupName)}</span>
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20">${teams.length} Team</span>
                         </div>
                         <div class="grid grid-cols-1 gap-2">
@@ -3386,7 +3204,7 @@
                     let btnStyle = isFilled ? theme.btnFilled : theme.btnBase;
                     html += `
                         <button onclick="openTeamInput('${team}')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex justify-between items-center ${btnStyle}">
-                            <span>${team}</span>
+                            <span>${escapeHtml(team)}</span>
                             ${isFilled ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${theme.badgeColor}">${count} TID</span>` : `<span class="text-[10px] opacity-60">Kosong</span>`}
                         </button>
                     `;
@@ -3430,7 +3248,7 @@
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
                     <div class="flex items-center gap-2">
                         <button onclick="saveAndReturnMenu('${teamName}')" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
-                        <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${teamName}</span>
+                        <span class="text-xs text-slate-700 font-bold ml-2">INPUT TID - ${escapeHtml(teamName)}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="saveTeamAndPrint('${teamName}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak Team Ini</button>
@@ -3446,7 +3264,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2" class="bg-gradient-to-r from-amber-500 to-orange-500 border border-slate-400 p-1.5 text-left font-extrabold">
-                                            <input type="text" id="inputTeamMember" value="${previousMemberName}" placeholder="NAMA PETUGAS" class="w-full bg-transparent text-slate-900 font-extrabold placeholder-slate-800 px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="handleTidInput('${teamName}')">
+                                            <input type="text" id="inputTeamMember" value="${escapeHtml(previousMemberName)}" placeholder="NAMA PETUGAS" class="w-full bg-transparent text-slate-900 font-extrabold placeholder-slate-800 px-1 py-0.5 border-none outline-none text-sm uppercase text-center" oninput="handleTidInput('${teamName}')">
                                         </th>
                                     </tr>
                                     <tr class="bg-white text-black font-extrabold border border-slate-400">
@@ -3462,7 +3280,7 @@
                     <tr>
                         <td class="border border-slate-400 p-1 text-center text-slate-800 text-xs bg-slate-100 font-normal">${i + 1}</td>
                         <td class="border border-slate-400 p-0.5 cell-container cursor-pointer" data-index="${i}">
-                            <input type="text" maxlength="25" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent font-normal text-slate-900 uppercase" value="${val}" data-index="${i}" oninput="handleTidInput('${teamName}')">
+                            <input type="text" maxlength="25" class="tid-input w-full px-1 py-0.5 border-none text-sm text-center outline-none bg-transparent font-normal text-slate-900 uppercase" value="${escapeHtml(val)}" data-index="${i}" oninput="handleTidInput('${teamName}')">
                         </td>
                     </tr>
                 `;
@@ -3492,9 +3310,9 @@
                                 <tr>
                                     <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
                                         <div class="flex items-center justify-center gap-8">
-                                            <span>${teamName}</span>
+                                            <span>${escapeHtml(teamName)}</span>
                                             <span class="text-slate-900 font-extrabold text-sm uppercase">
-                                                CUSTODY : <span id="previewMemberName">${previousMemberName || '-'}</span>
+                                                CUSTODY : <span id="previewMemberName">${escapeHtml(previousMemberName) || '-'}</span>
                                             </span>
                                         </div>
                                     </th>
@@ -3523,14 +3341,14 @@
                 html += `
                     <tr class="${i % 2 === 0 ? 'bg-slate-50' : 'bg-white'} text-xs font-normal" id="preview-row-${i}" style="${tid ? '' : 'display: none;'}">
                         <td class="border border-black p-2 col-no text-slate-900 font-normal">${i + 1}</td>
-                        <td class="border border-black p-2 col-tid text-slate-950 font-normal">${tid}</td>
-                        <td class="border border-black p-2 col-lokasi text-slate-950 font-normal">${master.lokasi || `ATM-${tid}`}</td>
-                        <td class="border border-black p-2 col-merk text-slate-950 font-normal">${merkVal}</td>
-                        <td class="border border-black p-2 col-rpl font-mono font-normal">${master.rpl || `RPL-${tid}-99`}</td>
-                        <td class="border border-black p-2 col-flm font-mono font-normal">${master.flm || ''}</td>
-                        <td class="border border-black p-2 col-rak text-slate-900 font-normal">${master.rak || ''}</td>
-                        <td class="border border-black p-2 col-baris text-slate-900 font-normal">${master.baris || ''}</td>
-                        <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${master.kolom || ''}</td>
+                        <td class="border border-black p-2 col-tid text-slate-950 font-normal">${escapeHtml(tid)}</td>
+                        <td class="border border-black p-2 col-lokasi text-slate-950 font-normal">${escapeHtml(master.lokasi || `ATM-${tid}`)}</td>
+                        <td class="border border-black p-2 col-merk text-slate-950 font-normal">${escapeHtml(merkVal)}</td>
+                        <td class="border border-black p-2 col-rpl font-mono font-normal">${escapeHtml(master.rpl || `RPL-${tid}-99`)}</td>
+                        <td class="border border-black p-2 col-flm font-mono font-normal">${escapeHtml(master.flm || '')}</td>
+                        <td class="border border-black p-2 col-rak text-slate-900 font-normal">${escapeHtml(master.rak || '')}</td>
+                        <td class="border border-black p-2 col-baris text-slate-900 font-normal">${escapeHtml(master.baris || '')}</td>
+                        <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${escapeHtml(master.kolom || '')}</td>
                         <td class="border border-black p-2 col-ket text-slate-900 font-normal"></td>
                         <td class="border border-black p-2 col-no text-slate-900 font-normal"></td>
                     </tr>
@@ -3948,14 +3766,14 @@
                 rowsHtml += `
                     <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} hover:bg-amber-50 text-xs">
                         <td class="border border-black p-2 col-no text-slate-900 font-normal">${rIdx + 1}</td>
-                        <td class="border border-black p-2 ${cellClass}">${row.tid}</td>
-                        <td class="border border-black p-2 col-lokasi text-slate-950 ${lokasiClass}">${row.lokasi}</td>
-                        <td class="border border-black p-2 col-merk text-slate-950 font-normal">${row.merk}</td>
-                        <td class="border border-black p-2 col-rpl font-mono font-normal">${row.rpl}</td>
-                        <td class="border border-black p-2 col-flm font-mono font-normal">${row.flm}</td>
-                        <td class="border border-black p-2 col-rak text-slate-900 font-normal">${row.rak}</td>
-                        <td class="border border-black p-2 col-baris text-slate-900 font-normal">${row.baris}</td>
-                        <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${row.kolom}</td>
+                        <td class="border border-black p-2 ${cellClass}">${escapeHtml(row.tid)}</td>
+                        <td class="border border-black p-2 col-lokasi text-slate-950 ${lokasiClass}">${escapeHtml(row.lokasi)}</td>
+                        <td class="border border-black p-2 col-merk text-slate-950 font-normal">${escapeHtml(row.merk)}</td>
+                        <td class="border border-black p-2 col-rpl font-mono font-normal">${escapeHtml(row.rpl)}</td>
+                        <td class="border border-black p-2 col-flm font-mono font-normal">${escapeHtml(row.flm)}</td>
+                        <td class="border border-black p-2 col-rak text-slate-900 font-normal">${escapeHtml(row.rak)}</td>
+                        <td class="border border-black p-2 col-baris text-slate-900 font-normal">${escapeHtml(row.baris)}</td>
+                        <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${escapeHtml(row.kolom)}</td>
                         <td class="border border-black p-2 col-ket font-normal"></td>
                         <td class="border border-black p-2 col-no font-normal"></td>
                     </tr>
@@ -4031,9 +3849,9 @@
                             <tr>
                                 <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
                                     <div class="flex items-center justify-center gap-8">
-                                        <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
+                                        <span class="font-black text-lg text-slate-900 tracking-wider">${escapeHtml(item.team_name)}</span>
                                         <span class="text-slate-900 font-extrabold uppercase text-sm tracking-wide">
-                                            CUSTODY : ${item.member_name}
+                                            CUSTODY : ${escapeHtml(item.member_name)}
                                         </span>
                                     </div>
                                 </th>
@@ -4130,14 +3948,14 @@
                     rowsHtml += `
                         <tr class="${rIdx % 2 === 0 ? 'bg-slate-50' : 'bg-white'} text-xs">
                             <td class="border border-black p-2 col-no text-slate-900 font-normal">${rIdx + 1}</td>
-                            <td class="border border-black p-2 ${cellClass}">${row.tid}</td>
-                            <td class="border border-black p-2 col-lokasi text-slate-950 ${lokasiClass}">${row.lokasi}</td>
-                            <td class="border border-black p-2 col-merk text-slate-950 font-normal">${row.merk}</td>
-                            <td class="border border-black p-2 col-rpl font-mono font-normal">${row.rpl}</td>
-                            <td class="border border-black p-2 col-flm font-mono font-normal">${row.flm}</td>
-                            <td class="border border-black p-2 col-rak text-slate-900 font-normal">${row.rak}</td>
-                            <td class="border border-black p-2 col-baris text-slate-900 font-normal">${row.baris}</td>
-                            <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${row.kolom}</td>
+                            <td class="border border-black p-2 ${cellClass}">${escapeHtml(row.tid)}</td>
+                            <td class="border border-black p-2 col-lokasi text-slate-950 ${lokasiClass}">${escapeHtml(row.lokasi)}</td>
+                            <td class="border border-black p-2 col-merk text-slate-950 font-normal">${escapeHtml(row.merk)}</td>
+                            <td class="border border-black p-2 col-rpl font-mono font-normal">${escapeHtml(row.rpl)}</td>
+                            <td class="border border-black p-2 col-flm font-mono font-normal">${escapeHtml(row.flm)}</td>
+                            <td class="border border-black p-2 col-rak text-slate-900 font-normal">${escapeHtml(row.rak)}</td>
+                            <td class="border border-black p-2 col-baris text-slate-900 font-normal">${escapeHtml(row.baris)}</td>
+                            <td class="border border-black p-2 col-kolom text-slate-900 font-normal">${escapeHtml(row.kolom)}</td>
                             <td class="border border-black p-2 col-ket font-normal"></td>
                             <td class="border border-black p-2 col-no font-normal"></td>
                         </tr>
@@ -4151,9 +3969,9 @@
                                 <tr>
                                     <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
                                         <div class="flex items-center justify-center gap-8">
-                                            <span class="font-black text-lg text-slate-900 tracking-wider">${item.team_name}</span>
+                                            <span class="font-black text-lg text-slate-900 tracking-wider">${escapeHtml(item.team_name)}</span>
                                             <span class="text-slate-900 font-extrabold uppercase text-sm tracking-wide">
-                                                CUSTODY : ${item.member_name}
+                                                CUSTODY : ${escapeHtml(item.member_name)}
                                             </span>
                                         </div>
                                     </th>
