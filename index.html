@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-        /* CSS Orientasi & Layout Cetak Dynamic (A4 Portrait Center-Up Default Fit A4) */
+        /* CSS Orientasi & Layout Cetak Dynamic */
         @page print-portrait {
             size: A4 portrait;
             margin: 5mm auto 0 auto;
@@ -494,7 +494,10 @@
     </div>
 
     <script>
-        // HELPER SECURITY SANITIZATION (MENCEGAH INJEKSI SCRIPT/XSS)
+        // PASTI KAN MEMASUKKAN WEB APP URL GOOGLE APPS SCRIPT MILIKMU DI SINI:
+        const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxY5o99xZrUXKY_CHWJpah8BcTJN58RvgJd8_nB0Ez2ulDJWrOeLgPLgIVcmvGzHxlNrg/exec";
+
+        // HELPER SECURITY SANITIZATION
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -539,7 +542,6 @@
 
         let accessRules = JSON.parse(JSON.stringify(DEFAULT_ACCESS_RULES));
         let activeUserSessions = {};
-        const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxY5o99xZrUXKY_CHWJpah8BcTJN58RvgJd8_nB0Ez2ulDJWrOeLgPLgIVcmvGzHxlNrg/exec";
 
         function refreshCurrentDashboard() {
             loadLocalStorageData();
@@ -845,6 +847,7 @@
             if (pwdInput) pwdInput.focus();
         }
 
+        /* --- FUNGSI LOGIN DENGAN SERVER GOOGLE APPS SCRIPT --- */
         async function handleLogin() {
             const userInput = document.getElementById("loginUserId");
             const pwdInput = document.getElementById("loginPass");
@@ -857,54 +860,76 @@
             const inputGroupPass = document.getElementById("inputGroupPass");
             const card = document.getElementById("loginCard");
 
-            enforceSupervisorRole();
-
-            let foundUserId = Object.keys(accessRules).find(id => id.trim().toUpperCase() === userId);
-
-            let isPasswordCorrect = false;
-            if (foundUserId) {
-                let savedPwd = String(accessRules[foundUserId].password).trim();
-                isPasswordCorrect = (pwd === savedPwd);
+            if (!userId || !pwd) {
+                if (errLabel) {
+                    errLabel.innerText = "⚠️ Isi User ID & Password!";
+                    errLabel.classList.remove("hidden");
+                }
+                return;
             }
 
-            if (foundUserId && isPasswordCorrect) {
-                clearLoginError();
-                let config = accessRules[foundUserId];
-                
-                currentUser = {
-                    id: escapeHtml(foundUserId),
-                    name: escapeHtml(config.name),
-                    role: escapeHtml(config.role),
-                    destination: config.destination || (config.role === "SUPERVISOR" ? "it_support_dashboard" : "dashboard"),
-                    location: "BG BEKASI",
-                    loginTime: new Date().toLocaleTimeString('id-ID')
-                };
+            const btnLogin = document.querySelector(".btn-3d-lock");
+            const originalBtnText = btnLogin.innerHTML;
+            btnLogin.innerHTML = "⌛ VERIFIKASI...";
+            btnLogin.disabled = true;
 
-                activeUserSessions[currentUser.id] = {
-                    name: currentUser.name,
-                    role: currentUser.role,
-                    loginTime: currentUser.loginTime,
-                    status: "ONLINE"
-                };
-                saveLocalStorageData();
+            try {
+                // Mengirimkan kredensial ke Google Apps Script backend
+                let response = await fetch(GOOGLE_SHEETS_API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "login",
+                        userId: userId,
+                        password: pwd
+                    })
+                });
 
-                document.getElementById("loginScreen").classList.add("hidden");
-                document.getElementById("mainApp").classList.remove("hidden");
-                
-                document.getElementById("sidebarRole").innerHTML = `${currentUser.role}<br>BG BEKASI`;
-                document.getElementById("lblLocation").innerText = currentUser.location;
-                document.getElementById("lblUser").innerText = `${currentUser.id} - ${currentUser.name}`;
-                
-                updateSidebarDateTime();
-                buildSidebarMenu();
-                
-                if (currentUser.role === "SUPERVISOR") {
-                    renderItSupportDashboard();
+                let result = await response.json();
+
+                if (result.status === "success") {
+                    clearLoginError();
+
+                    currentUser = {
+                        id: escapeHtml(result.user.id),
+                        name: escapeHtml(result.user.name),
+                        role: escapeHtml(result.user.role),
+                        destination: result.user.role === "SUPERVISOR" ? "it_support_dashboard" : "dashboard",
+                        location: "BG BEKASI",
+                        loginTime: new Date().toLocaleTimeString('id-ID')
+                    };
+
+                    activeUserSessions[currentUser.id] = {
+                        name: currentUser.name,
+                        role: currentUser.role,
+                        loginTime: currentUser.loginTime,
+                        status: "ONLINE"
+                    };
+                    saveLocalStorageData();
+
+                    // Sembunyikan layar login dan tampilkan aplikasi
+                    document.getElementById("loginScreen").classList.add("hidden");
+                    document.getElementById("mainApp").classList.remove("hidden");
+                    
+                    document.getElementById("sidebarRole").innerHTML = `${currentUser.role}<br>BG BEKASI`;
+                    document.getElementById("lblLocation").innerText = currentUser.location;
+                    document.getElementById("lblUser").innerText = `${currentUser.id} - ${currentUser.name}`;
+                    
+                    updateSidebarDateTime();
+                    buildSidebarMenu();
+                    
+                    if (currentUser.role === "SUPERVISOR") {
+                        renderItSupportDashboard();
+                    } else {
+                        renderHomeDashboardHtml();
+                    }
                 } else {
-                    renderHomeDashboardHtml();
+                    throw new Error(result.message || "Login Gagal");
                 }
-            } else {
-                if (errLabel) errLabel.classList.remove("hidden");
+            } catch (err) {
+                if (errLabel) {
+                    errLabel.innerText = "⚠️ User ID atau Password Salah !!!";
+                    errLabel.classList.remove("hidden");
+                }
                 if (inputGroupUser) inputGroupUser.classList.add("input-error-border");
                 if (inputGroupPass) inputGroupPass.classList.add("input-error-border");
                 
@@ -916,6 +941,9 @@
                 
                 pwdInput.value = "";
                 userInput.focus();
+            } finally {
+                btnLogin.innerHTML = originalBtnText;
+                btnLogin.disabled = false;
             }
         }
 
