@@ -500,6 +500,7 @@
         let previewPayload = [];
         let currentSlideIndex = 0;
         let masterDatabase = {}; 
+        let uploadedFiles = {}; 
         let syncTimeout = null; 
 
         let selectedPrintColor = "colour";
@@ -515,6 +516,15 @@
             "ADMIN02":    { password: "123",  role: "ADMIN",      name: "ADMIN OPERASIONAL 1",        destination: "dashboard" },
             "ADMIN03":    { password: "777",  role: "ADMIN",      name: "ADMIN OPERASIONAL 2",        destination: "dashboard" }
         };
+
+        const DOCUMENT_LIST = [
+            { key: "BA_KRONOLOGI", name: "BA KRONOLOGI", desc: "Berita Acara Kronologi Kejadian Operasional", icon: "📑" },
+            { key: "STH_CUSTODY", name: "STH_CUSTODY", desc: "Surat Tanda Serah Terima Custody Operasional", icon: "📋" },
+            { key: "STH_DRIVER", name: "STH DRIVER", desc: "Surat Tanda Serah Terima Driver Operasional", icon: "🚗" },
+            { key: "FORM_PERGANTIAN_SHIFT", name: "FORM PERGANTIAN SHIFT", desc: "Formulir Serah Terima Pergantian Shift", icon: "🔄" },
+            { key: "BERITA_ACARA_UT", name: "BERITA ACARA UT", desc: "Berita Acara Unit / Unscheduled Task", icon: "📝" },
+            { key: "FORM_VISITOR_LOG", name: "FORM VISITOR LOG", desc: "Form Catatan Log Logistik Visitor / Tamu", icon: "👤" }
+        ];
 
         let accessRules = JSON.parse(JSON.stringify(DEFAULT_ACCESS_RULES));
         let activeUserSessions = {};
@@ -568,6 +578,9 @@
                 const savedMembers = localStorage.getItem("bgi_batchTeamMembers");
                 if (savedMembers) batchTeamMembers = JSON.parse(savedMembers);
 
+                const savedFiles = localStorage.getItem("bgi_uploadedFiles");
+                if (savedFiles) uploadedFiles = JSON.parse(savedFiles);
+
                 const savedRules = localStorage.getItem("bgi_accessRules");
                 if (savedRules) {
                     let parsedRules = JSON.parse(savedRules);
@@ -593,6 +606,7 @@
                 localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                 localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                 localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+                localStorage.setItem("bgi_uploadedFiles", JSON.stringify(uploadedFiles));
                 localStorage.setItem("bgi_accessRules", JSON.stringify(accessRules));
                 localStorage.setItem("bgi_activeSessions", JSON.stringify(activeUserSessions));
 
@@ -618,6 +632,7 @@
                     masterDatabase: masterDatabase,
                     batchTeamsData: batchTeamsData,
                     batchTeamMembers: batchTeamMembers,
+                    uploadedFiles: uploadedFiles,
                     accessRules: accessRules
                 };
 
@@ -652,6 +667,13 @@
                         }
                     }
 
+                    if (result.uploadedFiles && Object.keys(result.uploadedFiles).length > 0) {
+                        if (JSON.stringify(result.uploadedFiles) !== JSON.stringify(uploadedFiles)) {
+                            uploadedFiles = result.uploadedFiles;
+                            isUpdated = true;
+                        }
+                    }
+
                     if (result.accessRules && Object.keys(result.accessRules).length > 0) {
                         if (JSON.stringify(result.accessRules) !== JSON.stringify(accessRules)) {
                             accessRules = result.accessRules;
@@ -678,12 +700,13 @@
                         localStorage.setItem("bgi_masterDatabase", JSON.stringify(masterDatabase));
                         localStorage.setItem("bgi_batchTeamsData", JSON.stringify(batchTeamsData));
                         localStorage.setItem("bgi_batchTeamMembers", JSON.stringify(batchTeamMembers));
+                        localStorage.setItem("bgi_uploadedFiles", JSON.stringify(uploadedFiles));
                         localStorage.setItem("bgi_accessRules", JSON.stringify(accessRules));
 
                         if (document.getElementById("masterTableBody")) {
                             renderMasterTable();
                         }
-                        if (document.getElementById("contentArea") && currentUser && currentUser.role === "SUPERVISOR") {
+                        if (document.getElementById("contentArea") && currentUser) {
                             let titleLabel = document.querySelector("#contentArea span");
                             if (titleLabel && titleLabel.innerText.includes("MANAJEMEN USER ADMIN")) {
                                 renderPasswordManagementHtml();
@@ -759,6 +782,7 @@
                     if (parsed.masterDatabase) masterDatabase = parsed.masterDatabase;
                     if (parsed.batchTeamsData) batchTeamsData = parsed.batchTeamsData;
                     if (parsed.batchTeamMembers) batchTeamMembers = parsed.batchTeamMembers;
+                    if (parsed.uploadedFiles) uploadedFiles = parsed.uploadedFiles;
                     if (parsed.accessRules) accessRules = parsed.accessRules;
 
                     enforceSupervisorRole();
@@ -907,6 +931,11 @@
             if (dropdown) dropdown.classList.toggle("hidden");
         }
 
+        function toggleFileDropdownMenu() {
+            const dropdown = document.getElementById("fileDropdownMenu");
+            if (dropdown) dropdown.classList.toggle("hidden");
+        }
+
         function buildSidebarMenu() {
             const menuContainer = document.getElementById("sidebarMenuContainer");
             if (!menuContainer) return;
@@ -945,7 +974,42 @@
                 </button>
             `;
 
-            if (currentUser && currentUser.role === "SUPERVISOR") {
+            const isSpv = currentUser && currentUser.role === "SUPERVISOR";
+            const fileMenuTitle = isSpv ? "📤 UPLOAD BERKAS" : "📥 UNDUH BERKAS";
+            const fileMenuBg = isSpv 
+                ? "from-orange-100 via-amber-100 to-orange-200 text-[#9A3412] border-orange-300"
+                : "from-indigo-100 via-sky-100 to-indigo-200 text-[#1E40AF] border-indigo-300";
+
+            let fileSubItemsHtml = "";
+            DOCUMENT_LIST.forEach(doc => {
+                let hasFile = !!(uploadedFiles[doc.key] && uploadedFiles[doc.key].fileData);
+                let onClickAction = isSpv 
+                    ? `renderDocumentPreviewHtml('${doc.key}')` 
+                    : `downloadDocumentFile('${doc.key}'); renderDocumentPreviewHtml('${doc.key}')`;
+
+                fileSubItemsHtml += `
+                    <button onclick="${onClickAction}" class="text-left bg-slate-50 hover:bg-indigo-50 text-slate-800 font-bold py-1.5 px-2 rounded text-[11px] border border-slate-200 transition flex items-center justify-between">
+                        <span class="truncate">${doc.icon} ${doc.name}</span>
+                        <span class="text-[8px] font-black px-1 rounded ${hasFile ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-500'}">
+                            ${hasFile ? '✓' : '—'}
+                        </span>
+                    </button>
+                `;
+            });
+
+            const fileDropdownButtonHtml = `
+                <div class="relative flex flex-col gap-1">
+                    <button onclick="toggleFileDropdownMenu()" class="text-left bg-gradient-to-r ${fileMenuBg} font-extrabold py-2.5 px-3 rounded-lg text-xs shadow transition border flex items-center justify-between">
+                        <span>${fileMenuTitle}</span>
+                        <span class="text-[10px]">▼</span>
+                    </button>
+                    <div id="fileDropdownMenu" class="hidden flex flex-col gap-1 pl-3 pt-1 border-l-2 border-indigo-400">
+                        ${fileSubItemsHtml}
+                    </div>
+                </div>
+            `;
+
+            if (isSpv) {
                 html = `
                     <button onclick="renderItSupportDashboard()" class="text-left bg-gradient-to-r from-purple-100 via-fuchsia-100 to-purple-200 hover:from-purple-200 hover:to-fuchsia-300 text-[#6B21A8] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-purple-300">
                         👑 DASHBOARD SUPERVISOR
@@ -957,6 +1021,7 @@
                     <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
                         🌺 CETAK KUNCI RPL
                     </button>
+                    ${fileDropdownButtonHtml}
                     ${barcodeButtonHtml}
                     <button onclick="renderPasswordManagementHtml()" class="text-left bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 hover:from-amber-200 hover:to-yellow-300 text-[#92400E] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-amber-300">
                         🔑 MANAJEMEN USER ADMIN
@@ -984,11 +1049,181 @@
                     <button onclick="renderTeamMenuHtml()" class="text-left bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 hover:from-blue-200 text-[#1E3A8A] font-bold py-2.5 px-3 rounded-lg text-xs shadow transition border border-blue-300">
                         🌺 CETAK KUNCI RPL
                     </button>
+                    ${fileDropdownButtonHtml}
                     ${barcodeButtonHtml}
                     ${logoutButtonHtml}
                 `;
             }
             menuContainer.innerHTML = html;
+        }
+
+        /* --- FITUR UNGGAH & TAMPILAN PRATINJAU BERKAS --- */
+        function handleDocumentUpload(docKey, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert("File terlalu besar! Maksimal ukuran file 10 MB.");
+                event.target.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedFiles[docKey] = {
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileData: e.target.result,
+                    fileSize: (file.size / 1024).toFixed(1) + " KB",
+                    uploadDate: new Date().toLocaleString('id-ID')
+                };
+                saveLocalStorageData();
+                buildSidebarMenu();
+                alert(`✅ Berkas "${file.name}" berhasil diunggah! Berkas siap diunduh & dicetak.`);
+                renderDocumentPreviewHtml(docKey);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function downloadDocumentFile(docKey) {
+            let fileObj = uploadedFiles[docKey];
+            let docInfo = DOCUMENT_LIST.find(d => d.key === docKey);
+            let docName = docInfo ? docInfo.name : docKey;
+
+            if (!fileObj || !fileObj.fileData) {
+                alert(`⚠️ Berkas "${docName}" belum diunggah oleh Supervisor.`);
+                return;
+            }
+
+            // Ambil ekstensi format file asli
+            let ext = "";
+            if (fileObj.fileName && fileObj.fileName.includes(".")) {
+                ext = fileObj.fileName.substring(fileObj.fileName.lastIndexOf("."));
+            }
+
+            const downloadLink = document.createElement("a");
+            downloadLink.href = fileObj.fileData;
+            // Nama file unduhan disesuaikan persis dengan nama tombol
+            downloadLink.download = `${docName}${ext}`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function printDocumentPreview(docKey) {
+            let fileObj = uploadedFiles[docKey];
+            let docInfo = DOCUMENT_LIST.find(d => d.key === docKey);
+            let docName = docInfo ? docInfo.name : docKey;
+
+            if (!fileObj || !fileObj.fileData) {
+                alert(`⚠️ Berkas "${docName}" belum diunggah oleh Supervisor.`);
+                return;
+            }
+
+            let printWindow = window.open('', '', 'width=900,height=700');
+            if (fileObj.fileType.includes("image")) {
+                printWindow.document.write(`
+                    <html>
+                        <head><title>Cetak Berkas - ${docName}</title></head>
+                        <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh;" onload="window.print(); window.close();">
+                            <img src="${fileObj.fileData}" style="max-width:100%; max-height:100vh; object-fit:contain;" />
+                        </body>
+                    </html>
+                `);
+            } else {
+                printWindow.document.write(`
+                    <html>
+                        <head><title>Cetak Berkas - ${docName}</title></head>
+                        <body style="margin:0;" onload="setTimeout(function(){ window.print(); window.close(); }, 800);">
+                            <iframe src="${fileObj.fileData}" style="width:100%; height:100vh; border:none;"></iframe>
+                        </body>
+                    </html>
+                `);
+            }
+            printWindow.document.close();
+        }
+
+        function renderDocumentPreviewHtml(docKey) {
+            const content = document.getElementById("contentArea");
+            let docInfo = DOCUMENT_LIST.find(d => d.key === docKey) || { key: docKey, name: docKey, desc: "Dokumen Operasional", icon: "📄" };
+            let fileObj = uploadedFiles[docKey];
+            let hasFile = !!(fileObj && fileObj.fileData);
+            let isSpv = currentUser && currentUser.role === "SUPERVISOR";
+
+            let previewBodyHtml = "";
+            if (hasFile) {
+                if (fileObj.fileType.includes("image")) {
+                    previewBodyHtml = `
+                        <div class="flex items-center justify-center p-4 bg-slate-100 rounded-xl border border-slate-300 min-h-[480px]">
+                            <img src="${fileObj.fileData}" alt="${fileObj.fileName}" class="max-w-full max-h-[580px] object-contain rounded-lg shadow-lg border border-slate-200" />
+                        </div>
+                    `;
+                } else {
+                    previewBodyHtml = `
+                        <div class="w-full bg-slate-100 rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                            <iframe src="${fileObj.fileData}" class="w-full h-[600px] border-none" title="Pratinjau Berkas"></iframe>
+                        </div>
+                    `;
+                }
+            } else {
+                previewBodyHtml = `
+                    <div class="flex flex-col items-center justify-center p-12 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl text-center space-y-4">
+                        <span class="text-6xl">${docInfo.icon}</span>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800">BERKAS BELUM TERSEDIA</h3>
+                            <p class="text-xs text-slate-500 mt-1 max-w-md">
+                                Berkas <strong class="text-indigo-900">${docInfo.name}</strong> belum diunggah ke dalam sistem oleh Supervisor.
+                            </p>
+                        </div>
+                        ${isSpv ? `
+                            <label class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 text-white font-black text-xs py-2.5 px-5 rounded-xl shadow cursor-pointer transition flex items-center gap-2">
+                                <span>📤</span> <span>Upload Berkas Sekarang</span>
+                                <input type="file" class="hidden" onchange="handleDocumentUpload('${docKey}', event)">
+                            </label>
+                        ` : `
+                            <div class="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-2 rounded-lg text-xs font-bold">
+                                💡 Silakan minta Supervisor untuk mengunggah berkas ini terlebih dahulu.
+                            </div>
+                        `}
+                    </div>
+                `;
+            }
+
+            content.innerHTML = `
+                <div class="flex flex-wrap justify-between items-center mb-4 pb-3 border-b border-slate-200 gap-2">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${docInfo.icon}</span>
+                            <div>
+                                <span class="font-black text-slate-900 text-base block">${docInfo.name}</span>
+                                <span class="text-xs text-slate-500 font-semibold">${docInfo.desc}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hanya menyisakan tombol Upload/Ganti Berkas untuk Supervisor -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        ${isSpv ? `
+                            <label class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs py-2 px-3.5 rounded-lg shadow cursor-pointer transition flex items-center gap-1.5 active:scale-95">
+                                <span>📤</span> <span>${hasFile ? 'Ganti Berkas' : 'Upload Berkas'}</span>
+                                <input type="file" class="hidden" onchange="handleDocumentUpload('${docKey}', event)">
+                            </label>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${hasFile ? `
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-4 flex flex-wrap justify-between items-center text-xs text-indigo-950 font-bold gap-2">
+                        <span>📄 File Name: <strong class="text-blue-900">${fileObj.fileName}</strong></span>
+                        <span>📅 Diunggah: <strong>${fileObj.uploadDate}</strong></span>
+                        <span>📊 Ukuran: <strong>${fileObj.fileSize}</strong></span>
+                    </div>
+                ` : ''}
+
+                <div class="bg-white border border-slate-300 rounded-xl p-3 shadow-md">
+                    ${previewBodyHtml}
+                </div>
+            `;
         }
 
         /* --- FITUR AUDIT / OPNAME & PENGECEKAN KUNCI --- */
@@ -2158,12 +2393,23 @@
                                 BG BEKASI SIAP MELESAT
                             </h1>
                             <p class="text-slate-300 text-sm leading-relaxed">
-                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional cabang BG BEKASI.
+                                Anda adalah pemegang hak akses Supervisor tertinggi. Anda dapat mengontrol Master Data, Cetak Kunci RPL, Upload & Pratinjau Berkas Operasional, menambah akun Admin tanpa batas, mengelola User ID & password akun Admin, serta memantau status sesi operasional cabang BG BEKASI.
                             </p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
+                        <div onclick="renderDocumentPreviewHtml('BA_KRONOLOGI')" class="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl p-2.5 bg-orange-600 text-white rounded-xl shadow">📤</span>
+                                <span class="text-[10px] font-bold text-orange-800 bg-orange-200/60 px-2 py-0.5 rounded-full">6 Berkas</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Upload & Pratinjau Berkas</h3>
+                                <p class="text-[11px] text-slate-600 mt-0.5">Kelola berkas operasional (BA Kronologi, STH Custody, Driver, Form Shift, UT, Visitor Log).</p>
+                            </div>
+                        </div>
+
                         <div onclick="renderMasterDataHtml()" class="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
                             <div class="flex items-center justify-between">
                                 <span class="text-2xl p-2.5 bg-amber-500 text-white rounded-xl shadow">📊</span>
@@ -2186,21 +2432,10 @@
                             </div>
                         </div>
 
-                        <div onclick="renderTeamMenuHtml()" class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
+                        <div onclick="renderPasswordManagementHtml()" class="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-2xl p-2.5 bg-blue-600 text-white rounded-xl shadow">🌺</span>
-                                <span class="text-[10px] font-bold text-blue-800 bg-blue-200/60 px-2 py-0.5 rounded-full">Akses Utama</span>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-extrabold text-slate-900">Cetak Kunci RPL</h3>
-                                <p class="text-[11px] text-slate-600 mt-0.5">Input data shift tim operasional dan cetak lembar kunci RPL.</p>
-                            </div>
-                        </div>
-
-                        <div onclick="renderPasswordManagementHtml()" class="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 p-4 rounded-2xl shadow-lg cursor-pointer transform hover:scale-[1.02] transition flex flex-col justify-between gap-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-2xl p-2.5 bg-orange-500 text-white rounded-xl shadow">🔑</span>
-                                <span class="text-[10px] font-bold text-orange-800 bg-orange-200/60 px-2 py-0.5 rounded-full">${totalRoles} Akun</span>
+                                <span class="text-2xl p-2.5 bg-purple-600 text-white rounded-xl shadow">🔑</span>
+                                <span class="text-[10px] font-bold text-purple-800 bg-purple-200/60 px-2 py-0.5 rounded-full">${totalRoles} Akun</span>
                             </div>
                             <div>
                                 <h3 class="text-sm font-extrabold text-slate-900">Manajemen User ID & Password</h3>
@@ -2522,6 +2757,7 @@
                     masterDatabase: masterDatabase,
                     batchTeamsData: batchTeamsData,
                     batchTeamMembers: batchTeamMembers,
+                    uploadedFiles: uploadedFiles,
                     accessRules: accessRules,
                     backupDate: new Date().toISOString()
                 };
@@ -2565,6 +2801,9 @@
                                 Pusat Kontrol Administrasi Status Mesin ATM, Pengelolaan Ketersediaan Kas, Gudang Kunci RPL/FLM, dan Operasional Cash Processing Center <strong class="text-amber-300">BG BEKASI</strong>.
                             </p>
                             <div class="pt-2 flex flex-wrap gap-3">
+                                <button onclick="renderDocumentPreviewHtml('BA_KRONOLOGI')" class="bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
+                                    <span>📥</span> Pratinjau Berkas
+                                </button>
                                 <button onclick="renderMasterDataHtml()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2">
                                     <span>📊</span> Lihat Master Data (${totalTidCount} TID)
                                 </button>
