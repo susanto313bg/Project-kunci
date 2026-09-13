@@ -1,5 +1,5 @@
 {
-  "name": "Management Kunci",
+  "name": "BG Kunci - Monitoring & Management",
   "short_name": "BG Kunci",
   "description": "Sistem Informasi Monitoring & Management Kunci BG Bekasi",
   "start_url": "./index.html",
@@ -8,13 +8,13 @@
   "theme_color": "#334155",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3064/3064155.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3064/3064155.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
