@@ -1,7 +1,7 @@
 {
-  "name": "BG Kunci - Monitoring & Management",
+  "name": "Management kunci",
   "short_name": "BG Kunci",
-  "description": "Sistem Informasi Monitoring & Management Kunci BG Bekasi",
+  "description": "Management Kunci BG Bekasi",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0F172A",
