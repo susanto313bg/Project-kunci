@@ -2635,7 +2635,7 @@
             
             if (inputPwd === null) return;
 
-            let supervisorPassword = accessRules[DEFAULT_SUPERVISOR_ID] ? accessRules[DEFAULT_SUPERVISOR_ID].password : "9930";
+            let supervisorPassword = accessRules[DEFAULT_SUPERVISOR_ID] ? accessRules[DEFAULT_SUPERVISOR_ID].password : "100";
 
             if (inputPwd.trim() !== String(supervisorPassword).trim()) {
                 alert("❌ Password Supervisor SALAH! Gagal menghapus user.");
