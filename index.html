@@ -3393,6 +3393,16 @@
                         </button>
                     `;
                 });
+                if (groupName === "MALAM") {
+                    const allMasterTids = batchTeamsData["ALL MASTER DATA"] || [];
+                    const allMasterStyle = allMasterTids.length > 0 ? theme.btnFilled : theme.btnBase;
+                    html += `
+                        <button onclick="openTeamInput('ALL MASTER DATA')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex justify-between items-center ${allMasterStyle}">
+                            <span>ALL MASTER DATA</span>
+                            ${allMasterTids.length > 0 ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${theme.badgeColor}">${allMasterTids.length} TID</span>` : `<span class="text-[10px] opacity-60">Kosong (Maks. 1.000 TID)</span>`}
+                        </button>
+                    `;
+                }
                 html += `</div></div>`;
             }
             html += `</div>`;
@@ -3423,8 +3433,92 @@
             }
         }
 
+        function parseAllMasterDataInput(rawValue) {
+            return [...new Set(String(rawValue || "")
+                .split(/[\s,;]+/)
+                .map(tid => tid.trim().toUpperCase())
+                .filter(Boolean))];
+        }
+
+        function openAllMasterDataInput() {
+            const content = document.getElementById("contentArea");
+            const previousTids = batchTeamsData["ALL MASTER DATA"] || [];
+            const previousValue = previousTids.join("\n");
+            content.innerHTML = `
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <button onclick="renderTeamMenuHtml()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
+                        <span class="text-xs text-slate-700 font-bold ml-2">INPUT MASSAL - ALL MASTER DATA</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="saveAllMasterDataInput()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
+                        <button onclick="printAllMasterDataInput()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
+                        <button onclick="clearAllMasterDataInput()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus</button>
+                    </div>
+                </div>
+                <div class="max-w-4xl mx-auto bg-white border border-amber-300 rounded-2xl shadow-xl p-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div>
+                            <h2 class="text-base font-black text-amber-900">📚 ALL MASTER DATA</h2>
+                            <p class="text-xs text-slate-500 mt-1">Masukkan maksimal 1.000 TID. Satu TID per baris, atau pisahkan dengan spasi, koma, maupun titik koma.</p>
+                        </div>
+                        <span id="allMasterDataCounter" class="bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 rounded-full text-xs font-black">${previousTids.length} / 1.000 TID</span>
+                    </div>
+                    <textarea id="allMasterDataInput" oninput="updateAllMasterDataCounter()" class="w-full min-h-[420px] rounded-xl border-2 border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none p-3 font-mono text-sm uppercase text-slate-900" placeholder="Contoh:\n100001\n100002\n100003\n\nAtau: 100001, 100002, 100003">${previousValue}</textarea>
+                    <p id="allMasterDataMessage" class="text-xs text-slate-500 mt-2">TID duplikat akan otomatis dihapus saat disimpan.</p>
+                </div>
+            `;
+            updateAllMasterDataCounter();
+        }
+
+        function updateAllMasterDataCounter() {
+            const input = document.getElementById("allMasterDataInput");
+            const counter = document.getElementById("allMasterDataCounter");
+            if (!input || !counter) return;
+            const count = parseAllMasterDataInput(input.value).length;
+            counter.innerText = `${count} / 1.000 TID`;
+            counter.className = `px-3 py-1 rounded-full text-xs font-black border ${count > 1000 ? "bg-rose-100 text-rose-900 border-rose-300" : "bg-amber-100 text-amber-900 border-amber-300"}`;
+        }
+
+        function saveAllMasterDataInput() {
+            const input = document.getElementById("allMasterDataInput");
+            const tids = parseAllMasterDataInput(input ? input.value : "");
+            if (tids.length > 1000) {
+                alert(`Jumlah TID adalah ${tids.length}. Maksimal hanya 1.000 TID.`);
+                return;
+            }
+            batchTeamsData["ALL MASTER DATA"] = tids;
+            saveLocalStorageData();
+            alert(`✅ ${tids.length} TID berhasil disimpan di ALL MASTER DATA.`);
+            renderTeamMenuHtml();
+        }
+
+        function clearAllMasterDataInput() {
+            if (!confirm("Hapus semua TID pada ALL MASTER DATA?")) return;
+            batchTeamsData["ALL MASTER DATA"] = [];
+            saveLocalStorageData();
+            openAllMasterDataInput();
+        }
+
+        function printAllMasterDataInput() {
+            const input = document.getElementById("allMasterDataInput");
+            const tids = parseAllMasterDataInput(input ? input.value : "");
+            if (tids.length === 0) {
+                alert("Masukkan minimal 1 TID terlebih dahulu!");
+                return;
+            }
+            if (tids.length > 1000) {
+                alert("Maksimal hanya 1.000 TID.");
+                return;
+            }
+            batchTeamsData["ALL MASTER DATA"] = tids;
+            saveLocalStorageData();
+            preparePreview({ "ALL MASTER DATA": tids });
+        }
+
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
+            const tidInputLimit = teamName === "ALL MASTER DATA" ? 1000 : 18;
             let previousTids = batchTeamsData[teamName] || [];
             let previousMemberName = batchTeamMembers[teamName] || "";
 
@@ -3458,7 +3552,7 @@
                                 </thead>
                                 <tbody>
             `;
-            for (let i = 0; i < 18; i++) {
+            for (let i = 0; i < tidInputLimit; i++) {
                 let val = previousTids[i] || "";
                 html += `
                     <tr>
@@ -3517,7 +3611,7 @@
                             </thead>
                             <tbody id="realtimePreviewBody">
             `;
-            for (let i = 0; i < 18; i++) {
+            for (let i = 0; i < tidInputLimit; i++) {
                 let tid = previousTids[i] || "";
                 let master = getMasterDataByTid(tid) || {};
                 let merkVal = master.merk || master.cluster || "";
@@ -3681,10 +3775,11 @@
 
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
+            let tidInputLimit = teamName === "ALL MASTER DATA" ? 1000 : 18;
             let tids = [];
             let inputs = document.querySelectorAll(".tid-input");
             inputs.forEach((inp, idx) => {
-                if(idx < 18 && inp.value.trim() !== "") {
+                if(idx < tidInputLimit && inp.value.trim() !== "") {
                     tids.push(inp.value.trim().toUpperCase());
                 }
             });
@@ -3713,6 +3808,7 @@
         function setupExcelInteractions(teamName) {
             const memberInput = document.getElementById("inputTeamMember");
             const inputs = document.querySelectorAll(".tid-input");
+            const tidInputLimit = teamName === "ALL MASTER DATA" ? 1000 : 18;
             const containers = document.querySelectorAll(".cell-container");
             let isMouseDown = false;
             let startIndex = null;
@@ -3788,16 +3884,16 @@
                         let currentIndex = parseInt(this.getAttribute("data-index"));
                         lines.forEach((lineText, offset) => {
                             let targetIndex = currentIndex + offset;
-                            if (targetIndex < 18 && targetIndex < inputs.length) {
+                            if (targetIndex < tidInputLimit && targetIndex < inputs.length) {
                                 inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
                             }
                         });
 
                         let nextFocusIndex = currentIndex + lines.length;
-                        if (nextFocusIndex < 18 && nextFocusIndex < inputs.length) {
+                        if (nextFocusIndex < tidInputLimit && nextFocusIndex < inputs.length) {
                             inputs[nextFocusIndex].focus();
                         } else {
-                            inputs[Math.min(17, inputs.length - 1)].focus();
+                            inputs[Math.min(tidInputLimit - 1, inputs.length - 1)].focus();
                         }
 
                         autoSaveDraft(teamName);
@@ -3809,7 +3905,7 @@
                     let currentIndex = parseInt(this.getAttribute("data-index"));
                     if (e.key === "Enter" || e.key === "ArrowDown") {
                         e.preventDefault();
-                        if (currentIndex + 1 < 18 && currentIndex + 1 < inputs.length) {
+                        if (currentIndex + 1 < tidInputLimit && currentIndex + 1 < inputs.length) {
                             inputs[currentIndex + 1].focus();
                             inputs[currentIndex + 1].select();
                         }
@@ -3850,7 +3946,8 @@
             for (let [tName, tids] of Object.entries(dataDict)) {
                 if (!tids || tids.length === 0) continue;
                 let memberName = batchTeamMembers[tName] || "-";
-                let limitedTids = tids.slice(0, 18);
+                let tidInputLimit = tName === "ALL MASTER DATA" ? 1000 : 18;
+                let limitedTids = tids.slice(0, tidInputLimit);
 
                 let tidCounts = {};
                 limitedTids.forEach(t => { 
