@@ -1802,6 +1802,15 @@
             printWindow.document.close();
         }
 
+        function getBarcodePrintSize(selectId) {
+            const sizes = {
+                "4.5x1.7": { width: 4.5, height: 1.7, columns: 4, label: "FLM — 4,5 cm × 1,7 cm" },
+                "3.5x1.5": { width: 3.5, height: 1.5, columns: 5, label: "Faskia — 3,5 cm × 1,5 cm" },
+                "4x1.7": { width: 4, height: 1.7, columns: 4, label: "RPL — 4 cm × 1,7 cm" }
+            };
+            return sizes[document.getElementById(selectId).value] || sizes["4.5x1.7"];
+        }
+
         /* --- MODUL 1: CETAK BARCODE SATUAN / INPUT MANUAL --- */
         function renderSingleBarcodePrintHtml(defaultTid = "") {
             const content = document.getElementById("contentArea");
@@ -1809,7 +1818,7 @@
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-200">
                     <div>
-                        <span class="font-extrabold text-slate-800 text-base">📌 1. CETAK BARCODE SATUAN & INPUT MANUAL (4.5 cm x 1.7 cm)</span>
+                        <span class="font-extrabold text-slate-800 text-base">📌 1. CETAK BARCODE SATUAN & INPUT MANUAL</span>
                         <p class="text-xs text-slate-500">Cetak label barcode tunggal presisi menggunakan TID atau teks manual secara langsung</p>
                     </div>
                     <button onclick="renderMasterDataHtml()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
@@ -1846,6 +1855,15 @@
                             </select>
                         </div>
 
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Ukuran Label Barcode:</label>
+                            <select id="singleBarcodeSize" onchange="updateSingleBarcodeSize()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                <option value="4.5x1.7">FLM — 4,5 cm × 1,7 cm (Default)</option>
+                                <option value="3.5x1.5">Faskia — 3,5 cm × 1,5 cm</option>
+                                <option value="4x1.7">RPL — 4 cm × 1,7 cm</option>
+                            </select>
+                        </div>
+
                         <div class="pt-2">
                             <button onclick="printSingleBarcode()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white font-black text-xs py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
                                 🖨️ CETAK LABEL BARCODE SATUAN
@@ -1854,7 +1872,7 @@
                     </div>
 
                     <div class="bg-slate-100 border border-slate-300 rounded-xl p-6 shadow-inner flex flex-col items-center justify-center">
-                        <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-4">Pratinjau Hasil (Lebar: 4.5 cm × Tinggi: 1.7 cm)</span>
+                        <span id="singleBarcodeSizePreview" class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-4">Pratinjau Hasil (Lebar: 4,5 cm × Tinggi: 1,7 cm)</span>
                         
                         <div id="singleBarcodeContainer" class="barcode-label-box shadow-md">
                             <svg id="singleBarcodeSvg"></svg>
@@ -1868,6 +1886,7 @@
                 </div>
             `;
 
+            updateSingleBarcodeSize();
             if (defaultTid) {
                 generateSingleBarcodePreview();
             } else {
@@ -1895,6 +1914,17 @@
                 containerManual.classList.add("hidden");
             }
             generateSingleBarcodePreview();
+        }
+
+        function updateSingleBarcodeSize() {
+            const size = getBarcodePrintSize("singleBarcodeSize");
+            const container = document.getElementById("singleBarcodeContainer");
+            const previewLabel = document.getElementById("singleBarcodeSizePreview");
+            if (container) {
+                container.style.width = `${size.width}cm`;
+                container.style.height = `${size.height}cm`;
+            }
+            if (previewLabel) previewLabel.innerText = `Pratinjau Hasil (Lebar: ${size.label})`;
         }
 
         function generateSingleBarcodePreview() {
@@ -1942,6 +1972,7 @@
         function printSingleBarcode() {
             let barcodeElement = document.getElementById("singleBarcodeContainer");
             if (!barcodeElement) return;
+            const size = getBarcodePrintSize("singleBarcodeSize");
 
             let printWindow = window.open('', '', 'width=450,height=300');
             printWindow.document.write(`
@@ -1950,7 +1981,7 @@
                         <title>Cetak Label Barcode Satuan</title>
                         <style>
                             @page {
-                                size: 4.5cm 1.7cm portrait;
+                                size: ${size.width}cm ${size.height}cm;
                                 margin: 0;
                             }
                             body {
@@ -1959,12 +1990,12 @@
                                 display: flex;
                                 items-center: center;
                                 justify-content: center;
-                                height: 1.7cm;
+                                height: ${size.height}cm;
                                 background: white;
                             }
                             .barcode-label-box {
-                                width: 4.5cm;
-                                height: 1.7cm;
+                                width: ${size.width}cm;
+                                height: ${size.height}cm;
                                 border: 1px solid #000000;
                                 outline: 1px solid #000000;
                                 outline-offset: -3px;
@@ -2030,6 +2061,15 @@
                                 </select>
                             </div>
 
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Ukuran Label Barcode:</label>
+                                <select id="dynamicBarcodeSize" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                    <option value="4.5x1.7">FLM — 4,5 cm × 1,7 cm (Default)</option>
+                                    <option value="3.5x1.5">Faskia — 3,5 cm × 1,5 cm</option>
+                                    <option value="4x1.7">RPL — 4 cm × 1,7 cm</option>
+                                </select>
+                            </div>
+
                             <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-lg text-xs text-indigo-900">
                                 <strong>💡 Tips Cetak Dinamis:</strong>
                                 <p class="text-[11px] mt-1 text-indigo-700">Anda dapat menyalin (*copy-paste*) kolom TID dari Excel langsung ke dalam kotak di sebelah kiri. Sistem akan memproses seluruh barcode secara cepat dalam format grid A4.</p>
@@ -2061,6 +2101,7 @@
             }
 
             let typeMode = document.getElementById("dynamicBarcodeType").value;
+            const size = getBarcodePrintSize("dynamicBarcodeSize");
             let labelsHtml = "";
 
             items.forEach(rawItem => {
@@ -2112,14 +2153,14 @@
                             }
                             .barcode-grid-print {
                                 display: grid;
-                                grid-template-columns: repeat(4, 4.5cm);
+                                grid-template-columns: repeat(${size.columns}, ${size.width}cm);
                                 gap: 4mm;
                                 justify-content: center;
                                 padding-top: 5mm;
                             }
                             .barcode-label-box {
-                                width: 4.5cm;
-                                height: 1.7cm;
+                                width: ${size.width}cm;
+                                height: ${size.height}cm;
                                 border: 1px solid #000000;
                                 outline: 1px solid #000000;
                                 outline-offset: -3px;
@@ -2196,6 +2237,14 @@
                                 <option value="rpl">Barcode Kunci RPL</option>
                                 <option value="flm">Barcode Kunci FLM</option>
                                 <option value="tid">Nomor TID</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Ukuran Label Barcode:</label>
+                            <select id="batchBarcodeSize" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-slate-50 text-slate-900 focus:outline-none">
+                                <option value="4.5x1.7">FLM — 4,5 cm × 1,7 cm (Default)</option>
+                                <option value="3.5x1.5">Faskia — 3,5 cm × 1,5 cm</option>
+                                <option value="4x1.7">RPL — 4 cm × 1,7 cm</option>
                             </select>
                         </div>
                         <div class="flex items-end gap-2">
@@ -2280,6 +2329,7 @@
             }
 
             let type = document.getElementById("batchBarcodeType").value;
+            const size = getBarcodePrintSize("batchBarcodeSize");
             let labelsHtml = "";
 
             checkedInputs.forEach(cb => {
@@ -2327,14 +2377,14 @@
                             }
                             .barcode-grid-print {
                                 display: grid;
-                                grid-template-columns: repeat(4, 4.5cm);
+                                grid-template-columns: repeat(${size.columns}, ${size.width}cm);
                                 gap: 4mm;
                                 justify-content: center;
                                 padding-top: 5mm;
                             }
                             .barcode-label-box {
-                                width: 4.5cm;
-                                height: 1.7cm;
+                                width: ${size.width}cm;
+                                height: ${size.height}cm;
                                 border: 1px solid #000000;
                                 outline: 1px solid #000000;
                                 outline-offset: -3px;
@@ -3393,16 +3443,6 @@
                         </button>
                     `;
                 });
-                if (groupName === "MALAM") {
-                    const allMasterTids = batchTeamsData["ALL MASTER DATA"] || [];
-                    const allMasterStyle = allMasterTids.length > 0 ? theme.btnFilled : theme.btnBase;
-                    html += `
-                        <button onclick="openTeamInput('ALL MASTER DATA')" class="text-left border px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex justify-between items-center ${allMasterStyle}">
-                            <span>ALL MASTER DATA</span>
-                            ${allMasterTids.length > 0 ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${theme.badgeColor}">${allMasterTids.length} TID</span>` : `<span class="text-[10px] opacity-60">Kosong (Maks. 1.000 TID)</span>`}
-                        </button>
-                    `;
-                }
                 html += `</div></div>`;
             }
             html += `</div>`;
@@ -3433,92 +3473,8 @@
             }
         }
 
-        function parseAllMasterDataInput(rawValue) {
-            return [...new Set(String(rawValue || "")
-                .split(/[\s,;]+/)
-                .map(tid => tid.trim().toUpperCase())
-                .filter(Boolean))];
-        }
-
-        function openAllMasterDataInput() {
-            const content = document.getElementById("contentArea");
-            const previousTids = batchTeamsData["ALL MASTER DATA"] || [];
-            const previousValue = previousTids.join("\n");
-            content.innerHTML = `
-                <div class="flex flex-wrap justify-between items-center mb-4 gap-2 bg-slate-100 p-2.5 rounded-lg shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2">
-                        <button onclick="renderTeamMenuHtml()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">⬅ Kembali</button>
-                        <span class="text-xs text-slate-700 font-bold ml-2">INPUT MASSAL - ALL MASTER DATA</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="saveAllMasterDataInput()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">💾 Simpan</button>
-                        <button onclick="printAllMasterDataInput()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🖨️ Cetak</button>
-                        <button onclick="clearAllMasterDataInput()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">🗑️ Hapus</button>
-                    </div>
-                </div>
-                <div class="max-w-4xl mx-auto bg-white border border-amber-300 rounded-2xl shadow-xl p-5">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <div>
-                            <h2 class="text-base font-black text-amber-900">📚 ALL MASTER DATA</h2>
-                            <p class="text-xs text-slate-500 mt-1">Masukkan maksimal 1.000 TID. Satu TID per baris, atau pisahkan dengan spasi, koma, maupun titik koma.</p>
-                        </div>
-                        <span id="allMasterDataCounter" class="bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 rounded-full text-xs font-black">${previousTids.length} / 1.000 TID</span>
-                    </div>
-                    <textarea id="allMasterDataInput" oninput="updateAllMasterDataCounter()" class="w-full min-h-[420px] rounded-xl border-2 border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none p-3 font-mono text-sm uppercase text-slate-900" placeholder="Contoh:\n100001\n100002\n100003\n\nAtau: 100001, 100002, 100003">${previousValue}</textarea>
-                    <p id="allMasterDataMessage" class="text-xs text-slate-500 mt-2">TID duplikat akan otomatis dihapus saat disimpan.</p>
-                </div>
-            `;
-            updateAllMasterDataCounter();
-        }
-
-        function updateAllMasterDataCounter() {
-            const input = document.getElementById("allMasterDataInput");
-            const counter = document.getElementById("allMasterDataCounter");
-            if (!input || !counter) return;
-            const count = parseAllMasterDataInput(input.value).length;
-            counter.innerText = `${count} / 1.000 TID`;
-            counter.className = `px-3 py-1 rounded-full text-xs font-black border ${count > 1000 ? "bg-rose-100 text-rose-900 border-rose-300" : "bg-amber-100 text-amber-900 border-amber-300"}`;
-        }
-
-        function saveAllMasterDataInput() {
-            const input = document.getElementById("allMasterDataInput");
-            const tids = parseAllMasterDataInput(input ? input.value : "");
-            if (tids.length > 1000) {
-                alert(`Jumlah TID adalah ${tids.length}. Maksimal hanya 1.000 TID.`);
-                return;
-            }
-            batchTeamsData["ALL MASTER DATA"] = tids;
-            saveLocalStorageData();
-            alert(`✅ ${tids.length} TID berhasil disimpan di ALL MASTER DATA.`);
-            renderTeamMenuHtml();
-        }
-
-        function clearAllMasterDataInput() {
-            if (!confirm("Hapus semua TID pada ALL MASTER DATA?")) return;
-            batchTeamsData["ALL MASTER DATA"] = [];
-            saveLocalStorageData();
-            openAllMasterDataInput();
-        }
-
-        function printAllMasterDataInput() {
-            const input = document.getElementById("allMasterDataInput");
-            const tids = parseAllMasterDataInput(input ? input.value : "");
-            if (tids.length === 0) {
-                alert("Masukkan minimal 1 TID terlebih dahulu!");
-                return;
-            }
-            if (tids.length > 1000) {
-                alert("Maksimal hanya 1.000 TID.");
-                return;
-            }
-            batchTeamsData["ALL MASTER DATA"] = tids;
-            saveLocalStorageData();
-            preparePreview({ "ALL MASTER DATA": tids });
-        }
-
         function openTeamInput(teamName) {
             const content = document.getElementById("contentArea");
-            const tidInputLimit = teamName === "ALL MASTER DATA" ? 1000 : 18;
             let previousTids = batchTeamsData[teamName] || [];
             let previousMemberName = batchTeamMembers[teamName] || "";
 
@@ -3552,7 +3508,7 @@
                                 </thead>
                                 <tbody>
             `;
-            for (let i = 0; i < tidInputLimit; i++) {
+            for (let i = 0; i < 18; i++) {
                 let val = previousTids[i] || "";
                 html += `
                     <tr>
@@ -3611,7 +3567,7 @@
                             </thead>
                             <tbody id="realtimePreviewBody">
             `;
-            for (let i = 0; i < tidInputLimit; i++) {
+            for (let i = 0; i < 18; i++) {
                 let tid = previousTids[i] || "";
                 let master = getMasterDataByTid(tid) || {};
                 let merkVal = master.merk || master.cluster || "";
@@ -3775,11 +3731,10 @@
 
         function autoSaveDraft(teamName) {
             let memberName = document.getElementById("inputTeamMember") ? document.getElementById("inputTeamMember").value.trim() : "";
-            let tidInputLimit = teamName === "ALL MASTER DATA" ? 1000 : 18;
             let tids = [];
             let inputs = document.querySelectorAll(".tid-input");
             inputs.forEach((inp, idx) => {
-                if(idx < tidInputLimit && inp.value.trim() !== "") {
+                if(idx < 18 && inp.value.trim() !== "") {
                     tids.push(inp.value.trim().toUpperCase());
                 }
             });
@@ -3808,7 +3763,6 @@
         function setupExcelInteractions(teamName) {
             const memberInput = document.getElementById("inputTeamMember");
             const inputs = document.querySelectorAll(".tid-input");
-            const tidInputLimit = teamName === "ALL MASTER DATA" ? 1000 : 18;
             const containers = document.querySelectorAll(".cell-container");
             let isMouseDown = false;
             let startIndex = null;
@@ -3884,16 +3838,16 @@
                         let currentIndex = parseInt(this.getAttribute("data-index"));
                         lines.forEach((lineText, offset) => {
                             let targetIndex = currentIndex + offset;
-                            if (targetIndex < tidInputLimit && targetIndex < inputs.length) {
+                            if (targetIndex < 18 && targetIndex < inputs.length) {
                                 inputs[targetIndex].value = lineText.replace(/\s+/g, '').toUpperCase();
                             }
                         });
 
                         let nextFocusIndex = currentIndex + lines.length;
-                        if (nextFocusIndex < tidInputLimit && nextFocusIndex < inputs.length) {
+                        if (nextFocusIndex < 18 && nextFocusIndex < inputs.length) {
                             inputs[nextFocusIndex].focus();
                         } else {
-                            inputs[Math.min(tidInputLimit - 1, inputs.length - 1)].focus();
+                            inputs[Math.min(17, inputs.length - 1)].focus();
                         }
 
                         autoSaveDraft(teamName);
@@ -3905,7 +3859,7 @@
                     let currentIndex = parseInt(this.getAttribute("data-index"));
                     if (e.key === "Enter" || e.key === "ArrowDown") {
                         e.preventDefault();
-                        if (currentIndex + 1 < tidInputLimit && currentIndex + 1 < inputs.length) {
+                        if (currentIndex + 1 < 18 && currentIndex + 1 < inputs.length) {
                             inputs[currentIndex + 1].focus();
                             inputs[currentIndex + 1].select();
                         }
@@ -3946,8 +3900,7 @@
             for (let [tName, tids] of Object.entries(dataDict)) {
                 if (!tids || tids.length === 0) continue;
                 let memberName = batchTeamMembers[tName] || "-";
-                let tidInputLimit = tName === "ALL MASTER DATA" ? 1000 : 18;
-                let limitedTids = tids.slice(0, tidInputLimit);
+                let limitedTids = tids.slice(0, 18);
 
                 let tidCounts = {};
                 limitedTids.forEach(t => { 
