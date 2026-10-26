@@ -21,37 +21,89 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-        /* CSS Orientasi & Layout Cetak Dynamic (A4 Portrait Center-Up Default Fit A4) */
-        @page print-portrait {
+        /* CSS Orientasi & Layout Cetak Dynamic (A4 Portrait/Landscape) */
+        @page {
             size: A4 portrait;
-            margin: 5mm auto 0 auto;
-        }
-        @page print-landscape {
-            size: A4 landscape;
-            margin: 0mm 0mm;
+            margin: 5mm;
         }
 
-        body.print-orient-portrait {
-            page: print-portrait;
+        #printArea.print-preview-portrait,
+        #printArea.print-preview-landscape {
+            box-sizing: border-box;
+            margin-left: auto;
+            margin-right: auto;
+            overflow-x: auto;
         }
-        body.print-orient-landscape {
-            page: print-landscape;
+        #printArea.print-preview-portrait {
+            width: 210mm;
+            max-width: calc(100vw - 2rem);
+        }
+        #printArea.print-preview-landscape {
+            width: 297mm;
+            max-width: calc(100vw - 2rem);
+        }
+        #printArea table {
+            width: 100%;
+            table-layout: fixed !important;
+        }
+        #printArea col:nth-child(1) { width: 4%; }
+        #printArea col:nth-child(2) { width: 9%; }
+        #printArea col:nth-child(3) { width: 22%; }
+        #printArea col:nth-child(4) { width: 15%; }
+        #printArea col:nth-child(5) { width: 12%; }
+        #printArea col:nth-child(6) { width: 12%; }
+        #printArea col:nth-child(7) { width: 5%; }
+        #printArea col:nth-child(8) { width: 5%; }
+        #printArea col:nth-child(9) { width: 5%; }
+        #printArea col:nth-child(10) { width: 7%; }
+        #printArea col:nth-child(11) { width: 4%; }
+        #printArea th, #printArea td {
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+            word-break: normal;
+        }
+        #printArea th[colspan="11"] > div {
+            flex-wrap: wrap;
+            gap: 3mm !important;
         }
 
         @media print {
             html, body {
-                width: 100% !important;
-                height: 100% !important;
+                width: auto !important;
+                height: auto !important;
+                min-height: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background: white !important;
                 color: black !important;
                 font-size: 11.5px !important;
-                display: flex !important;
-                justify-content: center !important; 
-                align-items: flex-start !important; 
+                display: block !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+            }
+            #mainApp {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #mainApp > div.flex.flex-1.p-3.gap-3 {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #contentArea {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                background: white !important;
+                border: 0 !important;
+                box-shadow: none !important;
             }
             body * {
                 visibility: hidden;
@@ -60,17 +112,22 @@
                 visibility: visible;
             }
             #printArea {
-                position: relative;
+                position: static !important;
                 width: 100% !important;
-                max-width: 210mm !important; 
-                padding: 2mm !important;
-                margin: 0 auto !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 background: white !important;
                 box-shadow: none !important;
                 border: none !important;
                 box-sizing: border-box !important;
+                overflow: visible !important;
             }
             .print-page-break {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
                 page-break-after: always !important;
                 break-after: page !important;
                 display: block !important;
@@ -84,42 +141,64 @@
             #printArea table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important;
+                table-layout: fixed !important;
                 border: 2px solid #000000 !important;
             }
+            #printArea col:nth-child(1) { width: 4% !important; }
+            #printArea col:nth-child(2) { width: 9% !important; }
+            #printArea col:nth-child(3) { width: 22% !important; }
+            #printArea col:nth-child(4) { width: 15% !important; }
+            #printArea col:nth-child(5) { width: 12% !important; }
+            #printArea col:nth-child(6) { width: 12% !important; }
+            #printArea col:nth-child(7) { width: 5% !important; }
+            #printArea col:nth-child(8) { width: 5% !important; }
+            #printArea col:nth-child(9) { width: 5% !important; }
+            #printArea col:nth-child(10) { width: 7% !important; }
+            #printArea col:nth-child(11) { width: 4% !important; }
             #printArea th {
-                padding: 5px 4px !important;
-                font-size: 11.5px !important;
+                padding: 4px 3px !important;
+                font-size: 10px !important;
                 font-weight: 800 !important;
                 background-color: #ffffff !important;
                 color: #000000 !important;
                 border: 1.5px solid #000000 !important;
                 text-transform: uppercase !important;
-                white-space: nowrap !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+                word-break: normal !important;
             }
             #printArea td {
-                padding: 4px 5px !important;
-                font-size: 11px !important;
+                padding: 3px 3px !important;
+                font-size: 9.5px !important;
                 font-weight: 600 !important; 
                 line-height: 1.2 !important;
-                height: 28px !important;
+                height: auto !important;
                 vertical-align: middle !important;
                 border: 1.5px solid #000000 !important;
                 color: #000000 !important;
-                white-space: nowrap !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+                word-break: normal !important;
+            }
+            #printArea thead {
+                display: table-header-group !important;
+            }
+            #printArea tr {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
             }
 
-            .col-no { width: 1% !important; text-align: center !important; }
-            .col-team { width: 1% !important; text-align: center !important; white-space: nowrap !important; }
-            .col-tid { width: 1% !important; text-align: center !important; white-space: nowrap !important; }
-            .col-lokasi { width: 1% !important; white-space: nowrap !important; text-align: left !important; }
-            .col-merk { width: 1% !important; white-space: nowrap !important; text-align: center !important; }
-            .col-rpl { width: 1% !important; white-space: nowrap !important; text-align: center !important; }
-            .col-flm { width: 1% !important; white-space: nowrap !important; text-align: center !important; }
-            .col-rak { width: 1% !important; text-align: center !important; }
-            .col-baris { width: 1% !important; text-align: center !important; }
-            .col-kolom { width: 1% !important; text-align: center !important; }
-            .col-ket { width: auto !important; text-align: left !important; white-space: normal !important; }
+            .col-no { width: 4% !important; text-align: center !important; }
+            .col-team { width: 7% !important; text-align: center !important; }
+            .col-tid { width: 9% !important; text-align: center !important; }
+            .col-lokasi { width: 22% !important; text-align: left !important; }
+            .col-merk { width: 15% !important; text-align: center !important; }
+            .col-rpl { width: 12% !important; text-align: center !important; }
+            .col-flm { width: 12% !important; text-align: center !important; }
+            .col-rak { width: 5% !important; text-align: center !important; }
+            .col-baris { width: 5% !important; text-align: center !important; }
+            .col-kolom { width: 5% !important; text-align: center !important; }
+            .col-ket { width: 7% !important; text-align: left !important; }
 
             body.print-bw #printArea * {
                 color: black !important;
@@ -4052,8 +4131,26 @@
             };
         }
 
+        function updatePrintOrientationPreview(orientation) {
+            selectedPrintOrientation = orientation === "landscape" ? "landscape" : "portrait";
+            const printArea = document.getElementById("printArea");
+            if (!printArea) return;
+
+            printArea.classList.toggle("print-preview-landscape", selectedPrintOrientation === "landscape");
+            printArea.classList.toggle("print-preview-portrait", selectedPrintOrientation === "portrait");
+        }
+
         function triggerCustomPrint() {
-            document.body.classList.remove("print-bw", "print-draft", "print-high", "print-orient-portrait", "print-orient-landscape");
+            let pageStyle = document.getElementById("dynamicPrintPageStyle");
+            if (!pageStyle) {
+                pageStyle = document.createElement("style");
+                pageStyle.id = "dynamicPrintPageStyle";
+                document.head.appendChild(pageStyle);
+            }
+            const pageOrientation = selectedPrintOrientation === "landscape" ? "landscape" : "portrait";
+            pageStyle.textContent = `@page { size: A4 ${pageOrientation}; margin: 5mm; }`;
+
+            document.body.classList.remove("print-bw", "print-draft", "print-high");
 
             if (selectedPrintColor === "bw") {
                 document.body.classList.add("print-bw");
@@ -4063,12 +4160,6 @@
                 document.body.classList.add("print-draft");
             } else if (selectedPrintQuality === "high") {
                 document.body.classList.add("print-high");
-            }
-
-            if (selectedPrintOrientation === "landscape") {
-                document.body.classList.add("print-orient-landscape");
-            } else {
-                document.body.classList.add("print-orient-portrait");
             }
 
             window.print();
@@ -4155,7 +4246,7 @@
                         </div>
                         <div class="flex items-center gap-1">
                             <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Orientasi:</span>
-                            <select id="printOrientationSelect" onchange="selectedPrintOrientation = this.value" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
+                            <select id="printOrientationSelect" onchange="updatePrintOrientationPreview(this.value)" class="text-xs font-bold bg-slate-100 text-slate-800 p-1 rounded border border-slate-300 outline-none">
                                 <option value="portrait" ${selectedPrintOrientation === 'portrait' ? 'selected' : ''}>📱 Potret (A4 Default)</option>
                                 <option value="landscape" ${selectedPrintOrientation === 'landscape' ? 'selected' : ''}>🖥️ Lanskap Penuh</option>
                             </select>
@@ -4174,8 +4265,9 @@
                     </div>
                 </div>
 
-                <div id="printArea" class="border-2 border-black bg-white p-3 rounded-xl shadow-md transition-all overflow-x-auto mx-auto my-0 max-w-[210mm]">
+                <div id="printArea" class="print-preview-${selectedPrintOrientation} border-2 border-black bg-white p-3 rounded-xl shadow-md transition-all overflow-x-auto mx-auto my-0 max-w-[210mm]">
                     <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border" style="table-layout: auto;">
+                        <colgroup><col><col><col><col><col><col><col><col><col><col><col></colgroup>
                         <thead>
                             <tr>
                                 <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
@@ -4244,7 +4336,7 @@
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1">Orientasi:</span>
-                        <select id="printOrientationSelectAll" onchange="selectedPrintOrientation = this.value" class="text-xs font-bold bg-amber-100 text-amber-900 p-1 rounded border border-amber-300 outline-none">
+                        <select id="printOrientationSelectAll" onchange="updatePrintOrientationPreview(this.value)" class="text-xs font-bold bg-amber-100 text-amber-900 p-1 rounded border border-amber-300 outline-none">
                             <option value="portrait" ${selectedPrintOrientation === 'portrait' ? 'selected' : ''}>📱 Potret (Portrait A4 Default)</option>
                             <option value="landscape" ${selectedPrintOrientation === 'landscape' ? 'selected' : ''}>🖥️ Lanskap Penuh (A4 Margin 0)</option>
                         </select>
@@ -4266,7 +4358,7 @@
                     </div>
                 </div>
                 <button onclick="triggerCustomPrint()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 rounded shadow">🖨️ CETAK SEMUA TEAM</button>
-            </div><div id="printArea">`;
+                </div><div id="printArea" class="print-preview-${selectedPrintOrientation}">`;
 
             previewPayload.forEach((item, pIdx) => {
                 let sortedRows = sortLocationData(item.data, selectedSortOrder);
@@ -4296,6 +4388,7 @@
                 fullHtml += `
                     <div class="${pIdx < previewPayload.length - 1 ? 'print-page-break' : ''} border-2 border-black bg-white p-3 rounded-xl shadow-md">
                         <table class="w-full border-collapse rounded-lg overflow-hidden border-2 border-black printable-table-border" style="table-layout: auto;">
+                            <colgroup><col><col><col><col><col><col><col><col><col><col><col></colgroup>
                             <thead>
                                 <tr>
                                     <th colspan="11" class="bg-white text-black border-2 border-black p-2.5 text-center font-extrabold text-base">
